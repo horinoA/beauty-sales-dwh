@@ -21,7 +21,7 @@
 
 | カテゴリ | 技術 | 選定理由 |
 | :--- | :--- | :--- |
-| **Backend** | **Java 17 / Spring Boot 3** | 堅牢なAPI構築およびSpring BatchによるETL処理の実装。 |
+| **Backend** | **Java 21 / Spring Boot 3** | 堅牢なAPI構築およびSpring BatchによるETL処理の実装。 |
 | **Frontend** | **Next.js (App Router)** | SEOとパフォーマンス、サーバーサイドレンダリングによる高速な描画。 |
 | **Database** | **PostgreSQL** | JSON型対応と分析クエリへの親和性。Rawデータ層とDWH層を分離設計。 |
 | **Infra** | **Docker / Docker Compose** | ポータビリティの確保とローカル開発環境の統一。 |
