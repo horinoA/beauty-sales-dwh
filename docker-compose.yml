@@ -1,0 +1,83 @@
+version: '3.8'
+
+services:
+  # ==============================
+  # 1. Database (PostgreSQL 16)
+  # ==============================
+  db:
+    image: postgres:16-alpine
+    container_name: beauty-dwh-db
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      TZ: ${TZ}
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ==============================
+  # 2. DB GUI (pgAdmin 4)
+  # ==============================
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: beauty-dwh-pgadmin
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+    ports:
+      - "5050:80"
+    depends_on:
+      - db
+    networks:
+      - app-network
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+
+  # ==============================
+  # 3. Backend (Spring Boot)
+  # ==============================
+  #backend:
+  #  build:
+  #    context: ./backend
+  #    dockerfile: Dockerfile
+  #  container_name: beauty-dwh-backend
+  #  ports:
+  #    - "8080:8080"
+  #  environment:
+  #    # DB接続設定 (コンテナ内のホスト名はサービス名 'db' になる)
+  #    SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/${POSTGRES_DB}
+  #    SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
+  #    SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
+  #    TZ: ${TZ}
+  #  depends_on:
+  #    db:
+  #      condition: service_healthy # DBの起動完了を待ってから起動
+  #  networks:
+  #    - app-network
+    # 開発中はローカルのソースコード変更を反映させるため、マウント推奨
+    # (下記はMavenを使用する場合の例。Jar実行のみならコメントアウトでOK)
+    # volumes:
+    #   - ./backend:/app
+    #   - ~/.m2:/root/.m2
+
+# ==============================
+# Network & Volumes
+# ==============================
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  db_data:
+  pgadmin_data:
