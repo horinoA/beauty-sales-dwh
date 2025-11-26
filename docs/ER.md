@@ -11,7 +11,7 @@ erDiagram
     }
 
     RAW_CUSTOMER {
-        BIGSERIAL customer_id PK "会員API取得処理ID"
+        BIGSERIAL customerId PK "会員API取得処理ID"
         TIMESTAMP fetched_at "取得日時"
         JSONB json_body "APIレスポンス全文"
     }
@@ -20,9 +20,14 @@ erDiagram
     %% Schema: DWH (Analytics Core)
     %% スタースキーマ構成
     %% ==========================================
+    %% customerId,staffId,staffName,transactionHeadId
+    %% transactionDetailId,productId,productName,price
+    %% total,quantity,salesPrice,PRODUCT
+    %% APIにあるフィールドはあえて命名を一致させた。
+
     DIM_CUSTOMER {
         BIGINT app_company_id FK
-        VARCHAR customer_id PK "統合ID"
+        VARCHAR customerId PK "統合ID"
         VARCHAR customer_name
         VARCHAR customer_kana
         VARCHAR phone_number
@@ -34,18 +39,18 @@ erDiagram
 
     DIM_STAFF {
         BIGINT app_company_id FK
-        VARCHAR staff_id PK
-        VARCHAR staff_name
+        VARCHAR staffId PK
+        VARCHAR staffName
         VARCHAR rank "経営側評価"
         boolean employ_flag "在籍フラグ"
     }
 
-    DIM_ITEM {
+    DIM_PRODUCT {
         BIGINT app_company_id FK
-        VARCHAR item_id PK
-        VARCHAR item_name
+        VARCHAR productId PK
+        VARCHAR productName
         VARCHAR category_name "技術/店販"
-        INTEGER unit_price
+        INTEGER price "マスタ上の商品単価"
     }
 
     FACT_SALES {
@@ -53,22 +58,23 @@ erDiagram
         VARCHAR transactionHeadId PK "スマレジが保持するID"
         TIMESTAMP transaction_date_time
         DATE transaction_date "パーティション/検索用"
-        VARCHAR customer_id FK
-        VARCHAR staff_id FK
-        INTEGER total_amount "返金はマイナス値"
+        VARCHAR customerId FK
+        VARCHAR staffId FK
+        INTEGER taxRate　"税率：10%,8%などパーセンテージ"
+        INTEGER total "返金はマイナス値"
         VARCHAR transaction_type "SALES/REFUND"
     }
 
     FACT_SALES_DETAILS {
         BIGINT app_company_id FK
-        SERIAL detail_id PK
-        VARCHAR transaction_id FK
-        VARCHAR item_id FK
-        VARCHAR item_name "スナップショット"
+        VARCHAR transactionDetailId PK
+        VARCHAR transactionHeadId FK
+        VARCHAR productId FK
+        VARCHAR productName "スナップショット"
         INTEGER quantity
-        INTEGER price_sales "実売価格,返金はマイナス値"
-        INTEGER taxRate　"10%,8%などパーセンテージ"
-        VARCHAR category_type "SALES/REFUND"
+        INTEGER salesPrice "実売価格,返金はマイナス値"
+        INTEGER taxRate　"税率：10%,8%などパーセンテージ"
+        VARCHAR category_type "SALES/REFUND_transactionDetailDivisionより判断"
     }
 
     %% ==========================================
@@ -100,12 +106,11 @@ erDiagram
     MERGE_CANDIDATES {
         SERIAL candidate_id PK
         BIGINT app_company_id FK
-        VARCHAR source_customer_id FK "消えるID"
-        VARCHAR target_customer_id FK "残るID"
+        VARCHAR source_customerId FK "消えるID"
+        VARCHAR target_customerId FK "残るID"
         INTEGER similarity_score "類似性スコア"
         VARCHAR status "PENDING/MERGED/IGNORED"
     }
-
 
 
     %% ==========================================
@@ -120,9 +125,19 @@ erDiagram
     FACT_SALES ||--|{ FACT_SALES_DETAILS : "contains"
     
     %% Detail - Item
-    DIM_ITEM ||--o{ FACT_SALES_DETAILS : "defined_as"
+    DIM_PRODUCT ||--o{ FACT_SALES_DETAILS : "defined_as"
 
     %% System - DWH Logic
     DIM_CUSTOMER ||--o{ MERGE_CANDIDATES : "is_source_of"
     DIM_CUSTOMER ||--o{ MERGE_CANDIDATES : "is_target_of"
+
+    %% MultiAccount
+    APP_COMPANY ||--o{ DIM_CUSTOMER : "multi-account "
+    APP_COMPANY ||--o{ DIM_STAFF : "multi-account "
+    APP_COMPANY ||--o{ DIM_PRODUCT : "multi-account "
+    APP_COMPANY ||--o{ FACT_SALES : "multi-account "
+    APP_COMPANY ||--o{ FACT_SALES_DETAILS : "multi-account "
+    APP_COMPANY ||--o{ APP_USER : "multi-account "
+
+
 ```
