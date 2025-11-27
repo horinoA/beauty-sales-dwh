@@ -33,10 +33,10 @@ gantt
 - [ ] **1-1. Docker環境構築**
     - [ ] PostgreSQL, Spring Boot, pgAdmin(任意)を含む `docker-compose.yml` の作成と起動確認
 - [ ] **1-2. DBスキーマ設計・実装**
-    - [ ] `raw_data` 層: APIレスポンスをそのまま保存するテーブル作成
+    - [o] `raw_data` 層: APIレスポンスをそのまま保存するテーブル作成
     - [ ] `dwh` 層: 分析用に正規化したテーブル (`fact_sales`, `dim_customers` 等) 作成
 - [ ] **1-3. スマレジAPI疎通・Mock作成**
-    - [ ] APIから実際のJSONを取得し、構造を確認
+    - [o] APIから実際のJSONを取得し、構造を確認
     - [ ] 開発用にJSONをローカルファイルとして保存（API制限回避のためのMockデータ作成）
 
 ## Phase 2: ETL処理とコアロジック実装 (The Core)
