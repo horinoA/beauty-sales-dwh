@@ -9,7 +9,7 @@ gantt
     section Phase 1: データ基盤構築
     環境構築 (Docker/DB)           :done, p1_1, 2025-11-24, 3d
     スマレジAPI疎通・Mock作成       :active, p1_2, after p1_1, 4d
-    DB設計実装 (Raw/DWH層)         :p1_3, after p1_2, 3d
+    DB設計実装 (Raw/DWH層)         :done, p1_3, after p1_2, 3d
     
     section Phase 2: ETL & ロジック
     Spring Batch実装 (取得~保存)    :p2_1, after p1_3, 7d
@@ -30,11 +30,11 @@ gantt
 **目標:** スマレジのデータがPostgreSQLに格納され、SQLで参照できる状態にする。
 **期間目安:** 1〜2週間
 
-- [ ] **1-1. Docker環境構築**
-    - [ ] PostgreSQL, Spring Boot, pgAdmin(任意)を含む `docker-compose.yml` の作成と起動確認
-- [ ] **1-2. DBスキーマ設計・実装**
+- [x] **1-1. Docker環境構築**
+    - [x] PostgreSQL, Spring Boot, pgAdmin(任意)を含む `docker-compose.yml` の作成と起動確認
+- [x] **1-2. DBスキーマ設計・実装**
     - [x] `raw_data` 層: APIレスポンスをそのまま保存するテーブル作成
-    - [ ] `dwh` 層: 分析用に正規化したテーブル (`fact_sales`, `dim_customers` 等) 作成
+    - [x] `dwh` 層: 分析用に正規化したテーブル (`fact_sales`, `dim_customers` 等) 作成
 - [ ] **1-3. スマレジAPI疎通・Mock作成**
     - [x] APIから実際のJSONを取得し、構造を確認
     - [ ] 開発用にJSONをローカルファイルとして保存（API制限回避のためのMockデータ作成）

@@ -37,6 +37,12 @@ erDiagram
         JSONB json_body "APIレスポンス全文"
     }
 
+    RAW_CATEGORY:::RAW {
+        BIGSERIAL cat_id PK "DB内管理ID"
+        TIMESTAMPTZ fetched_at "取得日時"
+        JSONB json_body "APIレスポンス全文"
+    }
+
     RAW_CATEGORY_GROUPS:::RAW {
         BIGSERIAL cat_group_id PK "DB内管理ID"
         TIMESTAMPTZ fetched_at "取得日時"
@@ -73,7 +79,7 @@ erDiagram
         BIGINT app_company_id PK "複合PK 1/2"
         VARCHAR product_id PK "複合PK 2/2 スマレジID:productId"
         VARCHAR product_name "スマレジID:productName"
-        VARCHAR category_name "技術/店販(最新) API:categoryGroupName"
+        VARCHAR cat_group_id "技術/店販(最新) API:categoryGroupId"
         INTEGER price "マスタ上の商品単価,スマレジID:price"
     }
     
@@ -116,7 +122,7 @@ erDiagram
         
         VARCHAR product_id FK
         VARCHAR product_name "スナップショット,スマレジID:productName"
-        VARCHAR category_name "スナップショット★カテゴリ保存用(重要),技術/店販"
+        VARCHAR category_group_name "スナップショット★カテゴリ保存用(重要),技術/店販"
         
         INTEGER quantity "スマレジID:quantity"
         INTEGER sales_price "実売価格,返金はマイナス値,スマレジID:salesPrice"
