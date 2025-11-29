@@ -1,7 +1,7 @@
 -- =================================================================
 -- Project: Beauty Sales DWH
 -- Description: DDL for PostgreSQL (Raw Layer, DWH Layer, System Layer)
--- Version: Final Implementation Ready
+-- Version: Final Implementation Ready (Added StoreID & Timestamps)
 -- =================================================================
 
 -- 1. Schema Definition
@@ -53,14 +53,14 @@ CREATE TABLE IF NOT EXISTS raw.staffs (
     json_body JSONB NOT NULL
 );
 
--- 1.6 Categories (API: /categories) - NEW
+-- 1.6 Categories (API: /categories)
 CREATE TABLE IF NOT EXISTS raw.categories (
     cat_id BIGSERIAL PRIMARY KEY,
     fetched_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
     json_body JSONB NOT NULL
 );
 
--- 1.7 Category Groups (API: /category_groups) - NEW
+-- 1.7 Category Groups (API: /category_groups)
 CREATE TABLE IF NOT EXISTS raw.category_groups (
     cat_group_id BIGSERIAL PRIMARY KEY,
     fetched_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
@@ -82,6 +82,7 @@ CREATE TABLE IF NOT EXISTS dwh.dim_customers (
     customer_kana VARCHAR(100),
     phone_number VARCHAR(50),
     mobile_number VARCHAR(50), -- Mobile specific
+    store_id VARCHAR(50),      -- Added: Store ID
     
     -- Calculated Fields (Rich Dimension)
     first_visit_date DATE,
@@ -89,6 +90,10 @@ CREATE TABLE IF NOT EXISTS dwh.dim_customers (
     visit_count INTEGER DEFAULT 0,
     
     is_deleted BOOLEAN DEFAULT FALSE,
+
+    -- API Timestamps
+    insert_data_time TIMESTAMPTZ, -- API: insDateTime
+    update_data_time TIMESTAMPTZ, -- API: updDateTime
     
     PRIMARY KEY (app_company_id, customer_id)
 );
@@ -100,8 +105,13 @@ CREATE TABLE IF NOT EXISTS dwh.dim_staffs (
     
     staff_name VARCHAR(100),
     rank VARCHAR(50),
+    store_id VARCHAR(50),          -- Added: Store ID
     employ_flag INTEGER DEFAULT 1, -- 0:Retire, 1:Active
     
+    -- API Timestamps
+    insert_data_time TIMESTAMPTZ, -- API: insDateTime
+    update_data_time TIMESTAMPTZ, -- API: updDateTime
+
     PRIMARY KEY (app_company_id, staff_id)
 );
 
@@ -111,6 +121,10 @@ CREATE TABLE IF NOT EXISTS dwh.dim_category_groups (
     cat_group_id VARCHAR(50) NOT NULL, -- Smaregi ID
     cat_group_name VARCHAR(100), -- Tech/Retail
     
+    -- API Timestamps
+    insert_data_time TIMESTAMPTZ, -- API: insDateTime
+    update_data_time TIMESTAMPTZ, -- API: updDateTime
+
     PRIMARY KEY (app_company_id, cat_group_id)
 );
 
@@ -122,6 +136,11 @@ CREATE TABLE IF NOT EXISTS dwh.dim_products (
     product_name VARCHAR(200),
     cat_group_id VARCHAR(50), -- FK Reference to Category Groups
     price INTEGER,
+    store_id VARCHAR(50),     -- Added: Store ID
+
+    -- API Timestamps
+    insert_data_time TIMESTAMPTZ, -- API: insDateTime
+    update_data_time TIMESTAMPTZ, -- API: updDateTime
     
     PRIMARY KEY (app_company_id, product_id)
 );
@@ -136,6 +155,7 @@ CREATE TABLE IF NOT EXISTS dwh.fact_sales (
     
     customer_id VARCHAR(50),
     staff_id VARCHAR(50),
+    store_id VARCHAR(50), -- Added: Store ID (Transaction Store)
     
     -- Amounts (Currency) - 1 Yen Wall Strategy
     amount_total INTEGER NOT NULL,      -- Inc. Tax (API: total)
@@ -171,7 +191,7 @@ CREATE TABLE IF NOT EXISTS dwh.fact_sales_details (
     
     -- Snapshots (History Preservation)
     product_name VARCHAR(200),
-    category_group_name VARCHAR(100), -- Snapshot: Tech/Retail (Renamed from category_name)
+    category_group_name VARCHAR(100), -- Snapshot: Tech/Retail
     
     quantity INTEGER NOT NULL,
     sales_price INTEGER NOT NULL, -- Actual sold price
