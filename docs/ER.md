@@ -61,10 +61,13 @@ erDiagram
         VARCHAR customer_kana "スマレジAPI:firstKana+lastKane"
         VARCHAR phone_number "スマレジAPI:phoneNumber"
         VARCHAR mobile_number "スマレジAPI:mobileNumber,今携帯番号のみの人多い"
+        VARCHAR store_id  "API:storeID"
         DATE first_visit_date "★計算結果:初回利用日"
         DATE last_visit_date "★計算結果:最終利用日(リピート分析用)"
         INTEGER visit_count "★計算結果:来店回数(F分析用)"
         BOOLEAN is_deleted "名寄せで消滅した場合True"
+        TIMESTAMPZ insert_data_time "API:insDateTime"
+        TIMESTAMPZ update_data_time "API:updDateTime"
     }
 
     DIM_STAFF {
@@ -72,7 +75,10 @@ erDiagram
         VARCHAR staff_id PK "複合PK 2/2 スマレジAPI:staffId"
         VARCHAR staff_Name "スマレジAPI:staffName"
         VARCHAR rank "スマレジAPI:rank"
+        VARCHAR store_id  "API:storeID"
         INTEGER employ_flag "在籍フラグ スマレジAPI:display_flag"
+        TIMESTAMPZ insert_data_time "API:insDateTime"
+        TIMESTAMPZ update_data_time "API:updDateTime"
     }
 
     DIM_PRODUCT {
@@ -81,12 +87,17 @@ erDiagram
         VARCHAR product_name "スマレジID:productName"
         VARCHAR cat_group_id "技術/店販(最新) API:categoryGroupId"
         INTEGER price "マスタ上の商品単価,スマレジID:price"
+        VARCHAR store_id  "API:storeID"
+        TIMESTAMPZ insert_data_time "API:insDateTime"
+        TIMESTAMPZ update_data_time "API:updDateTime"
     }
     
     DIM_CATEGORY_GROUPS{
         BIGINT app_company_id PK "複合PK 1/2"
         VARCHAR cat_group_id PK "複合PK 2/2 API:categoryGroupId"
         VARCHAR cat_group_name "API:categoryGroupName 技術/店販"
+        TIMESTAMPZ insert_data_time "API:insDateTime"
+        TIMESTAMPZ update_data_time "API:updDateTime"
     }
 
     FACT_SALES {
@@ -98,6 +109,7 @@ erDiagram
         
         VARCHAR customer_id FK "DIM_CUSTOMERへ"
         VARCHAR staff_id FK "DIM_STAFFへ"
+        VARCHAR store_id  "マスタはとらないが店舗idはtranとして取得"
 
         %% --- 金額・税（1円の壁対策） ---
         INTEGER amount_total "決済総額(税込),返金はマイナス値(API:total)"
