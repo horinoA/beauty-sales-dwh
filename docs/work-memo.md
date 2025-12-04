@@ -35,3 +35,6 @@ CREATE DATABASE beauty_dwh_db OWNER beauty_user;
 
 ### テーブル、スキーマ初期作成用SQL
 01_schema.sql
+
+### postgres pg_dumpコマンド
+pg_dump -U ユーザー名 --format=p --file=フルパス.sql db名
