@@ -8,7 +8,7 @@ gantt
 
     section Phase 1: データ基盤構築
     環境構築 (Docker/DB)           :done, p1_1, 2025-11-24, 3d
-    スマレジAPI疎通・Mock作成       :active, p1_2, after p1_1, 4d
+    スマレジAPI疎通・Mock作成       :done, p1_2, after p1_1, 4d
     DB設計実装 (Raw/DWH層)         :done, p1_3, after p1_2, 3d
     
     section Phase 2: ETL & ロジック
@@ -35,9 +35,9 @@ gantt
 - [x] **1-2. DBスキーマ設計・実装**
     - [x] `raw_data` 層: APIレスポンスをそのまま保存するテーブル作成
     - [x] `dwh` 層: 分析用に正規化したテーブル (`fact_sales`, `dim_customers` 等) 作成
-- [ ] **1-3. スマレジAPI疎通・Mock作成**
+- [x] **1-3. スマレジAPI疎通・Mock作成**
     - [x] APIから実際のJSONを取得し、構造を確認
-    - [ ] 開発用にJSONをローカルファイルとして保存（API制限回避のためのMockデータ作成）
+    - [x] 開発用にJSONをローカルファイルとして保存（API制限回避のためのMockデータ作成）
 
 ## Phase 2: ETL処理とコアロジック実装 (The Core)
 **目標:** データ取り込み〜名寄せ〜集計の一連フローをバックエンドで完結させる。

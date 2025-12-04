@@ -98,6 +98,7 @@ erDiagram
         VARCHAR cat_group_name "API:categoryGroupName 技術/店販"
         TIMESTAMPZ insert_data_time "API:insDateTime"
         TIMESTAMPZ update_data_time "API:updDateTime"
+
     }
 
     FACT_SALES {
