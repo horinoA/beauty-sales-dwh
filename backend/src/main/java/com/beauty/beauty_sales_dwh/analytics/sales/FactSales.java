@@ -54,6 +54,7 @@ public record FactSales(
     Integer discountPoint,
     Integer discountCoupon,
 
+    @NotNull(message = "{factSales.transactionType.notNull}")
     @Pattern(regexp = "^(SALES|REFUND)$", message = "{factSales.transactionType.pattern}")
     String transactionType, // SALES, REFUND
 
