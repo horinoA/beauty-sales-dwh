@@ -38,3 +38,39 @@ CREATE DATABASE beauty_dwh_db OWNER beauty_user;
 
 ### postgres pg_dumpコマンド
 pg_dump -U ユーザー名 --format=p --file=フルパス.sql db名
+
+### SpringBootプロジェクトフォルダ構成
+```
+com.example.beautydwh
+├── BeautyDwhApplication.java  // [Main] 起動クラス (ルートに置くのが鉄則)
+│
+├── common                     // [Shared] 全ドメイン共通の部品
+│   ├── config                 // Security, JDBC, Batch設定
+│   ├── security               // OAuth2, JWT, 認証Userモデル
+│   └── tenant                 // マルチテナント(CompanyId)のContextHolder
+│
+├── ingestion                  // [Domain: ETL] データ収集・Raw層
+│   ├── client                 // スマレジAPIクライアント
+│   ├── batch                  // Spring BatchのJob/Step定義
+│   └── raw                    // Raw層のEntity/Repository (RawTransactionなど)
+│
+├── analytics                  // [Domain: 分析] DWH層・可視化
+│   ├── sales                  // 売上分析ドメイン
+│   │   ├── FactSales.java     // Entity (Record)
+│   │   ├── SalesRepository.java
+│   │   ├── SalesService.java
+│   │   └── SalesController.java
+│   ├── customer               // 顧客分析ドメイン (DimCustomer)
+│   ├── staff                  // スタッフ分析ドメイン (DimStaff)
+│   └── product                // 商品分析ドメイン (DimProduct)
+│
+├── identity                   // [Domain: 名寄せ] 顧客統合ロジック
+│   ├── matching               // 類似度判定アルゴリズム
+│   ├── candidate              // 名寄せ候補 (MergeCandidates)
+│   └── MergeController.java   // 名寄せ画面用API
+│
+└── system                     // [Domain: 管理] システム管理
+    ├── joblog                 // ジョブ実行ログ
+    ├── user                   // アプリユーザー管理
+    └── company                // テナント(Company)管理
+```
