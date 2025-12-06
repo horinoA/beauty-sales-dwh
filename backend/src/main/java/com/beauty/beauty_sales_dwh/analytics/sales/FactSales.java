@@ -6,6 +6,7 @@ import java.time.OffsetDateTime;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Table;
 
+import com.beauty.beauty_sales_dwh.common.validation.ValidSnowflakeId;
 import com.beauty.beauty_sales_dwh.common.validation.ValidTransactionAmount;
 
 import jakarta.validation.constraints.NotNull;
@@ -19,6 +20,7 @@ import jakarta.validation.constraints.Pattern;
 @Table(name = "fact_sales", schema = "dwh")
 @ValidTransactionAmount // カスタムバリデーション: 取引区分と金額の整合性チェック
 public record FactSales(
+    @ValidSnowflakeId
     @NotNull(message = "{factSales.companyId.notNull}")
     Long appCompanyId,
 
