@@ -60,6 +60,7 @@ public record FactSales(
 
     @NotNull
     Boolean isVoid
+    
 ) {
     // ドメインロジック: 返金データかどうか
     public boolean isRefund() {

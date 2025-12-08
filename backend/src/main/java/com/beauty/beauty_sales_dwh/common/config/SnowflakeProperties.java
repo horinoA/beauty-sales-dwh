@@ -10,7 +10,7 @@ import lombok.Data;
 @ConfigurationProperties(prefix = "snowflake")
 public class SnowflakeProperties {
     private Long nodeId = 1L; // デフォルト値
-    private Long epoch = 1764547200000L; // 2025年12月1日 00:00:00 (UTC)
+    private Long epoch = 1704067200000L; // 2024年01月01日 00:00:00 (UTC)
     private Long nodeIdBits = 10L;
     private Long sequenceBits = 12L;
 }
