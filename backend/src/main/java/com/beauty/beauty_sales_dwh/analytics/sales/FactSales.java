@@ -6,11 +6,13 @@ import java.time.OffsetDateTime;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Table;
 
+import com.beauty.beauty_sales_dwh.common.validation.ValidSmaregiId;
 import com.beauty.beauty_sales_dwh.common.validation.ValidSnowflakeId;
 import com.beauty.beauty_sales_dwh.common.validation.ValidTransactionAmount;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 
 /**
  * 売上ファクト (ヘッダー)
@@ -26,6 +28,7 @@ public record FactSales(
 
     @NotNull(message = "{factSales.transactionHeadId.notNull}")
     @Id // Spring Data JDBC上の識別子（実際はRepositoryでSQL制御）
+    @Pattern(regexp = "^[1-9][0-9]*$", message = "正の整数を入力してください")
     String transactionHeadId,
 
     @NotNull
@@ -34,18 +37,25 @@ public record FactSales(
     @NotNull
     LocalDate transactionDate,
 
+    @ValidSmaregiId
     String customerId,
+    @ValidSmaregiId
     String staffId,
+    @ValidSmaregiId
     String storeId, // 最新スキーマ対応
 
     // --- 金額・税（1円の壁対策 / Null許容しない） ---
     @NotNull
+    @Size(min = -999999999, max = 999999999, message = "{sumaregi.amount.size}")
     Integer amountTotal,
     @NotNull
+    @Size(min = -999999999, max = 999999999, message = "{sumaregi.amount.size}")
     Integer amountSubtotal,
     @NotNull
+    @Size(min = -999999999, max = 999999999, message = "{sumaregi.amount.size}")
     Integer amountTaxInclude,
     @NotNull
+    @Size(min = -999999999, max = 999999999, message = "{sumaregi.amount.size}")
     Integer amountTaxExclude,
 
     Integer amountSubtotalDiscountPrice,
@@ -60,7 +70,7 @@ public record FactSales(
 
     @NotNull
     Boolean isVoid
-    
+
 ) {
     // ドメインロジック: 返金データかどうか
     public boolean isRefund() {
