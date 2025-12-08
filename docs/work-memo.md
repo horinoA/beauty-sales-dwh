@@ -48,6 +48,9 @@ com.example.beautydwh
 │   ├── config                 // Security, JDBC, Batch設定
 │   ├── security               // OAuth2, JWT, 認証Userモデル
 │   └── tenant                 // マルチテナント(CompanyId)のContextHolder
+│   └── util                  //  システムに必要な処理を格納（SnowflakeGenerator.java)
+│   └── validation             // カスタムバリデーション格納
+
 │
 ├── ingestion                  // [Domain: ETL] データ収集・Raw層
 │   ├── client                 // スマレジAPIクライアント
@@ -57,9 +60,8 @@ com.example.beautydwh
 ├── analytics                  // [Domain: 分析] DWH層・可視化
 │   ├── sales                  // 売上分析ドメイン
 │   │   ├── FactSales.java     // Entity (Record)
-│   │   ├── SalesRepository.java
-│   │   ├── SalesService.java
-│   │   └── SalesController.java
+│   │   ├── FactSalesDetails.java
+│   │   └── SalesRepository.java
 │   ├── customer               // 顧客分析ドメイン (DimCustomer)
 │   ├── staff                  // スタッフ分析ドメイン (DimStaff)
 │   └── product                // 商品分析ドメイン (DimProduct)
