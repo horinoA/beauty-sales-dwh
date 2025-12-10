@@ -10,9 +10,10 @@ import com.beauty.beauty_sales_dwh.common.validation.ValidSmaregiId;
 import com.beauty.beauty_sales_dwh.common.validation.ValidSnowflakeId;
 import com.beauty.beauty_sales_dwh.common.validation.ValidTransactionAmount;
 
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
 
 /**
  * 売上ファクト (ヘッダー)
@@ -28,7 +29,7 @@ public record FactSales(
 
     @NotNull(message = "{factSales.transactionHeadId.notNull}")
     @Id // Spring Data JDBC上の識別子（実際はRepositoryでSQL制御）
-    @Pattern(regexp = "^[1-9][0-9]*$", message = "正の整数を入力してください")
+    @ValidSmaregiId(min = 1,max = 999999999)
     String transactionHeadId,
 
     @NotNull
@@ -37,25 +38,29 @@ public record FactSales(
     @NotNull
     LocalDate transactionDate,
 
-    @ValidSmaregiId
+    @ValidSmaregiId(min = 1,max = 999999999)
     String customerId,
-    @ValidSmaregiId
+    @ValidSmaregiId(min = 1,max = 999999999)
     String staffId,
-    @ValidSmaregiId
+    @ValidSmaregiId(min = 1,max = 999999999)
     String storeId, // 最新スキーマ対応
 
     // --- 金額・税（1円の壁対策 / Null許容しない） ---
     @NotNull
-    @Size(min = -999999999, max = 999999999, message = "{sumaregi.amount.size}")
+    @Min(value = -999999999, message = "{sumaregi.amount.minsize}")
+    @Max(value = 999999999, message = "{sumaregi.amount.maxsize}")
     Integer amountTotal,
     @NotNull
-    @Size(min = -999999999, max = 999999999, message = "{sumaregi.amount.size}")
+    @Min(value = -999999999, message = "{sumaregi.amount.minsize}")
+    @Max(value = 999999999, message = "{sumaregi.amount.maxsize}")
     Integer amountSubtotal,
     @NotNull
-    @Size(min = -999999999, max = 999999999, message = "{sumaregi.amount.size}")
+    @Min(value = -999999999, message = "{sumaregi.amount.minsize}")
+    @Max(value = 999999999, message = "{sumaregi.amount.maxsize}")
     Integer amountTaxInclude,
     @NotNull
-    @Size(min = -999999999, max = 999999999, message = "{sumaregi.amount.size}")
+    @Min(value = -999999999, message = "{sumaregi.amount.minsize}")
+    @Max(value = 999999999, message = "{sumaregi.amount.maxsize}")
     Integer amountTaxExclude,
 
     Integer amountSubtotalDiscountPrice,
