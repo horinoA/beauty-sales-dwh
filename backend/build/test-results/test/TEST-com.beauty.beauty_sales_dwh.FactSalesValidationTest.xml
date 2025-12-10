@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.beauty.beauty_sales_dwh.FactSalesValidationTest" tests="5" skipped="0" failures="5" errors="0" timestamp="2025-12-09T05:55:37.801Z" hostname="AkikoHorinonoMacBook-Air.local" time="0.043">
+  <properties/>
+  <testcase name="validateSnowFlake()" classname="com.beauty.beauty_sales_dwh.FactSalesValidationTest" time="0.03">
+    <failure message="jakarta.validation.UnexpectedTypeException: HV000030: No validator could be found for constraint 'jakarta.validation.constraints.Size' validating type 'java.lang.Integer'. Check configuration for 'amountTaxExclude'" type="jakarta.validation.UnexpectedTypeException">jakarta.validation.UnexpectedTypeException: HV000030: No validator could be found for constraint 'jakarta.validation.constraints.Size' validating type 'java.lang.Integer'. Check configuration for 'amountTaxExclude'
+	at app//org.hibernate.validator.internal.engine.constraintvalidation.ConstraintTree.getExceptionForNullValidator(ConstraintTree.java:116)
+	at app//org.hibernate.validator.internal.engine.constraintvalidation.ConstraintTree.getInitializedConstraintValidator(ConstraintTree.java:162)
+	at app//org.hibernate.validator.internal.engine.constraintvalidation.SimpleConstraintTree.validateConstraints(SimpleConstraintTree.java:58)
+	at app//org.hibernate.validator.internal.engine.constraintvalidation.ConstraintTree.validateConstraints(ConstraintTree.java:75)
+	at app//org.hibernate.validator.internal.metadata.core.MetaConstraint.doValidateConstraint(MetaConstraint.java:130)
+	at app//org.hibernate.validator.internal.metadata.core.MetaConstraint.validateConstraint(MetaConstraint.java:123)
+	at app//org.hibernate.validator.internal.engine.ValidatorImpl.validateMetaConstraint(ValidatorImpl.java:555)
+	at app//org.hibernate.validator.internal.engine.ValidatorImpl.validateConstraintsForSingleDefaultGroupElement(ValidatorImpl.java:518)
+	at app//org.hibernate.validator.internal.engine.ValidatorImpl.validateConstraintsForDefaultGroup(ValidatorImpl.java:488)
+	at app//org.hibernate.validator.internal.engine.ValidatorImpl.validateConstraintsForCurrentGroup(ValidatorImpl.java:450)
+	at app//org.hibernate.validator.internal.engine.ValidatorImpl.validateInContext(ValidatorImpl.java:400)
+	at app//org.hibernate.validator.internal.engine.ValidatorImpl.validate(ValidatorImpl.java:172)
+	at app//org.springframework.validation.beanvalidation.SpringValidatorAdapter.validate(SpringValidatorAdapter.java:359)
+	at app//com.beauty.beauty_sales_dwh.FactSalesValidationTest.validateSnowFlake(FactSalesValidationTest.java:60)
+	at java.base@21.0.9/java.lang.reflect.Method.invoke(Method.java:580)
+	at java.base@21.0.9/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at java.base@21.0.9/java.util.ArrayList.forEach(ArrayList.java:1596)
+</failure>
+  </testcase>
+  <testcase name="validateMessageFromProperties()" classname="com.beauty.beauty_sales_dwh.FactSalesValidationTest" time="0.003">
+    <failure message="jakarta.validation.UnexpectedTypeException: HV000030: No validator could be found for constraint 'jakarta.validation.constraints.Size' validating type 'java.lang.Integer'. Check configuration for 'amountTaxExclude'" type="jakarta.validation.UnexpectedTypeException">jakarta.validation.UnexpectedTypeException: HV000030: No validator could be found for constraint 'jakarta.validation.constraints.Size' validating type 'java.lang.Integer'. Check configuration for 'amountTaxExclude'
+	at app//org.hibernate.validator.internal.engine.constraintvalidation.ConstraintTree.getExceptionForNullValidator(ConstraintTree.java:116)
+	at app//org.hibernate.validator.internal.engine.constraintvalidation.ConstraintTree.getInitializedConstraintValidator(ConstraintTree.java:162)
+	at app//org.hibernate.validator.internal.engine.constraintvalidation.SimpleConstraintTree.validateConstraints(SimpleConstraintTree.java:58)
+	at app//org.hibernate.validator.internal.engine.constraintvalidation.ConstraintTree.validateConstraints(ConstraintTree.java:75)
+	at app//org.hibernate.validator.internal.metadata.core.MetaConstraint.doValidateConstraint(MetaConstraint.java:130)
+	at app//org.hibernate.validator.internal.metadata.core.MetaConstraint.validateConstraint(MetaConstraint.java:123)
+	at app//org.hibernate.validator.internal.engine.ValidatorImpl.validateMetaConstraint(ValidatorImpl.java:555)
+	at app//org.hibernate.validator.internal.engine.ValidatorImpl.validateConstraintsForSingleDefaultGroupElement(ValidatorImpl.java:518)
+	at app//org.hibernate.validator.internal.engine.ValidatorImpl.validateConstraintsForDefaultGroup(ValidatorImpl.java:488)
+	at app//org.hibernate.validator.internal.engine.ValidatorImpl.validateConstraintsForCurrentGroup(ValidatorImpl.java:450)
+	at app//org.hibernate.validator.internal.engine.ValidatorImpl.validateInContext(ValidatorImpl.java:400)
+	at app//org.hibernate.validator.internal.engine.ValidatorImpl.validate(ValidatorImpl.java:172)
+	at app//org.springframework.validation.beanvalidation.SpringValidatorAdapter.validate(SpringValidatorAdapter.java:359)
+	at app//com.beauty.beauty_sales_dwh.FactSalesValidationTest.validateMessageFromProperties(FactSalesValidationTest.java:35)
+	at java.base@21.0.9/java.lang.reflect.Method.invoke(Method.java:580)
+	at java.base@21.0.9/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at java.base@21.0.9/java.util.ArrayList.forEach(ArrayList.java:1596)
+</failure>
+  </testcase>
+  <testcase name="smaregiIdrenge()" classname="com.beauty.beauty_sales_dwh.FactSalesValidationTest" time="0.003">
+    <failure message="jakarta.validation.UnexpectedTypeException: HV000030: No validator could be found for constraint 'jakarta.validation.constraints.Size' validating type 'java.lang.Integer'. Check configuration for 'amountTaxExclude'" type="jakarta.validation.UnexpectedTypeException">jakarta.validation.UnexpectedTypeException: HV000030: No validator could be found for constraint 'jakarta.validation.constraints.Size' validating type 'java.lang.Integer'. Check configuration for 'amountTaxExclude'
+	at app//org.hibernate.validator.internal.engine.constraintvalidation.ConstraintTree.getExceptionForNullValidator(ConstraintTree.java:116)
+	at app//org.hibernate.validator.internal.engine.constraintvalidation.ConstraintTree.getInitializedConstraintValidator(ConstraintTree.java:162)
+	at app//org.hibernate.validator.internal.engine.constraintvalidation.SimpleConstraintTree.validateConstraints(SimpleConstraintTree.java:58)
+	at app//org.hibernate.validator.internal.engine.constraintvalidation.ConstraintTree.validateConstraints(ConstraintTree.java:75)
+	at app//org.hibernate.validator.internal.metadata.core.MetaConstraint.doValidateConstraint(MetaConstraint.java:130)
+	at app//org.hibernate.validator.internal.metadata.core.MetaConstraint.validateConstraint(MetaConstraint.java:123)
+	at app//org.hibernate.validator.internal.engine.ValidatorImpl.validateMetaConstraint(ValidatorImpl.java:555)
+	at app//org.hibernate.validator.internal.engine.ValidatorImpl.validateConstraintsForSingleDefaultGroupElement(ValidatorImpl.java:518)
+	at app//org.hibernate.validator.internal.engine.ValidatorImpl.validateConstraintsForDefaultGroup(ValidatorImpl.java:488)
+	at app//org.hibernate.validator.internal.engine.ValidatorImpl.validateConstraintsForCurrentGroup(ValidatorImpl.java:450)
+	at app//org.hibernate.validator.internal.engine.ValidatorImpl.validateInContext(ValidatorImpl.java:400)
+	at app//org.hibernate.validator.internal.engine.ValidatorImpl.validate(ValidatorImpl.java:172)
+	at app//org.springframework.validation.beanvalidation.SpringValidatorAdapter.validate(SpringValidatorAdapter.java:359)
+	at app//com.beauty.beauty_sales_dwh.FactSalesValidationTest.smaregiIdrenge(FactSalesValidationTest.java:180)
+	at java.base@21.0.9/java.lang.reflect.Method.invoke(Method.java:580)
+	at java.base@21.0.9/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at java.base@21.0.9/java.util.ArrayList.forEach(ArrayList.java:1596)
+</failure>
+  </testcase>
+  <testcase name="validTransactionAmount()" classname="com.beauty.beauty_sales_dwh.FactSalesValidationTest" time="0.003">
+    <failure message="jakarta.validation.UnexpectedTypeException: HV000030: No validator could be found for constraint 'jakarta.validation.constraints.Size' validating type 'java.lang.Integer'. Check configuration for 'amountTaxExclude'" type="jakarta.validation.UnexpectedTypeException">jakarta.validation.UnexpectedTypeException: HV000030: No validator could be found for constraint 'jakarta.validation.constraints.Size' validating type 'java.lang.Integer'. Check configuration for 'amountTaxExclude'
+	at app//org.hibernate.validator.internal.engine.constraintvalidation.ConstraintTree.getExceptionForNullValidator(ConstraintTree.java:116)
+	at app//org.hibernate.validator.internal.engine.constraintvalidation.ConstraintTree.getInitializedConstraintValidator(ConstraintTree.java:162)
+	at app//org.hibernate.validator.internal.engine.constraintvalidation.SimpleConstraintTree.validateConstraints(SimpleConstraintTree.java:58)
+	at app//org.hibernate.validator.internal.engine.constraintvalidation.ConstraintTree.validateConstraints(ConstraintTree.java:75)
+	at app//org.hibernate.validator.internal.metadata.core.MetaConstraint.doValidateConstraint(MetaConstraint.java:130)
+	at app//org.hibernate.validator.internal.metadata.core.MetaConstraint.validateConstraint(MetaConstraint.java:123)
+	at app//org.hibernate.validator.internal.engine.ValidatorImpl.validateMetaConstraint(ValidatorImpl.java:555)
+	at app//org.hibernate.validator.internal.engine.ValidatorImpl.validateConstraintsForSingleDefaultGroupElement(ValidatorImpl.java:518)
+	at app//org.hibernate.validator.internal.engine.ValidatorImpl.validateConstraintsForDefaultGroup(ValidatorImpl.java:488)
+	at app//org.hibernate.validator.internal.engine.ValidatorImpl.validateConstraintsForCurrentGroup(ValidatorImpl.java:450)
+	at app//org.hibernate.validator.internal.engine.ValidatorImpl.validateInContext(ValidatorImpl.java:400)
+	at app//org.hibernate.validator.internal.engine.ValidatorImpl.validate(ValidatorImpl.java:172)
+	at app//org.springframework.validation.beanvalidation.SpringValidatorAdapter.validate(SpringValidatorAdapter.java:359)
+	at app//com.beauty.beauty_sales_dwh.FactSalesValidationTest.validTransactionAmount(FactSalesValidationTest.java:132)
+	at java.base@21.0.9/java.lang.reflect.Method.invoke(Method.java:580)
+	at java.base@21.0.9/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at java.base@21.0.9/java.util.ArrayList.forEach(ArrayList.java:1596)
+</failure>
+  </testcase>
+  <testcase name="validateTranType()" classname="com.beauty.beauty_sales_dwh.FactSalesValidationTest" time="0.003">
+    <failure message="jakarta.validation.UnexpectedTypeException: HV000030: No validator could be found for constraint 'jakarta.validation.constraints.Size' validating type 'java.lang.Integer'. Check configuration for 'amountTaxExclude'" type="jakarta.validation.UnexpectedTypeException">jakarta.validation.UnexpectedTypeException: HV000030: No validator could be found for constraint 'jakarta.validation.constraints.Size' validating type 'java.lang.Integer'. Check configuration for 'amountTaxExclude'
+	at app//org.hibernate.validator.internal.engine.constraintvalidation.ConstraintTree.getExceptionForNullValidator(ConstraintTree.java:116)
+	at app//org.hibernate.validator.internal.engine.constraintvalidation.ConstraintTree.getInitializedConstraintValidator(ConstraintTree.java:162)
+	at app//org.hibernate.validator.internal.engine.constraintvalidation.SimpleConstraintTree.validateConstraints(SimpleConstraintTree.java:58)
+	at app//org.hibernate.validator.internal.engine.constraintvalidation.ConstraintTree.validateConstraints(ConstraintTree.java:75)
+	at app//org.hibernate.validator.internal.metadata.core.MetaConstraint.doValidateConstraint(MetaConstraint.java:130)
+	at app//org.hibernate.validator.internal.metadata.core.MetaConstraint.validateConstraint(MetaConstraint.java:123)
+	at app//org.hibernate.validator.internal.engine.ValidatorImpl.validateMetaConstraint(ValidatorImpl.java:555)
+	at app//org.hibernate.validator.internal.engine.ValidatorImpl.validateConstraintsForSingleDefaultGroupElement(ValidatorImpl.java:518)
+	at app//org.hibernate.validator.internal.engine.ValidatorImpl.validateConstraintsForDefaultGroup(ValidatorImpl.java:488)
+	at app//org.hibernate.validator.internal.engine.ValidatorImpl.validateConstraintsForCurrentGroup(ValidatorImpl.java:450)
+	at app//org.hibernate.validator.internal.engine.ValidatorImpl.validateInContext(ValidatorImpl.java:400)
+	at app//org.hibernate.validator.internal.engine.ValidatorImpl.validate(ValidatorImpl.java:172)
+	at app//org.springframework.validation.beanvalidation.SpringValidatorAdapter.validate(SpringValidatorAdapter.java:359)
+	at app//com.beauty.beauty_sales_dwh.FactSalesValidationTest.validateTranType(FactSalesValidationTest.java:85)
+	at java.base@21.0.9/java.lang.reflect.Method.invoke(Method.java:580)
+	at java.base@21.0.9/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at java.base@21.0.9/java.util.ArrayList.forEach(ArrayList.java:1596)
+</failure>
+  </testcase>
+  <system-out><![CDATA[2025-12-09T14:55:37.799+09:00  INFO 3724 --- [beauty-sales-dwh] [    Test worker] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.beauty.beauty_sales_dwh.FactSalesValidationTest]: FactSalesValidationTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2025-12-09T14:55:37.800+09:00  INFO 3724 --- [beauty-sales-dwh] [    Test worker] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.beauty.beauty_sales_dwh.BeautySalesDwhApplication for test class com.beauty.beauty_sales_dwh.FactSalesValidationTest
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

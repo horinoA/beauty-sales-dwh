@@ -14,6 +14,12 @@ import jakarta.validation.Payload;
 @Target({ElementType.FIELD, ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ValidSmaregiId {
+
+    //最小値
+    long min() default 1;  //スマレジIDは１開始
+    //最大値
+    long max() default 999999999;
+
     String message() default "{sumaregi.id.size}";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
