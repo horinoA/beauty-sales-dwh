@@ -10,7 +10,10 @@ import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 
 @Documented
-@Constraint(validatedBy = TransactionAmountValidator.class) // ロジッククラスを指定
+@Constraint(validatedBy = {
+    TransactionAmountValidator.class,//FactSalse用バリデータクラス
+    FactSalseDetailsTranAmountValidator.class//FactSalseDeatils用バリデータクラス
+}) // ロジッククラスを指定
 @Target({ElementType.TYPE}) // クラス(Record)全体に対してチェックする設定
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ValidTransactionAmount {
