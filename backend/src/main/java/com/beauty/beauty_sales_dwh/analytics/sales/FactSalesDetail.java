@@ -10,6 +10,7 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * 売上明細ファクト
@@ -18,6 +19,7 @@ import jakarta.validation.constraints.Pattern;
  */
 @Table(name = "fact_sales_details", schema = "dwh")
 @ValidTransactionAmount // カスタムバリデーション: 取引区分CategyTypeと販売単価の整合性チェック
+@Slf4j
 public record FactSalesDetail(
     @ValidSnowflakeId
     @NotNull(message = "{factSales.companyId.notNull}")
