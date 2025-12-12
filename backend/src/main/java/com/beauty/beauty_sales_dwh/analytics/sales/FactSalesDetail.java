@@ -56,4 +56,10 @@ public record FactSalesDetail(
     @Pattern(regexp = "^(SALES|REFUND)$", message = "{factSales.transactionType.pattern}")
     String categoryType      // SALES/REFUND区分
 ) {
+    public FactSalesDetail {
+        // taxDivisionのデフォルト値を設定
+        if (taxDivision == null) {
+            taxDivision = 0; // デフォルト：税込
+        }
+    }
 }

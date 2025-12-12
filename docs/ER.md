@@ -125,7 +125,7 @@ erDiagram
         INTEGER discount_coupon "クーポン値引き(API:couponDiscount)"
 
         VARCHAR transaction_type "SALES/REFUND"
-        BOOLEAN is_void "取消データフラグ"
+        BOOLEAN is_void "取消データフラグ(API:cancelDivision)"
     }
 
     FACT_SALES_DETAILS {
