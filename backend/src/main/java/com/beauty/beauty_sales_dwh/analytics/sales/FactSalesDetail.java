@@ -10,6 +10,7 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -35,9 +36,19 @@ public record FactSalesDetail(
 
     @ValidSmaregiId(min = 1,max = 999999999)
     String productId,
-    String productName,      // Snapshot
-    String categoryGroupName, // Snapshot
+    
+    // Snapshot: 商品名
+    // XSS対策: < > を禁止。それ以外の記号は許可。空文字も許可(*)。
+    @Size(max = 200, message = "{FactSalesDetail.productName.size}") 
+    @Pattern(regexp = "^[^<>]*$", message = "{FactSalesDetail.productName.pattern}")
+    String productName,      
 
+    // Snapshot: カテゴリ名
+    // XSS対策: < > を禁止。
+    @Size(max = 100, message = "{FactSalesDetail.categoryGroupName.size}") 
+    @Pattern(regexp = "^[^<>]*$", message = "{FactSalesDetail.categoryGroupName.pattern}")
+    String categoryGroupName,
+    
     @NotNull
     @Min(value = 1, message="{factSalesDetail.quantity.minsize}")
     @Max(value = 999999, message = "{factSalesDetail.quantity.maxsize}")
@@ -52,14 +63,19 @@ public record FactSalesDetail(
     @Max(value=2, message = "{factSalesDetail.taxDivision.size}")
     Integer taxDivision,     // 0:込, 1:抜, 2:非
 
-    @NotNull(message = "{factSales.transactionType.notNull}")
     @Pattern(regexp = "^(SALES|REFUND)$", message = "{factSales.transactionType.pattern}")
     String categoryType      // SALES/REFUND区分
+
 ) {
     public FactSalesDetail {
-        // taxDivisionのデフォルト値を設定
+        // taxDivision が null なら 0 (税込)
         if (taxDivision == null) {
-            taxDivision = 0; // デフォルト：税込
+            taxDivision = 0;
+        }
+        
+        // categoryType が null なら "SALES"
+        if (categoryType == null) {
+            categoryType = "SALES";
         }
     }
 }

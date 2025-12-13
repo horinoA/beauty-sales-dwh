@@ -174,5 +174,180 @@ public class FactSalesDetailsValidationTest {
 
     }
 
+    @Test
+    void defaultValueTest(){
+        FactSalesDetail validFactSalesDetail = new FactSalesDetail(
+                1L, // appCompanyId (@ValidSnowflakeId 想定: 正の整数)
+                "1",    // transactionHeadId (@ValidSmaregiId min=1)
+                "1",    // transactionDetailId (@ValidSmaregiId max=999 なので "1" はOK)
+                null,     // productId (@ValidSmaregiId)null許可
+                null,   // productName (任意)null許可
+                null, // categoryGroupName (任意)null許可
+                1,  // quantity (@Min(1) なので 1以上)
+                5000,   // salesPrice (金額)
+                1,  // taxDivision (0:込, 1:抜, 2:非 のいずれか)
+                null // categoryType ("SALES" または "REFUND")null許可default値SALES
+        );
 
+        // Act
+        Set<ConstraintViolation<FactSalesDetail>> violations = validator.validate(validFactSalesDetail);
+
+        // Assert
+        assertThat(violations).isEmpty();
+
+        System.out.println(validFactSalesDetail);
+
+    }
+
+    @Test
+    void productNameTest(){
+        //200文字以上
+        FactSalesDetail validFactSalesDetail = new FactSalesDetail(
+                1L, // appCompanyId (@ValidSnowflakeId 想定: 正の整数)
+                "1",    // transactionHeadId (@ValidSmaregiId min=1)
+                "1",    // transactionDetailId (@ValidSmaregiId max=999 なので "1" はOK)
+                "1001",     // productId (@ValidSmaregiId)
+                "商品名オーバー_あいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほまみむめもやゆよらりるれろわをんあいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほまみむめもやゆよらりるれろわをんあいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほまみむめもやゆよらりるれろわをんあいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほまみむめもやゆよらりるれろわをんあいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほまみむめもやゆよらりるれろわをんあいうえおかきくけこさしすせそたちつ",   // productName エラー
+                null, // categoryGroupName (任意)
+                1,  // quantity (@Min(1) なので 1以上)
+                5000,   // salesPrice (金額)
+                1,  // taxDivision (0:込, 1:抜, 2:非 のいずれか)
+                "SALES" // categoryType ("SALES" または "REFUND")
+        );
+
+        // Act
+        Set<ConstraintViolation<FactSalesDetail>> violations = validator.validate(validFactSalesDetail);
+
+        // Assert
+        assertThat(violations).isNotEmpty();
+
+        // メッセージがプロパティファイルから取得できているか確認
+        boolean messageFound = violations.stream()
+            .anyMatch(v -> v.getMessage().equals("商品名は200文字までです"));
+            
+        System.out.println(violations);
+        assertThat(messageFound).isTrue();
+
+        //文字数正常系
+        FactSalesDetail validFactSalesDetail_1 = new FactSalesDetail(
+                1L, // appCompanyId (@ValidSnowflakeId 想定: 正の整数)
+                "1",    // transactionHeadId (@ValidSmaregiId min=1)
+                "1",    // transactionDetailId (@ValidSmaregiId max=999 なので "1" はOK)
+                "1001",     // productId (@ValidSmaregiId)
+                "商品名テスト_あいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほまみむめもやゆよらりるれろわをんあいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほまみむめもやゆよらりるれろわをんあいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほまみむめもやゆよらりるれろわをんあいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほまみむめもやゆよらりるれろわをんあいうえおかきくけ",   // productName 正常
+                null, // categoryGroupName (任意)
+                1,  // quantity (@Min(1) なので 1以上)
+                5000,   // salesPrice (金額)
+                1,  // taxDivision (0:込, 1:抜, 2:非 のいずれか)
+                "SALES" // categoryType ("SALES" または "REFUND")
+        );
+
+        // Act
+        Set<ConstraintViolation<FactSalesDetail>> violations_1 = validator.validate(validFactSalesDetail_1);
+
+        // Assert
+        assertThat(violations_1).isEmpty();
+
+        FactSalesDetail validFactSalesDetail_2 = new FactSalesDetail(
+                1L, // appCompanyId (@ValidSnowflakeId 想定: 正の整数)
+                "1",    // transactionHeadId (@ValidSmaregiId min=1)
+                "1",    // transactionDetailId (@ValidSmaregiId max=999 なので "1" はOK)
+                "1001",     // productId (@ValidSmaregiId)
+                ">_<",   // productName <>エラー
+                null, // categoryGroupName (任意)
+                1,  // quantity (@Min(1) なので 1以上)
+                5000,   // salesPrice (金額)
+                1,  // taxDivision (0:込, 1:抜, 2:非 のいずれか)
+                "SALES" // categoryType ("SALES" または "REFUND")
+        );
+
+        // Act
+        Set<ConstraintViolation<FactSalesDetail>> violations_2 = validator.validate(validFactSalesDetail_2);
+
+        // Assert
+        assertThat(violations_2).isNotEmpty();
+
+                // メッセージがプロパティファイルから取得できているか確認
+        boolean messageFound_2 = violations_2.stream()
+            .anyMatch(v -> v.getMessage().equals("商品名で記号< >を含む文字列は登録できません"));
+            
+        System.out.println(violations_2);
+        assertThat(messageFound_2).isTrue();
+
+    }
+
+    @Test
+    void productGroupNameTest(){
+        //１００文字以上
+        FactSalesDetail validFactSalesDetail = new FactSalesDetail(
+                1L, // appCompanyId (@ValidSnowflakeId 想定: 正の整数)
+                "1",    // transactionHeadId (@ValidSmaregiId min=1)
+                "1",    // transactionDetailId (@ValidSmaregiId max=999 なので "1" はOK)
+                "1001",     // productId (@ValidSmaregiId)
+                "カット",   // productName
+                "カテゴリ最大長_あいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほまみむめもやゆよらりるれろわをんあいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほまみむめもやゆよらりるれろわをんあいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほまみむめもやゆよらりるれろわをんあいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほまみむめもやゆよらりるれろわをんあいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほまみむめもやゆよらりるれろわをんあいうえおかきくけこさしすせそたち", // categoryGroupName エラー256文字
+                1,  // quantity (@Min(1) なので 1以上)
+                5000,   // salesPrice (金額)
+                1,  // taxDivision (0:込, 1:抜, 2:非 のいずれか)
+                "SALES" // categoryType ("SALES" または "REFUND")
+        );
+
+        // Act
+        Set<ConstraintViolation<FactSalesDetail>> violations = validator.validate(validFactSalesDetail);
+
+        // Assert
+        assertThat(violations).isNotEmpty();
+
+        // メッセージがプロパティファイルから取得できているか確認
+        boolean messageFound = violations.stream()
+            .anyMatch(v -> v.getMessage().equals("商品グループ名は100文字までです"));
+            
+        assertThat(messageFound).isTrue();
+
+        //文字数正常系
+        FactSalesDetail validFactSalesDetail_1 = new FactSalesDetail(
+                1L, // appCompanyId (@ValidSnowflakeId 想定: 正の整数)
+                "1",    // transactionHeadId (@ValidSmaregiId min=1)
+                "1",    // transactionDetailId (@ValidSmaregiId max=999 なので "1" はOK)
+                "1001",     // productId (@ValidSmaregiId)
+                "カット",   // productName 正常
+                "カテゴリテスト_あいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほまみむめもやゆよらりるれろわをんあいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほまみむめもやゆよらりるれろわをん", // categoryGroupName 正常
+                1,  // quantity (@Min(1) なので 1以上)
+                5000,   // salesPrice (金額)
+                1,  // taxDivision (0:込, 1:抜, 2:非 のいずれか)
+                "SALES" // categoryType ("SALES" または "REFUND")
+        );
+
+        // Act
+        Set<ConstraintViolation<FactSalesDetail>> violations_1 = validator.validate(validFactSalesDetail_1);
+
+        // Assert
+        assertThat(violations_1).isEmpty();
+
+        FactSalesDetail validFactSalesDetail_2 = new FactSalesDetail(
+                1L, // appCompanyId (@ValidSnowflakeId 想定: 正の整数)
+                "1",    // transactionHeadId (@ValidSmaregiId min=1)
+                "1",    // transactionDetailId (@ValidSmaregiId max=999 なので "1" はOK)
+                "1001",     // productId (@ValidSmaregiId)
+                "カット",   // productName 
+                ">_<", // categoryGroupName <>エラー
+                1,  // quantity (@Min(1) なので 1以上)
+                5000,   // salesPrice (金額)
+                1,  // taxDivision (0:込, 1:抜, 2:非 のいずれか)
+                "SALES" // categoryType ("SALES" または "REFUND")
+        );
+
+        // Act
+        Set<ConstraintViolation<FactSalesDetail>> violations_2 = validator.validate(validFactSalesDetail_2);
+
+        // Assert
+        assertThat(violations_2).isNotEmpty();
+
+                // メッセージがプロパティファイルから取得できているか確認
+        boolean messageFound_2 = violations_2.stream()
+            .anyMatch(v -> v.getMessage().equals("商品グループ名で記号< >を含む文字列は登録できません"));
+            
+        assertThat(messageFound_2).isTrue();
+
+    }
 }
