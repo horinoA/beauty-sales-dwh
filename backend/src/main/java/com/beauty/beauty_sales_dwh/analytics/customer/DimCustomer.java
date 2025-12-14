@@ -6,6 +6,7 @@ import java.time.OffsetDateTime;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Table;
 
+import com.beauty.beauty_sales_dwh.common.validation.ValidCustomerDates;
 import com.beauty.beauty_sales_dwh.common.validation.ValidSmaregiId;
 import com.beauty.beauty_sales_dwh.common.validation.ValidSnowflakeId;
 
@@ -20,6 +21,7 @@ import jakarta.validation.constraints.Size;
  * DWH層: dwh.dim_customers
  */
 @Table(name = "dim_customers", schema = "dwh")
+@ValidCustomerDates //初回来店日firstVisitDateと最終来店日lastVisitDateの不整合チェック
 public record DimCustomer(
     @ValidSnowflakeId
     @NotNull
@@ -41,10 +43,12 @@ public record DimCustomer(
     String customerKana,
 
     // 半角数字と-ハイフンのみ (null許可)
+    @Size(max = 50, message = "{DimCustomer.phone.size}")
     @Pattern(regexp = "^[0-9-]+$", message = "{DimCustomer.phoneNumber.pattern}")
     String phoneNumber,
 
     // 半角数字と-ハイフンのみ (null許可)
+    @Size(max = 50, message = "{DimCustomer.phone.size}")
     @Pattern(regexp = "^[0-9-]+$", message = "{DimCustomer.mobileNumber.pattern}")
     String mobileNumber,
 
