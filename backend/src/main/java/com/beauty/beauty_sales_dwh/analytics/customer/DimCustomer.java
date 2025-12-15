@@ -69,7 +69,6 @@ public record DimCustomer(
     OffsetDateTime insertDataTime,
     OffsetDateTime updateDataTime
 ) {
-    // コンパクトコンストラクタ（デフォルト値設定）
     public DimCustomer {
         //訪問回数: nullなら　0
         if (visitCount == null){
