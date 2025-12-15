@@ -43,7 +43,7 @@ public record FactSales(
     @ValidSmaregiId(min = 1,max = 999999999)
     String staffId,
     @ValidSmaregiId(min = 1,max = 999999999)
-    String storeId, // 最新スキーマ対応
+    String storeId,
 
     // --- 金額・税（1円の壁対策 / Null許容しない） ---
     @NotNull
