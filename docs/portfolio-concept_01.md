@@ -57,7 +57,7 @@ https://www.figma.com/design/1pJa6JpBpvmSSRZk33ACPm/beauty-sales-dwh?node-id=0-1
 | 対象業種 | 美容業（美容室・サロン） |
 | 対応POS | スマレジ（API連携） |
 | 開発体制 | 個人開発 |
-| 開発期間 | 来年度末まで（約1年） |
+| 開発期間 | 2026年2月末まで（3ヶ月） |
 | 成果物 | Webアプリ（Docker構成）、要件定義書、ER図、README、デモ動画 |
 
 ## 技術スタック
