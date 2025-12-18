@@ -41,7 +41,7 @@
 </td>
 <td>
 <div class="infoBox" id="duration">
-<div class="counter">0.092s</div>
+<div class="counter">0.088s</div>
 <p>duration</p>
 </div>
 </td>
@@ -81,7 +81,7 @@
 <tr>
 <td class="success">予期せぬエラー: NullPointerExceptionが発生すると500エラーになる</td>
 <td class="success">testNpe()</td>
-<td class="success">0.009s</td>
+<td class="success">0.007s</td>
 <td class="success">passed</td>
 </tr>
 <tr>
@@ -93,7 +93,7 @@
 <tr>
 <td class="success">バリデーション違反: 必須項目がnullだと400エラーと詳細が返る</td>
 <td class="success">testValidationNull()</td>
-<td class="success">0.078s</td>
+<td class="success">0.076s</td>
 <td class="success">passed</td>
 </tr>
 </table>
@@ -101,7 +101,7 @@
 <div class="tab">
 <h2>Standard output</h2>
 <span class="code">
-<pre>2025-12-09T14:55:37.856+09:00  INFO 3724 --- [beauty-sales-dwh] [    Test worker] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.beauty.beauty_sales_dwh.BeautySalesDwhApplication for test class com.beauty.beauty_sales_dwh.GlobalExceptionHandlerTest
+<pre>2025-12-18T17:59:31.396+09:00  INFO 10011 --- [beauty-sales-dwh] [    Test worker] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.beauty.beauty_sales_dwh.BeautySalesDwhApplication for test class com.beauty.beauty_sales_dwh.GlobalExceptionHandlerTest
 
   .   ____          _            __ _ _
  /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
@@ -112,12 +112,12 @@
 
  :: Spring Boot ::                (v3.5.8)
 
-2025-12-09T14:55:37.869+09:00  INFO 3724 --- [beauty-sales-dwh] [    Test worker] c.b.b.GlobalExceptionHandlerTest         : Starting GlobalExceptionHandlerTest using Java 21.0.9 with PID 3724 (started by horinoakiko in /Users/horinoakiko/Documents/beauty-sales-dwh/backend)
-2025-12-09T14:55:37.869+09:00  INFO 3724 --- [beauty-sales-dwh] [    Test worker] c.b.b.GlobalExceptionHandlerTest         : No active profile set, falling back to 1 default profile: &quot;default&quot;
-2025-12-09T14:55:37.999+09:00  INFO 3724 --- [beauty-sales-dwh] [    Test worker] o.s.b.t.m.w.SpringBootMockServletContext : Initializing Spring TestDispatcherServlet ''
-2025-12-09T14:55:38.000+09:00  INFO 3724 --- [beauty-sales-dwh] [    Test worker] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
-2025-12-09T14:55:38.000+09:00  INFO 3724 --- [beauty-sales-dwh] [    Test worker] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
-2025-12-09T14:55:38.004+09:00  INFO 3724 --- [beauty-sales-dwh] [    Test worker] c.b.b.GlobalExceptionHandlerTest         : Started GlobalExceptionHandlerTest in 0.146 seconds (process running for 2.348)
+2025-12-18T17:59:31.407+09:00  INFO 10011 --- [beauty-sales-dwh] [    Test worker] c.b.b.GlobalExceptionHandlerTest         : Starting GlobalExceptionHandlerTest using Java 21.0.9 with PID 10011 (started by horinoakiko in /Users/horinoakiko/Documents/beauty-sales-dwh/backend)
+2025-12-18T17:59:31.408+09:00  INFO 10011 --- [beauty-sales-dwh] [    Test worker] c.b.b.GlobalExceptionHandlerTest         : No active profile set, falling back to 1 default profile: &quot;default&quot;
+2025-12-18T17:59:31.531+09:00  INFO 10011 --- [beauty-sales-dwh] [    Test worker] o.s.b.t.m.w.SpringBootMockServletContext : Initializing Spring TestDispatcherServlet ''
+2025-12-18T17:59:31.531+09:00  INFO 10011 --- [beauty-sales-dwh] [    Test worker] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2025-12-18T17:59:31.532+09:00  INFO 10011 --- [beauty-sales-dwh] [    Test worker] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 1 ms
+2025-12-18T17:59:31.536+09:00  INFO 10011 --- [beauty-sales-dwh] [    Test worker] c.b.b.GlobalExceptionHandlerTest         : Started GlobalExceptionHandlerTest in 0.139 seconds (process running for 2.434)
 
 MockHttpServletRequest:
       HTTP Method = POST
@@ -151,11 +151,11 @@ MockHttpServletResponse:
     Error message = null
           Headers = [Content-Type:&quot;application/json&quot;]
      Content type = application/json
-             Body = {&quot;details&quot;:{&quot;value&quot;:&quot;must not be null&quot;},&quot;error&quot;:&quot;Validation Error&quot;,&quot;message&quot;:&quot;入力内容に誤りがあります。&quot;,&quot;timestamp&quot;:&quot;2025-12-09T14:55:38.056922&quot;,&quot;status&quot;:400}
+             Body = {&quot;details&quot;:{&quot;value&quot;:&quot;must not be null&quot;},&quot;error&quot;:&quot;Validation Error&quot;,&quot;message&quot;:&quot;入力内容に誤りがあります。&quot;,&quot;timestamp&quot;:&quot;2025-12-18T17:59:31.587007&quot;,&quot;status&quot;:400}
     Forwarded URL = null
    Redirected URL = null
           Cookies = []
-2025-12-09T14:55:38.086+09:00 ERROR 3724 --- [beauty-sales-dwh] [    Test worker] c.b.b.c.e.GlobalExceptionHandler         : NullPointerException occurred: 
+2025-12-18T17:59:31.615+09:00 ERROR 10011 --- [beauty-sales-dwh] [    Test worker] c.b.b.c.e.GlobalExceptionHandler         : NullPointerException occurred: 
 
 java.lang.NullPointerException: Oops!
 	at com.beauty.beauty_sales_dwh.GlobalExceptionHandlerTest$TestController.throwNpe(GlobalExceptionHandlerTest.java:106) ~[test/:na]
@@ -299,7 +299,7 @@ MockHttpServletResponse:
     Error message = null
           Headers = [Content-Type:&quot;application/json&quot;]
      Content type = application/json
-             Body = {&quot;error&quot;:&quot;Internal Server Error&quot;,&quot;message&quot;:&quot;サーバー内部で予期せぬエラーが発生しました。&quot;,&quot;timestamp&quot;:&quot;2025-12-09T14:55:38.09079&quot;,&quot;status&quot;:500}
+             Body = {&quot;error&quot;:&quot;Internal Server Error&quot;,&quot;message&quot;:&quot;サーバー内部で予期せぬエラーが発生しました。&quot;,&quot;timestamp&quot;:&quot;2025-12-18T17:59:31.61862&quot;,&quot;status&quot;:500}
     Forwarded URL = null
    Redirected URL = null
           Cookies = []
@@ -336,7 +336,7 @@ MockHttpServletResponse:
     Error message = null
           Headers = [Content-Type:&quot;application/json&quot;]
      Content type = application/json
-             Body = {&quot;error&quot;:&quot;Bad Request&quot;,&quot;message&quot;:&quot;入力形式が正しくありません。フィールド: value, 値: abc&quot;,&quot;timestamp&quot;:&quot;2025-12-09T14:55:38.096453&quot;,&quot;status&quot;:400}
+             Body = {&quot;error&quot;:&quot;Bad Request&quot;,&quot;message&quot;:&quot;入力形式が正しくありません。フィールド: value, 値: abc&quot;,&quot;timestamp&quot;:&quot;2025-12-18T17:59:31.623124&quot;,&quot;status&quot;:400}
     Forwarded URL = null
    Redirected URL = null
           Cookies = []
@@ -351,7 +351,7 @@ MockHttpServletResponse:
 <input id="line-wrapping-toggle" type="checkbox" autocomplete="off"/>
 </label>
 </div>Generated by 
-<a href="https://www.gradle.org">Gradle 8.14.3</a> at 2025/12/09 14:55:38</p>
+<a href="https://www.gradle.org">Gradle 8.14.3</a> at 2025/12/18 17:59:31</p>
 </div>
 </div>
 </body>

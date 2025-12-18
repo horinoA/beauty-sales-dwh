@@ -41,7 +41,7 @@
 </td>
 <td>
 <div class="infoBox" id="duration">
-<div class="counter">0.390s</div>
+<div class="counter">0.003s</div>
 <p>duration</p>
 </div>
 </td>
@@ -66,9 +66,6 @@
 <li>
 <a href="#">Standard output</a>
 </li>
-<li>
-<a href="#">Standard error</a>
-</li>
 </ul>
 <div class="tab">
 <h2>Tests</h2>
@@ -82,7 +79,7 @@
 </thead>
 <tr>
 <td class="success">contextLoads()</td>
-<td class="success">0.390s</td>
+<td class="success">0.003s</td>
 <td class="success">passed</td>
 </tr>
 </table>
@@ -90,38 +87,8 @@
 <div class="tab">
 <h2>Standard output</h2>
 <span class="code">
-<pre>14:55:36.132 [Test worker] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [com.beauty.beauty_sales_dwh.BeautySalesDwhApplicationTests]: BeautySalesDwhApplicationTests does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
-14:55:36.185 [Test worker] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration com.beauty.beauty_sales_dwh.BeautySalesDwhApplication for test class com.beauty.beauty_sales_dwh.BeautySalesDwhApplicationTests
-
-  .   ____          _            __ _ _
- /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
-( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
- \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
-  '  |____| .__|_| |_|_| |_\__, | / / / /
- =========|_|==============|___/=/_/_/_/
-
- :: Spring Boot ::                (v3.5.8)
-
-2025-12-09T14:55:36.346+09:00  INFO 3724 --- [beauty-sales-dwh] [    Test worker] c.b.b.BeautySalesDwhApplicationTests     : Starting BeautySalesDwhApplicationTests using Java 21.0.9 with PID 3724 (started by horinoakiko in /Users/horinoakiko/Documents/beauty-sales-dwh/backend)
-2025-12-09T14:55:36.347+09:00  INFO 3724 --- [beauty-sales-dwh] [    Test worker] c.b.b.BeautySalesDwhApplicationTests     : No active profile set, falling back to 1 default profile: &quot;default&quot;
-2025-12-09T14:55:36.642+09:00  INFO 3724 --- [beauty-sales-dwh] [    Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JDBC repositories in DEFAULT mode.
-2025-12-09T14:55:36.666+09:00  INFO 3724 --- [beauty-sales-dwh] [    Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 21 ms. Found 1 JDBC repository interface.
-2025-12-09T14:55:37.041+09:00  INFO 3724 --- [beauty-sales-dwh] [    Test worker] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
-2025-12-09T14:55:37.122+09:00  INFO 3724 --- [beauty-sales-dwh] [    Test worker] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection conn0: url=jdbc:h2:mem:0de7d960-a742-46bc-9ba2-4e5dd2f13d39 user=SA
-2025-12-09T14:55:37.122+09:00  INFO 3724 --- [beauty-sales-dwh] [    Test worker] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
-2025-12-09T14:55:37.399+09:00  INFO 3724 --- [beauty-sales-dwh] [    Test worker] c.b.b.BeautySalesDwhApplicationTests     : Started BeautySalesDwhApplicationTests in 1.149 seconds (process running for 1.743)
-2025-12-09T14:55:37.401+09:00  INFO 3724 --- [beauty-sales-dwh] [    Test worker] o.s.b.a.b.JobLauncherApplicationRunner   : Running default command line with: []
-</pre>
-</span>
-</div>
-<div class="tab">
-<h2>Standard error</h2>
-<span class="code">
-<pre>Mockito is currently self-attaching to enable the inline-mock-maker. This will no longer work in future releases of the JDK. Please add Mockito as an agent to your build as described in Mockito's documentation: https://javadoc.io/doc/org.mockito/mockito-core/latest/org.mockito/org/mockito/Mockito.html#0.3
-WARNING: A Java agent has been loaded dynamically (/Users/horinoakiko/.gradle/caches/modules-2/files-2.1/net.bytebuddy/byte-buddy-agent/1.17.8/f09415827a71be7ed621c7bd02550678f28bc81c/byte-buddy-agent-1.17.8.jar)
-WARNING: If a serviceability tool is in use, please run with -XX:+EnableDynamicAgentLoading to hide this warning
-WARNING: If a serviceability tool is not in use, please run with -Djdk.instrument.traceUsage for more information
-WARNING: Dynamic loading of agents will be disallowed by default in a future release
+<pre>2025-12-18T17:59:31.305+09:00  INFO 10011 --- [beauty-sales-dwh] [    Test worker] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.beauty.beauty_sales_dwh.BeautySalesDwhApplicationTests]: BeautySalesDwhApplicationTests does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2025-12-18T17:59:31.305+09:00  INFO 10011 --- [beauty-sales-dwh] [    Test worker] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.beauty.beauty_sales_dwh.BeautySalesDwhApplication for test class com.beauty.beauty_sales_dwh.BeautySalesDwhApplicationTests
 </pre>
 </span>
 </div>
@@ -133,7 +100,7 @@ WARNING: Dynamic loading of agents will be disallowed by default in a future rel
 <input id="line-wrapping-toggle" type="checkbox" autocomplete="off"/>
 </label>
 </div>Generated by 
-<a href="https://www.gradle.org">Gradle 8.14.3</a> at 2025/12/09 14:55:38</p>
+<a href="https://www.gradle.org">Gradle 8.14.3</a> at 2025/12/18 17:59:31</p>
 </div>
 </div>
 </body>

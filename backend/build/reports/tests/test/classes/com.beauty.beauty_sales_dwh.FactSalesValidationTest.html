@@ -23,13 +23,13 @@
 <tr>
 <td>
 <div class="infoBox" id="tests">
-<div class="counter">5</div>
+<div class="counter">7</div>
 <p>tests</p>
 </div>
 </td>
 <td>
 <div class="infoBox" id="failures">
-<div class="counter">5</div>
+<div class="counter">0</div>
 <p>failures</p>
 </div>
 </td>
@@ -41,7 +41,7 @@
 </td>
 <td>
 <div class="infoBox" id="duration">
-<div class="counter">0.042s</div>
+<div class="counter">0.487s</div>
 <p>duration</p>
 </div>
 </td>
@@ -50,8 +50,8 @@
 </div>
 </td>
 <td>
-<div class="infoBox failures" id="successRate">
-<div class="percent">0%</div>
+<div class="infoBox success" id="successRate">
+<div class="percent">100%</div>
 <p>successful</p>
 </div>
 </td>
@@ -61,143 +61,15 @@
 <div class="tab-container">
 <ul class="tabLinks">
 <li>
-<a href="#">Failed tests</a>
-</li>
-<li>
 <a href="#">Tests</a>
 </li>
 <li>
 <a href="#">Standard output</a>
 </li>
+<li>
+<a href="#">Standard error</a>
+</li>
 </ul>
-<div class="tab">
-<h2>Failed tests</h2>
-<div class="test">
-<a name="smaregiIdrenge()"></a>
-<h3 class="failures">smaregiIdrenge()</h3>
-<span class="code">
-<pre>jakarta.validation.UnexpectedTypeException: HV000030: No validator could be found for constraint 'jakarta.validation.constraints.Size' validating type 'java.lang.Integer'. Check configuration for 'amountTaxExclude'
-	at app//org.hibernate.validator.internal.engine.constraintvalidation.ConstraintTree.getExceptionForNullValidator(ConstraintTree.java:116)
-	at app//org.hibernate.validator.internal.engine.constraintvalidation.ConstraintTree.getInitializedConstraintValidator(ConstraintTree.java:162)
-	at app//org.hibernate.validator.internal.engine.constraintvalidation.SimpleConstraintTree.validateConstraints(SimpleConstraintTree.java:58)
-	at app//org.hibernate.validator.internal.engine.constraintvalidation.ConstraintTree.validateConstraints(ConstraintTree.java:75)
-	at app//org.hibernate.validator.internal.metadata.core.MetaConstraint.doValidateConstraint(MetaConstraint.java:130)
-	at app//org.hibernate.validator.internal.metadata.core.MetaConstraint.validateConstraint(MetaConstraint.java:123)
-	at app//org.hibernate.validator.internal.engine.ValidatorImpl.validateMetaConstraint(ValidatorImpl.java:555)
-	at app//org.hibernate.validator.internal.engine.ValidatorImpl.validateConstraintsForSingleDefaultGroupElement(ValidatorImpl.java:518)
-	at app//org.hibernate.validator.internal.engine.ValidatorImpl.validateConstraintsForDefaultGroup(ValidatorImpl.java:488)
-	at app//org.hibernate.validator.internal.engine.ValidatorImpl.validateConstraintsForCurrentGroup(ValidatorImpl.java:450)
-	at app//org.hibernate.validator.internal.engine.ValidatorImpl.validateInContext(ValidatorImpl.java:400)
-	at app//org.hibernate.validator.internal.engine.ValidatorImpl.validate(ValidatorImpl.java:172)
-	at app//org.springframework.validation.beanvalidation.SpringValidatorAdapter.validate(SpringValidatorAdapter.java:359)
-	at app//com.beauty.beauty_sales_dwh.FactSalesValidationTest.smaregiIdrenge(FactSalesValidationTest.java:180)
-	at java.base@21.0.9/java.lang.reflect.Method.invoke(Method.java:580)
-	at java.base@21.0.9/java.util.ArrayList.forEach(ArrayList.java:1596)
-	at java.base@21.0.9/java.util.ArrayList.forEach(ArrayList.java:1596)
-</pre>
-</span>
-</div>
-<div class="test">
-<a name="validTransactionAmount()"></a>
-<h3 class="failures">validTransactionAmount()</h3>
-<span class="code">
-<pre>jakarta.validation.UnexpectedTypeException: HV000030: No validator could be found for constraint 'jakarta.validation.constraints.Size' validating type 'java.lang.Integer'. Check configuration for 'amountTaxExclude'
-	at app//org.hibernate.validator.internal.engine.constraintvalidation.ConstraintTree.getExceptionForNullValidator(ConstraintTree.java:116)
-	at app//org.hibernate.validator.internal.engine.constraintvalidation.ConstraintTree.getInitializedConstraintValidator(ConstraintTree.java:162)
-	at app//org.hibernate.validator.internal.engine.constraintvalidation.SimpleConstraintTree.validateConstraints(SimpleConstraintTree.java:58)
-	at app//org.hibernate.validator.internal.engine.constraintvalidation.ConstraintTree.validateConstraints(ConstraintTree.java:75)
-	at app//org.hibernate.validator.internal.metadata.core.MetaConstraint.doValidateConstraint(MetaConstraint.java:130)
-	at app//org.hibernate.validator.internal.metadata.core.MetaConstraint.validateConstraint(MetaConstraint.java:123)
-	at app//org.hibernate.validator.internal.engine.ValidatorImpl.validateMetaConstraint(ValidatorImpl.java:555)
-	at app//org.hibernate.validator.internal.engine.ValidatorImpl.validateConstraintsForSingleDefaultGroupElement(ValidatorImpl.java:518)
-	at app//org.hibernate.validator.internal.engine.ValidatorImpl.validateConstraintsForDefaultGroup(ValidatorImpl.java:488)
-	at app//org.hibernate.validator.internal.engine.ValidatorImpl.validateConstraintsForCurrentGroup(ValidatorImpl.java:450)
-	at app//org.hibernate.validator.internal.engine.ValidatorImpl.validateInContext(ValidatorImpl.java:400)
-	at app//org.hibernate.validator.internal.engine.ValidatorImpl.validate(ValidatorImpl.java:172)
-	at app//org.springframework.validation.beanvalidation.SpringValidatorAdapter.validate(SpringValidatorAdapter.java:359)
-	at app//com.beauty.beauty_sales_dwh.FactSalesValidationTest.validTransactionAmount(FactSalesValidationTest.java:132)
-	at java.base@21.0.9/java.lang.reflect.Method.invoke(Method.java:580)
-	at java.base@21.0.9/java.util.ArrayList.forEach(ArrayList.java:1596)
-	at java.base@21.0.9/java.util.ArrayList.forEach(ArrayList.java:1596)
-</pre>
-</span>
-</div>
-<div class="test">
-<a name="validateMessageFromProperties()"></a>
-<h3 class="failures">validateMessageFromProperties()</h3>
-<span class="code">
-<pre>jakarta.validation.UnexpectedTypeException: HV000030: No validator could be found for constraint 'jakarta.validation.constraints.Size' validating type 'java.lang.Integer'. Check configuration for 'amountTaxExclude'
-	at app//org.hibernate.validator.internal.engine.constraintvalidation.ConstraintTree.getExceptionForNullValidator(ConstraintTree.java:116)
-	at app//org.hibernate.validator.internal.engine.constraintvalidation.ConstraintTree.getInitializedConstraintValidator(ConstraintTree.java:162)
-	at app//org.hibernate.validator.internal.engine.constraintvalidation.SimpleConstraintTree.validateConstraints(SimpleConstraintTree.java:58)
-	at app//org.hibernate.validator.internal.engine.constraintvalidation.ConstraintTree.validateConstraints(ConstraintTree.java:75)
-	at app//org.hibernate.validator.internal.metadata.core.MetaConstraint.doValidateConstraint(MetaConstraint.java:130)
-	at app//org.hibernate.validator.internal.metadata.core.MetaConstraint.validateConstraint(MetaConstraint.java:123)
-	at app//org.hibernate.validator.internal.engine.ValidatorImpl.validateMetaConstraint(ValidatorImpl.java:555)
-	at app//org.hibernate.validator.internal.engine.ValidatorImpl.validateConstraintsForSingleDefaultGroupElement(ValidatorImpl.java:518)
-	at app//org.hibernate.validator.internal.engine.ValidatorImpl.validateConstraintsForDefaultGroup(ValidatorImpl.java:488)
-	at app//org.hibernate.validator.internal.engine.ValidatorImpl.validateConstraintsForCurrentGroup(ValidatorImpl.java:450)
-	at app//org.hibernate.validator.internal.engine.ValidatorImpl.validateInContext(ValidatorImpl.java:400)
-	at app//org.hibernate.validator.internal.engine.ValidatorImpl.validate(ValidatorImpl.java:172)
-	at app//org.springframework.validation.beanvalidation.SpringValidatorAdapter.validate(SpringValidatorAdapter.java:359)
-	at app//com.beauty.beauty_sales_dwh.FactSalesValidationTest.validateMessageFromProperties(FactSalesValidationTest.java:35)
-	at java.base@21.0.9/java.lang.reflect.Method.invoke(Method.java:580)
-	at java.base@21.0.9/java.util.ArrayList.forEach(ArrayList.java:1596)
-	at java.base@21.0.9/java.util.ArrayList.forEach(ArrayList.java:1596)
-</pre>
-</span>
-</div>
-<div class="test">
-<a name="validateSnowFlake()"></a>
-<h3 class="failures">validateSnowFlake()</h3>
-<span class="code">
-<pre>jakarta.validation.UnexpectedTypeException: HV000030: No validator could be found for constraint 'jakarta.validation.constraints.Size' validating type 'java.lang.Integer'. Check configuration for 'amountTaxExclude'
-	at app//org.hibernate.validator.internal.engine.constraintvalidation.ConstraintTree.getExceptionForNullValidator(ConstraintTree.java:116)
-	at app//org.hibernate.validator.internal.engine.constraintvalidation.ConstraintTree.getInitializedConstraintValidator(ConstraintTree.java:162)
-	at app//org.hibernate.validator.internal.engine.constraintvalidation.SimpleConstraintTree.validateConstraints(SimpleConstraintTree.java:58)
-	at app//org.hibernate.validator.internal.engine.constraintvalidation.ConstraintTree.validateConstraints(ConstraintTree.java:75)
-	at app//org.hibernate.validator.internal.metadata.core.MetaConstraint.doValidateConstraint(MetaConstraint.java:130)
-	at app//org.hibernate.validator.internal.metadata.core.MetaConstraint.validateConstraint(MetaConstraint.java:123)
-	at app//org.hibernate.validator.internal.engine.ValidatorImpl.validateMetaConstraint(ValidatorImpl.java:555)
-	at app//org.hibernate.validator.internal.engine.ValidatorImpl.validateConstraintsForSingleDefaultGroupElement(ValidatorImpl.java:518)
-	at app//org.hibernate.validator.internal.engine.ValidatorImpl.validateConstraintsForDefaultGroup(ValidatorImpl.java:488)
-	at app//org.hibernate.validator.internal.engine.ValidatorImpl.validateConstraintsForCurrentGroup(ValidatorImpl.java:450)
-	at app//org.hibernate.validator.internal.engine.ValidatorImpl.validateInContext(ValidatorImpl.java:400)
-	at app//org.hibernate.validator.internal.engine.ValidatorImpl.validate(ValidatorImpl.java:172)
-	at app//org.springframework.validation.beanvalidation.SpringValidatorAdapter.validate(SpringValidatorAdapter.java:359)
-	at app//com.beauty.beauty_sales_dwh.FactSalesValidationTest.validateSnowFlake(FactSalesValidationTest.java:60)
-	at java.base@21.0.9/java.lang.reflect.Method.invoke(Method.java:580)
-	at java.base@21.0.9/java.util.ArrayList.forEach(ArrayList.java:1596)
-	at java.base@21.0.9/java.util.ArrayList.forEach(ArrayList.java:1596)
-</pre>
-</span>
-</div>
-<div class="test">
-<a name="validateTranType()"></a>
-<h3 class="failures">validateTranType()</h3>
-<span class="code">
-<pre>jakarta.validation.UnexpectedTypeException: HV000030: No validator could be found for constraint 'jakarta.validation.constraints.Size' validating type 'java.lang.Integer'. Check configuration for 'amountTaxExclude'
-	at app//org.hibernate.validator.internal.engine.constraintvalidation.ConstraintTree.getExceptionForNullValidator(ConstraintTree.java:116)
-	at app//org.hibernate.validator.internal.engine.constraintvalidation.ConstraintTree.getInitializedConstraintValidator(ConstraintTree.java:162)
-	at app//org.hibernate.validator.internal.engine.constraintvalidation.SimpleConstraintTree.validateConstraints(SimpleConstraintTree.java:58)
-	at app//org.hibernate.validator.internal.engine.constraintvalidation.ConstraintTree.validateConstraints(ConstraintTree.java:75)
-	at app//org.hibernate.validator.internal.metadata.core.MetaConstraint.doValidateConstraint(MetaConstraint.java:130)
-	at app//org.hibernate.validator.internal.metadata.core.MetaConstraint.validateConstraint(MetaConstraint.java:123)
-	at app//org.hibernate.validator.internal.engine.ValidatorImpl.validateMetaConstraint(ValidatorImpl.java:555)
-	at app//org.hibernate.validator.internal.engine.ValidatorImpl.validateConstraintsForSingleDefaultGroupElement(ValidatorImpl.java:518)
-	at app//org.hibernate.validator.internal.engine.ValidatorImpl.validateConstraintsForDefaultGroup(ValidatorImpl.java:488)
-	at app//org.hibernate.validator.internal.engine.ValidatorImpl.validateConstraintsForCurrentGroup(ValidatorImpl.java:450)
-	at app//org.hibernate.validator.internal.engine.ValidatorImpl.validateInContext(ValidatorImpl.java:400)
-	at app//org.hibernate.validator.internal.engine.ValidatorImpl.validate(ValidatorImpl.java:172)
-	at app//org.springframework.validation.beanvalidation.SpringValidatorAdapter.validate(SpringValidatorAdapter.java:359)
-	at app//com.beauty.beauty_sales_dwh.FactSalesValidationTest.validateTranType(FactSalesValidationTest.java:85)
-	at java.base@21.0.9/java.lang.reflect.Method.invoke(Method.java:580)
-	at java.base@21.0.9/java.util.ArrayList.forEach(ArrayList.java:1596)
-	at java.base@21.0.9/java.util.ArrayList.forEach(ArrayList.java:1596)
-</pre>
-</span>
-</div>
-</div>
 <div class="tab">
 <h2>Tests</h2>
 <table>
@@ -209,37 +81,86 @@
 </tr>
 </thead>
 <tr>
-<td class="failures">smaregiIdrenge()</td>
-<td class="failures">0.003s</td>
-<td class="failures">failed</td>
+<td class="success">smaregiIdOKtest()</td>
+<td class="success">0.002s</td>
+<td class="success">passed</td>
 </tr>
 <tr>
-<td class="failures">validTransactionAmount()</td>
-<td class="failures">0.003s</td>
-<td class="failures">failed</td>
+<td class="success">smaregiIdrenge()</td>
+<td class="success">0.011s</td>
+<td class="success">passed</td>
 </tr>
 <tr>
-<td class="failures">validateMessageFromProperties()</td>
-<td class="failures">0.003s</td>
-<td class="failures">failed</td>
+<td class="success">sumareziNullOk()</td>
+<td class="success">0.001s</td>
+<td class="success">passed</td>
 </tr>
 <tr>
-<td class="failures">validateSnowFlake()</td>
-<td class="failures">0.030s</td>
-<td class="failures">failed</td>
+<td class="success">validTransactionAmount()</td>
+<td class="success">0.003s</td>
+<td class="success">passed</td>
 </tr>
 <tr>
-<td class="failures">validateTranType()</td>
-<td class="failures">0.003s</td>
-<td class="failures">failed</td>
+<td class="success">validateMessageFromProperties()</td>
+<td class="success">0.002s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">validateSnowFlake()</td>
+<td class="success">0.465s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">validateTranType()</td>
+<td class="success">0.003s</td>
+<td class="success">passed</td>
 </tr>
 </table>
 </div>
 <div class="tab">
 <h2>Standard output</h2>
 <span class="code">
-<pre>2025-12-09T14:55:37.799+09:00  INFO 3724 --- [beauty-sales-dwh] [    Test worker] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.beauty.beauty_sales_dwh.FactSalesValidationTest]: FactSalesValidationTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
-2025-12-09T14:55:37.800+09:00  INFO 3724 --- [beauty-sales-dwh] [    Test worker] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.beauty.beauty_sales_dwh.BeautySalesDwhApplication for test class com.beauty.beauty_sales_dwh.FactSalesValidationTest
+<pre>17:59:29.552 [Test worker] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [com.beauty.beauty_sales_dwh.FactSalesValidationTest]: FactSalesValidationTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+17:59:29.608 [Test worker] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration com.beauty.beauty_sales_dwh.BeautySalesDwhApplication for test class com.beauty.beauty_sales_dwh.FactSalesValidationTest
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.5.8)
+
+2025-12-18T17:59:29.773+09:00  INFO 10011 --- [beauty-sales-dwh] [    Test worker] c.b.b.FactSalesValidationTest            : Starting FactSalesValidationTest using Java 21.0.9 with PID 10011 (started by horinoakiko in /Users/horinoakiko/Documents/beauty-sales-dwh/backend)
+2025-12-18T17:59:29.773+09:00  INFO 10011 --- [beauty-sales-dwh] [    Test worker] c.b.b.FactSalesValidationTest            : No active profile set, falling back to 1 default profile: &quot;default&quot;
+2025-12-18T17:59:30.064+09:00  INFO 10011 --- [beauty-sales-dwh] [    Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JDBC repositories in DEFAULT mode.
+2025-12-18T17:59:30.089+09:00  INFO 10011 --- [beauty-sales-dwh] [    Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 22 ms. Found 1 JDBC repository interface.
+2025-12-18T17:59:30.455+09:00  INFO 10011 --- [beauty-sales-dwh] [    Test worker] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2025-12-18T17:59:30.534+09:00  INFO 10011 --- [beauty-sales-dwh] [    Test worker] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection conn0: url=jdbc:h2:mem:898469dc-54c7-44ea-9743-609c0d68e778 user=SA
+2025-12-18T17:59:30.535+09:00  INFO 10011 --- [beauty-sales-dwh] [    Test worker] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2025-12-18T17:59:30.805+09:00  INFO 10011 --- [beauty-sales-dwh] [    Test worker] c.b.b.FactSalesValidationTest            : Started FactSalesValidationTest in 1.13 seconds (process running for 1.704)
+2025-12-18T17:59:30.807+09:00  INFO 10011 --- [beauty-sales-dwh] [    Test worker] o.s.b.a.b.JobLauncherApplicationRunner   : Running default command line with: []
+message = IDは1〜999999999の間で指定してください
+messageTemplate = {sumaregi.id.size}
+rootBean = FactSales[appCompanyId=4069, transactionHeadId=0, transactionDateTime=2025-12-18T17:59:31.282801+09:00, transactionDate=2025-12-18, customerId=1, staffId=1, storeId=1, amountTotal=1000, amountSubtotal=1000, amountTaxInclude=1100, amountTaxExclude=1000, amountSubtotalDiscountPrice=0, amountFee=0, amountShipping=0, discountPoint=0, discountCoupon=0, transactionType=SALES, isVoid=false]
+rootBeanClass = class com.beauty.beauty_sales_dwh.analytics.sales.FactSales
+invalidValue = 0
+propertyPath = transactionHeadId
+leafBean = FactSales[appCompanyId=4069, transactionHeadId=0, transactionDateTime=2025-12-18T17:59:31.282801+09:00, transactionDate=2025-12-18, customerId=1, staffId=1, storeId=1, amountTotal=1000, amountSubtotal=1000, amountTaxInclude=1100, amountTaxExclude=1000, amountSubtotalDiscountPrice=0, amountFee=0, amountShipping=0, discountPoint=0, discountCoupon=0, transactionType=SALES, isVoid=false]
+descriptor = ConstraintDescriptorImpl{annotation=c.b.b.c.v.ValidSmaregiId, payloads=[], hasComposingConstraints=true, isReportAsSingleInvalidConstraint=false, constraintLocationKind=FIELD, definedOn=DEFINED_LOCALLY, groups=[interface jakarta.validation.groups.Default], attributes={groups=[Ljava.lang.Class;@33060020, min=1, message={sumaregi.id.size}, payload=[Ljava.lang.Class;@443b6765, max=999999999}, constraintType=GENERIC, valueUnwrapping=DEFAULT}
+
+</pre>
+</span>
+</div>
+<div class="tab">
+<h2>Standard error</h2>
+<span class="code">
+<pre>Mockito is currently self-attaching to enable the inline-mock-maker. This will no longer work in future releases of the JDK. Please add Mockito as an agent to your build as described in Mockito's documentation: https://javadoc.io/doc/org.mockito/mockito-core/latest/org.mockito/org/mockito/Mockito.html#0.3
+WARNING: A Java agent has been loaded dynamically (/Users/horinoakiko/.gradle/caches/modules-2/files-2.1/net.bytebuddy/byte-buddy-agent/1.17.8/f09415827a71be7ed621c7bd02550678f28bc81c/byte-buddy-agent-1.17.8.jar)
+WARNING: If a serviceability tool is in use, please run with -XX:+EnableDynamicAgentLoading to hide this warning
+WARNING: If a serviceability tool is not in use, please run with -Djdk.instrument.traceUsage for more information
+WARNING: Dynamic loading of agents will be disallowed by default in a future release
 </pre>
 </span>
 </div>
@@ -251,7 +172,7 @@
 <input id="line-wrapping-toggle" type="checkbox" autocomplete="off"/>
 </label>
 </div>Generated by 
-<a href="https://www.gradle.org">Gradle 8.14.3</a> at 2025/12/09 14:55:38</p>
+<a href="https://www.gradle.org">Gradle 8.14.3</a> at 2025/12/18 17:59:31</p>
 </div>
 </div>
 </body>

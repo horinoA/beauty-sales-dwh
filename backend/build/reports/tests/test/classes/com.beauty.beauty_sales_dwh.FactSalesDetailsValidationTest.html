@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta http-equiv="x-ua-compatible" content="IE=edge"/>
+<title>Test results - FactSalesDetailsValidationTest</title>
+<link href="../css/base-style.css" rel="stylesheet" type="text/css"/>
+<link href="../css/style.css" rel="stylesheet" type="text/css"/>
+<script src="../js/report.js" type="text/javascript"></script>
+</head>
+<body>
+<div id="content">
+<h1>FactSalesDetailsValidationTest</h1>
+<div class="breadcrumbs">
+<a href="../index.html">all</a> &gt; 
+<a href="../packages/com.beauty.beauty_sales_dwh.html">com.beauty.beauty_sales_dwh</a> &gt; FactSalesDetailsValidationTest</div>
+<div id="summary">
+<table>
+<tr>
+<td>
+<div class="summaryGroup">
+<table>
+<tr>
+<td>
+<div class="infoBox" id="tests">
+<div class="counter">6</div>
+<p>tests</p>
+</div>
+</td>
+<td>
+<div class="infoBox" id="failures">
+<div class="counter">0</div>
+<p>failures</p>
+</div>
+</td>
+<td>
+<div class="infoBox" id="ignored">
+<div class="counter">0</div>
+<p>ignored</p>
+</div>
+</td>
+<td>
+<div class="infoBox" id="duration">
+<div class="counter">0.024s</div>
+<p>duration</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</td>
+<td>
+<div class="infoBox success" id="successRate">
+<div class="percent">100%</div>
+<p>successful</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="tab-container">
+<ul class="tabLinks">
+<li>
+<a href="#">Tests</a>
+</li>
+<li>
+<a href="#">Standard output</a>
+</li>
+</ul>
+<div class="tab">
+<h2>Tests</h2>
+<table>
+<thead>
+<tr>
+<th>Test</th>
+<th>Duration</th>
+<th>Result</th>
+</tr>
+</thead>
+<tr>
+<td class="success">defaultValueTest()</td>
+<td class="success">0.004s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">productGroupNameTest()</td>
+<td class="success">0.002s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">productNameTest()</td>
+<td class="success">0.003s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">quantitySizetest()</td>
+<td class="success">0.003s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">taxDivisionTest()</td>
+<td class="success">0.010s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">transactionDetailIdTest()</td>
+<td class="success">0.002s</td>
+<td class="success">passed</td>
+</tr>
+</table>
+</div>
+<div class="tab">
+<h2>Standard output</h2>
+<span class="code">
+<pre>2025-12-18T17:59:31.359+09:00  INFO 10011 --- [beauty-sales-dwh] [    Test worker] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.beauty.beauty_sales_dwh.FactSalesDetailsValidationTest]: FactSalesDetailsValidationTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2025-12-18T17:59:31.360+09:00  INFO 10011 --- [beauty-sales-dwh] [    Test worker] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.beauty.beauty_sales_dwh.BeautySalesDwhApplication for test class com.beauty.beauty_sales_dwh.FactSalesDetailsValidationTest
+FactSalesDetail[appCompanyId=1, transactionHeadId=1, transactionDetailId=1, productId=null, productName=null, categoryGroupName=null, quantity=1, salesPrice=5000, taxDivision=1, categoryType=SALES]
+message = 数量は1以上で指定してください
+messageTemplate = {factSalesDetail.quantity.minsize}
+rootBean = FactSalesDetail[appCompanyId=1, transactionHeadId=1, transactionDetailId=1, productId=1001, productName=カット, categoryGroupName=技術売上, quantity=0, salesPrice=5000, taxDivision=1, categoryType=SALES]
+rootBeanClass = class com.beauty.beauty_sales_dwh.analytics.sales.FactSalesDetail
+invalidValue = 0
+propertyPath = quantity
+leafBean = FactSalesDetail[appCompanyId=1, transactionHeadId=1, transactionDetailId=1, productId=1001, productName=カット, categoryGroupName=技術売上, quantity=0, salesPrice=5000, taxDivision=1, categoryType=SALES]
+descriptor = ConstraintDescriptorImpl{annotation=j.v.c.Min, payloads=[], hasComposingConstraints=true, isReportAsSingleInvalidConstraint=false, constraintLocationKind=FIELD, definedOn=DEFINED_LOCALLY, groups=[interface jakarta.validation.groups.Default], attributes={groups=[Ljava.lang.Class;@10280879, message={factSalesDetail.quantity.minsize}, payload=[Ljava.lang.Class;@3472f3ab, value=1}, constraintType=GENERIC, valueUnwrapping=DEFAULT}
+
+[ConstraintViolationImpl{interpolatedMessage='商品名は200文字までです', propertyPath=productName, rootBeanClass=class com.beauty.beauty_sales_dwh.analytics.sales.FactSalesDetail, messageTemplate='{FactSalesDetail.productName.size}'}]
+[ConstraintViolationImpl{interpolatedMessage='商品名で記号&lt; &gt;を含む文字列は登録できません', propertyPath=productName, rootBeanClass=class com.beauty.beauty_sales_dwh.analytics.sales.FactSalesDetail, messageTemplate='{FactSalesDetail.productName.pattern}'}]
+message = 取引明細IDは必須です
+messageTemplate = {factSalesDetail.transactionDetailId.notNull}
+rootBean = FactSalesDetail[appCompanyId=1, transactionHeadId=1, transactionDetailId=null, productId=1001, productName=カット, categoryGroupName=技術売上, quantity=1, salesPrice=5000, taxDivision=1, categoryType=SALES]
+rootBeanClass = class com.beauty.beauty_sales_dwh.analytics.sales.FactSalesDetail
+invalidValue = null
+propertyPath = transactionDetailId
+leafBean = FactSalesDetail[appCompanyId=1, transactionHeadId=1, transactionDetailId=null, productId=1001, productName=カット, categoryGroupName=技術売上, quantity=1, salesPrice=5000, taxDivision=1, categoryType=SALES]
+descriptor = ConstraintDescriptorImpl{annotation=j.v.c.NotNull, payloads=[], hasComposingConstraints=true, isReportAsSingleInvalidConstraint=false, constraintLocationKind=FIELD, definedOn=DEFINED_LOCALLY, groups=[interface jakarta.validation.groups.Default], attributes={groups=[Ljava.lang.Class;@377cbdae, message={factSalesDetail.transactionDetailId.notNull}, payload=[Ljava.lang.Class;@37a939bc}, constraintType=GENERIC, valueUnwrapping=DEFAULT}
+
+</pre>
+</span>
+</div>
+</div>
+<div id="footer">
+<p>
+<div>
+<label class="hidden" id="label-for-line-wrapping-toggle" for="line-wrapping-toggle">Wrap lines
+<input id="line-wrapping-toggle" type="checkbox" autocomplete="off"/>
+</label>
+</div>Generated by 
+<a href="https://www.gradle.org">Gradle 8.14.3</a> at 2025/12/18 17:59:31</p>
+</div>
+</div>
+</body>
+</html>
