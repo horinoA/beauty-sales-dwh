@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.beauty.beauty_sales_dwh.BeautySalesDwhApplicationTests" tests="1" skipped="0" failures="0" errors="0" timestamp="2025-12-18T08:59:31.305Z" hostname="AkikoHorinonoMacBook-Air.local" time="0.003">
-  <properties/>
-  <testcase name="contextLoads()" classname="com.beauty.beauty_sales_dwh.BeautySalesDwhApplicationTests" time="0.003"/>
-  <system-out><![CDATA[2025-12-18T17:59:31.305+09:00  INFO 10011 --- [beauty-sales-dwh] [    Test worker] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.beauty.beauty_sales_dwh.BeautySalesDwhApplicationTests]: BeautySalesDwhApplicationTests does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
-2025-12-18T17:59:31.305+09:00  INFO 10011 --- [beauty-sales-dwh] [    Test worker] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.beauty.beauty_sales_dwh.BeautySalesDwhApplication for test class com.beauty.beauty_sales_dwh.BeautySalesDwhApplicationTests
-]]></system-out>
-  <system-err><![CDATA[]]></system-err>
-</testsuite>

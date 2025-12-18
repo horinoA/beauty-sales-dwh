@@ -1,0 +1,14 @@
+{
+    "java.compile.nullAnalysis.mode": "automatic",
+    "java.configuration.updateBuildConfiguration": "interactive",
+    "java.test.config": {
+        // テスト実行時に .env ファイルを読み込む設定
+        "envFile": "${workspaceFolder}/.env",
+        
+        // 【重要】DB接続先をローカル用に上書きする
+        // Docker内ではホスト名 "db" ですが、ローカルからは "localhost" なので
+        "env": {
+            "SPRING_DATASOURCE_URL": "jdbc:postgresql://localhost:5432/beauty_dwh_db" 
+        }
+    }
+}
