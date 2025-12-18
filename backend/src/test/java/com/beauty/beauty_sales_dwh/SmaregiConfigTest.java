@@ -13,6 +13,7 @@ import org.springframework.test.context.ActiveProfiles;
 class SmaregiConfigTest {
 
     // application.properties 経由で環境変数を注入
+    //test
     @Value("${smaregi.api.client-id}")
     private String clientId;
 

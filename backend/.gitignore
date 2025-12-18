@@ -35,7 +35,3 @@ out/
 
 ### VS Code ###
 .vscode/
-
-### こちらにも念の為
-.env
-application-test.properties
