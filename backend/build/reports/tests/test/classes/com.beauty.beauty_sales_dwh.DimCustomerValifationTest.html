@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta http-equiv="x-ua-compatible" content="IE=edge"/>
+<title>Test results - DimCustomerValifationTest</title>
+<link href="../css/base-style.css" rel="stylesheet" type="text/css"/>
+<link href="../css/style.css" rel="stylesheet" type="text/css"/>
+<script src="../js/report.js" type="text/javascript"></script>
+</head>
+<body>
+<div id="content">
+<h1>DimCustomerValifationTest</h1>
+<div class="breadcrumbs">
+<a href="../index.html">all</a> &gt; 
+<a href="../packages/com.beauty.beauty_sales_dwh.html">com.beauty.beauty_sales_dwh</a> &gt; DimCustomerValifationTest</div>
+<div id="summary">
+<table>
+<tr>
+<td>
+<div class="summaryGroup">
+<table>
+<tr>
+<td>
+<div class="infoBox" id="tests">
+<div class="counter">13</div>
+<p>tests</p>
+</div>
+</td>
+<td>
+<div class="infoBox" id="failures">
+<div class="counter">0</div>
+<p>failures</p>
+</div>
+</td>
+<td>
+<div class="infoBox" id="ignored">
+<div class="counter">0</div>
+<p>ignored</p>
+</div>
+</td>
+<td>
+<div class="infoBox" id="duration">
+<div class="counter">0.042s</div>
+<p>duration</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</td>
+<td>
+<div class="infoBox success" id="successRate">
+<div class="percent">100%</div>
+<p>successful</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="tab-container">
+<ul class="tabLinks">
+<li>
+<a href="#">Tests</a>
+</li>
+<li>
+<a href="#">Standard output</a>
+</li>
+</ul>
+<div class="tab">
+<h2>Tests</h2>
+<table>
+<thead>
+<tr>
+<th>Test</th>
+<th>Method name</th>
+<th>Duration</th>
+<th>Result</th>
+</tr>
+</thead>
+<tr>
+<td class="success">氏名エラー: 禁止文字(&lt;, &gt;, @, !)が含まれる</td>
+<td class="success">customerName_Error_Pattern()</td>
+<td class="success">0.002s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">氏名エラー: 文字数オーバー (101文字)</td>
+<td class="success">customerName_Error_Size()</td>
+<td class="success">0.003s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">氏名: 許可された文字種が全て通ること</td>
+<td class="success">customerName_Normal_AllTypes()</td>
+<td class="success">0.002s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">defaultValueTest()</td>
+<td class="success">defaultValueTest()</td>
+<td class="success">0.006s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">携帯番号エラー: 英字や記号が含まれる</td>
+<td class="success">mobileNumbers_Error_Pattern()</td>
+<td class="success">0.002s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">電話番号エラー: 英字や記号が含まれる</td>
+<td class="success">phoneNumbers_Error_Pattern()</td>
+<td class="success">0.002s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">電話番号: 数字とハイフンのみならOK</td>
+<td class="success">phoneNumbers_Normal()</td>
+<td class="success">0.012s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">電話番号: ハイフンなし数字のみもOK</td>
+<td class="success">phoneNumbers_Normal_NoHyphen()</td>
+<td class="success">0.002s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">電話番号エラー: 文字数オーバー (51文字)</td>
+<td class="success">phone_Error_Size()</td>
+<td class="success">0.003s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">来店日整合性エラー: 初回 &gt; 最終 の場合はエラー</td>
+<td class="success">validCustomerDates_Error()</td>
+<td class="success">0.002s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">来店日整合性: 初回 &lt;= 最終 ならOK</td>
+<td class="success">validCustomerDates_Normal()</td>
+<td class="success">0.002s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">来店日整合性: 片方がnullならチェックをスキップしてOK</td>
+<td class="success">validCustomerDates_Null()</td>
+<td class="success">0.002s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">来店日整合性: 初回 == 最終 ならOK</td>
+<td class="success">validCustomerDates_SameDate()</td>
+<td class="success">0.002s</td>
+<td class="success">passed</td>
+</tr>
+</table>
+</div>
+<div class="tab">
+<h2>Standard output</h2>
+<span class="code">
+<pre>2025-12-18T17:59:31.310+09:00  INFO 10011 --- [beauty-sales-dwh] [    Test worker] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.beauty.beauty_sales_dwh.DimCustomerValifationTest]: DimCustomerValifationTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2025-12-18T17:59:31.311+09:00  INFO 10011 --- [beauty-sales-dwh] [    Test worker] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.beauty.beauty_sales_dwh.BeautySalesDwhApplication for test class com.beauty.beauty_sales_dwh.DimCustomerValifationTest
+[ConstraintViolationImpl{interpolatedMessage='顧客名は漢字、ひらがな、カタカナ、英数字(半角/全角)、スペース、記号(ー 々)、アンダーバーのみのみ入力可です', propertyPath=customerName, rootBeanClass=class com.beauty.beauty_sales_dwh.analytics.customer.DimCustomer, messageTemplate='{DimCustomer.customerName.pattern}'}]
+DimCustomer[appCompanyId=1, customerId=10002, customerName=佐藤_花子, customerKana=サトウ_ハナコ, phoneNumber=null, mobileNumber=null, storeId=1, firstVisitDate=null, lastVisitDate=null, visitCount=0, isDeleted=false, insertDataTime=2025-12-18T17:59:31.352136+09:00, updateDataTime=2025-12-18T17:59:31.352149+09:00]
+</pre>
+</span>
+</div>
+</div>
+<div id="footer">
+<p>
+<div>
+<label class="hidden" id="label-for-line-wrapping-toggle" for="line-wrapping-toggle">Wrap lines
+<input id="line-wrapping-toggle" type="checkbox" autocomplete="off"/>
+</label>
+</div>Generated by 
+<a href="https://www.gradle.org">Gradle 8.14.3</a> at 2025/12/18 17:59:31</p>
+</div>
+</div>
+</body>
+</html>

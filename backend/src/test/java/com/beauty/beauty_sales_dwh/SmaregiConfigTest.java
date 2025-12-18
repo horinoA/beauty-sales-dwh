@@ -5,13 +5,11 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
-/*@TestPropertySource(properties = {
-    "smaregi.api.contract-id=testContractId",
-    "smaregi.api.client-id=testCliantId",
-    "smaregi.api.client-secret=testClientSSecret"
-})*/
+
 @SpringBootTest
+@ActiveProfiles("test")
 class SmaregiConfigTest {
 
     // application.properties 経由で環境変数を注入
@@ -23,10 +21,6 @@ class SmaregiConfigTest {
 
     @Value("${smaregi.api.contract-id}")
     private String contractId;
-
-    @Value("$smaregi.api.scope")
-    private String scope;
-
     @Test
     void 環境変数が正しく読み込まれているか確認() {
         // 1. 値がnullでないかチェック（読み込めていなければここで落ちます）

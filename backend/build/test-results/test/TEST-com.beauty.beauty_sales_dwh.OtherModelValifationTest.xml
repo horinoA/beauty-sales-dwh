@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.beauty.beauty_sales_dwh.OtherModelValifationTest" tests="6" skipped="0" failures="0" errors="0" timestamp="2025-12-18T08:59:31.627Z" hostname="AkikoHorinonoMacBook-Air.local" time="0.023">
+  <properties/>
+  <testcase name="dimStaffRank()" classname="com.beauty.beauty_sales_dwh.OtherModelValifationTest" time="0.005"/>
+  <testcase name="dimproductTest()" classname="com.beauty.beauty_sales_dwh.OtherModelValifationTest" time="0.006"/>
+  <testcase name="DimStaffTest()" classname="com.beauty.beauty_sales_dwh.OtherModelValifationTest" time="0.002"/>
+  <testcase name="dimStaffStaffName()" classname="com.beauty.beauty_sales_dwh.OtherModelValifationTest" time="0.001"/>
+  <testcase name="dimCategoryGroupTest()" classname="com.beauty.beauty_sales_dwh.OtherModelValifationTest" time="0.005"/>
+  <testcase name="dimStaffemployFlag()" classname="com.beauty.beauty_sales_dwh.OtherModelValifationTest" time="0.002"/>
+  <system-out><![CDATA[2025-12-18T17:59:31.627+09:00  INFO 10011 --- [beauty-sales-dwh] [    Test worker] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.beauty.beauty_sales_dwh.OtherModelValifationTest]: OtherModelValifationTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2025-12-18T17:59:31.627+09:00  INFO 10011 --- [beauty-sales-dwh] [    Test worker] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.beauty.beauty_sales_dwh.BeautySalesDwhApplication for test class com.beauty.beauty_sales_dwh.OtherModelValifationTest
+DimProduct[appCompanyId=1, productId=20001, productName=デザインカット(S/B込), catGroupId=100, price=5500, storeId=1, insertDataTime=2025-12-18T17:59:31.635419+09:00, updateDataTime=2025-12-18T17:59:31.635430+09:00]
+DimStaff[appCompanyId=1, staffId=30001, staffName=美容_師太郎, rank=トップスタイリスト, storeId=1, employFlag=1, insertDataTime=2025-12-18T17:59:31.642094+09:00, updateDataTime=2025-12-18T17:59:31.642108+09:00]
+DimCategoryGroup[appCompanyId=1, catGroupId=100, catGroupName=カットメニュー, insertDataTime=2025-12-18T17:59:31.645704+09:00, updateDataTime=2025-12-18T17:59:31.645711+09:00]
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
