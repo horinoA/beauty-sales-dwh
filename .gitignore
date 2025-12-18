@@ -1,5 +1,2 @@
 .env
 application-test.properties
-
-### VS Code ###
-.vscode/
