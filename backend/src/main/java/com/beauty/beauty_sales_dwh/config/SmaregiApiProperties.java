@@ -5,7 +5,7 @@ import org.springframework.context.annotation.Configuration;
 
 import lombok.Data;
 
-@Configuration // Springに「これは設定クラスだよ」と教える
+@Configuration // 設定クラス
 @ConfigurationProperties(prefix = "smaregi.api") // "smaregi.api" から始まる設定を読み込む
 @Data // Lombok: Getter/Setterを自動生成
 public class SmaregiApiProperties {
