@@ -1,6 +1,7 @@
 {
     "java.compile.nullAnalysis.mode": "automatic",
     "java.configuration.updateBuildConfiguration": "interactive",
+    //テスト用Vscode設定
     "java.test.config": {
         // テスト実行時に .env ファイルを読み込む設定
         "envFile": "${workspaceFolder}/.env",
