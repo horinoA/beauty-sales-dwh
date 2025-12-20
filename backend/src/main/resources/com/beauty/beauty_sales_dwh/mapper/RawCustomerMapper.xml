@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.beauty.beauty_sales_dwh.mapper.RawCustomerMapper">
+
+    <insert id="insertRawCustomer">
+        INSERT INTO raw_smaregi_customers (
+            company_id,
+            api_response_body,
+            imported_at
+        ) VALUES (
+            #{companyId},
+            #{jsonBody}::jsonb,
+            CURRENT_TIMESTAMP
+        )
+    </insert>
+
+</mapper>
