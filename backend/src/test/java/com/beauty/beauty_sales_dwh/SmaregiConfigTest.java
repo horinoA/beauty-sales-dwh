@@ -22,12 +22,17 @@ class SmaregiConfigTest {
 
     @Value("${smaregi.api.contract-id}")
     private String contractId;
+
+    @Value("${app.vendor.id}")
+    private String appVendor;
+
     @Test
     void 環境変数が正しく読み込まれているか確認() {
         // 1. 値がnullでないかチェック（読み込めていなければここで落ちます）
         assertNotNull(clientId, "クライアントIDが読み込めていません");
         assertNotNull(clientSecret, "クライアントシークレットが読み込めていません");
         assertNotNull(contractId, "契約IDが読み込めていません");
+        assertNotNull(appVendor, "アプリ使用業者IDが読み込めていません");
 
         // 2. コンソールに出力して目視確認
         System.out.println("============================================");
@@ -40,6 +45,7 @@ class SmaregiConfigTest {
                               ? clientSecret.substring(0, 3) + "********" 
                               : "****";
         System.out.println("Client Secret : " + maskedSecret);
+        System.out.println("App Vendor : " + appVendor);
         System.out.println("============================================");
     }
 }
