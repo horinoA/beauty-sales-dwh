@@ -3,13 +3,14 @@
 <mapper namespace="com.beauty.beauty_sales_dwh.mapper.RawProductMapper">
 
     <insert id="insertRawProduct">
-        INSERT INTO raw_smaregi_products (
-            company_id,
-            api_response_body,
-            imported_at
+        INSERT INTO raw.products (
+            app_company_id,
+            json_body,
+            fetched_at
         ) VALUES (
             #{companyId},
-            #{jsonBody}::jsonb,  CURRENT_TIMESTAMP
+            #{jsonBody}::jsonb,
+            CURRENT_TIMESTAMP
         )
     </insert>
 
