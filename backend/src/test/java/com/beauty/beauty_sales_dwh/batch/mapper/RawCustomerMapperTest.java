@@ -1,4 +1,4 @@
-package com.beauty.beauty_sales_dwh.mapper;
+package com.beauty.beauty_sales_dwh.batch.mapper;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -13,6 +13,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.beauty.beauty_sales_dwh.domain.CustomerRawData;
+import com.beauty.beauty_sales_dwh.mapper.RawCustomerMapper;
 
 @MybatisTest // 1. MyBatis関連のコンポーネントだけをロード
 @ActiveProfiles("test") // 2. application-test.properties を読み込む
