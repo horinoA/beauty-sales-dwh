@@ -3,10 +3,10 @@
 <mapper namespace="com.beauty.beauty_sales_dwh.mapper.RawCustomerMapper">
 
     <insert id="insertRawCustomer">
-        INSERT INTO raw.customers (
+        INSERT INTO "raw".customers (
             app_company_id,
             json_body,
-            imported_at
+            fetched_at
         ) VALUES (
             #{companyId},
             #{jsonBody}::jsonb,
@@ -14,7 +14,7 @@
         )
     </insert>
 
-    <select id="findMaxFetchedAt" resultType="java.time.LocalDateTime">
+    <select id="findMaxFetchedAt" resultType="java.time.OffsetDateTime">
         SELECT MAX(fetched_at)
         FROM raw.customers
     </select>

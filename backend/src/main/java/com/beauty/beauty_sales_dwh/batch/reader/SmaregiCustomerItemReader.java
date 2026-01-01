@@ -1,6 +1,7 @@
 package com.beauty.beauty_sales_dwh.batch.reader;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 
 import org.springframework.batch.core.StepExecution;
@@ -39,9 +40,9 @@ public class SmaregiCustomerItemReader extends AbstractSmaregiItemReader {
         super.beforeStep(stepExecution);
 
         // 2. DBから最終更新日時を取得
-        LocalDateTime maxDate = rawCustomerMapper.findMaxFetchedAt();
+        OffsetDateTime maxDate = rawCustomerMapper.findMaxFetchedAt();
         if (maxDate == null) {
-            maxDate = LocalDateTime.of(2000, 1, 1, 0, 0, 0);
+            maxDate = OffsetDateTime.of(2000, 1, 1, 0, 0, 0,0,ZoneOffset.ofHours(9));
         }
         
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
