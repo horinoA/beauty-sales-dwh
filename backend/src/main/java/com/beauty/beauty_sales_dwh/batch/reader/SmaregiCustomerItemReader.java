@@ -58,7 +58,7 @@ public class SmaregiCustomerItemReader extends AbstractSmaregiItemReader {
         String baseUrl = properties.getUrl() + "/" +properties.getContractId() + "/pos/customers";
         
         // パラメータ付きURLを生成して返す
-        return String.format("/?limit=1000&page=%d&upd_date_time-from=%s",
+        return String.format("%s?limit=1000&page=%d&upd_date_time-from=%s",
                 baseUrl, page, this.updDateTimeFrom);
     }
 }
