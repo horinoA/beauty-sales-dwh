@@ -1,4 +1,4 @@
-package com.beauty.beauty_sales_dwh.processor;
+package com.beauty.beauty_sales_dwh.batch.processor;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -9,7 +9,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import com.beauty.beauty_sales_dwh.batch.processor.CustomerRawDataProcessor;
 import com.beauty.beauty_sales_dwh.config.AppVendorProperties;
 import com.beauty.beauty_sales_dwh.domain.CustomerRawData;
 import com.fasterxml.jackson.databind.ObjectMapper;

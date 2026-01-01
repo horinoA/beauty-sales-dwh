@@ -1,4 +1,4 @@
-package com.beauty.beauty_sales_dwh.reader;
+package com.beauty.beauty_sales_dwh.batch.reader;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
@@ -24,7 +24,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
 
-import com.beauty.beauty_sales_dwh.batch.reader.SmaregiCustomerItemReader;
 import com.beauty.beauty_sales_dwh.batch.tasklet.SmaregiAuthTasklet;
 import com.beauty.beauty_sales_dwh.config.SmaregiApiProperties;
 import com.beauty.beauty_sales_dwh.mapper.RawCustomerMapper;
