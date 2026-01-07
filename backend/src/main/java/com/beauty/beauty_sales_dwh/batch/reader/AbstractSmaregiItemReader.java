@@ -1,5 +1,6 @@
 package com.beauty.beauty_sales_dwh.batch.reader;
 
+import java.net.URI;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -7,9 +8,8 @@ import java.util.Map;
 import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.StepExecutionListener;
-//import org.springframework.batch.core.annotation.BeforeStep;
 import org.springframework.batch.item.ItemReader;
-import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.core.ParameterizedTypeReference; // ★これが必要です
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -25,7 +25,7 @@ import lombok.extern.slf4j.Slf4j;
  * APIレスポンスが配列 [ {...}, {...} ] の形式であることを前提とします。
  */
 @Slf4j
-public abstract class AbstractSmaregiItemReader implements ItemReader<Map<String, Object>> , StepExecutionListener{
+public abstract class AbstractSmaregiItemReader implements ItemReader<Map<String, Object>>, StepExecutionListener {
 
     private final RestTemplate restTemplate;
     protected String accessToken;
@@ -36,9 +36,9 @@ public abstract class AbstractSmaregiItemReader implements ItemReader<Map<String
         this.restTemplate = restTemplate;
     }
 
-    protected abstract String getApiUrl(int page);
+    // ★変更: String ではなく URI を返すように定義
+    protected abstract URI getApiUrl(int page);
 
-    //@BeforeStep
     @Override
     public void beforeStep(StepExecution stepExecution) {
         this.accessToken = (String) stepExecution.getJobExecution()
@@ -67,18 +67,20 @@ public abstract class AbstractSmaregiItemReader implements ItemReader<Map<String
 
     // レスポンスをList<Map<String, Object>> 型で受け取る
     private void fetchNextPage() {
-        String url = getApiUrl(page);
+        // ★変更: StringではなくURI型で受け取る
+        URI uri = getApiUrl(page);
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + accessToken);
         HttpEntity<String> entity = new HttpEntity<>(headers);
 
-        log.debug("API Fetch: {}", url);
+        log.debug("API Fetch: {}", uri);
 
         try {
-            // ParameterizedTypeReference を使用して List<Map<String, Object>> 型で受け取る
+            // URIを渡しつつ、ParameterizedTypeReference で List型として受け取る
+            // これにより、自動的にJSONがList<Map>に変換されます
             ResponseEntity<List<Map<String, Object>>> response = restTemplate.exchange(
-                    url,
+                    uri,
                     HttpMethod.GET,
                     entity,
                     new ParameterizedTypeReference<List<Map<String, Object>>>() {}
@@ -86,7 +88,7 @@ public abstract class AbstractSmaregiItemReader implements ItemReader<Map<String
 
             List<Map<String, Object>> rows = response.getBody();
 
-            // nullチェックと空チェックのみを行う 
+            // nullチェックと空チェック
             if (rows != null && !rows.isEmpty()) {
                 currentIterator = rows.iterator();
                 page++; // データが取れたので次ページへ
@@ -97,7 +99,7 @@ public abstract class AbstractSmaregiItemReader implements ItemReader<Map<String
 
         } catch (Exception e) {
             log.error("API Error: {}", e.getMessage());
-            throw new RuntimeException("API取得失敗: " + url, e);
+            throw new RuntimeException("API取得失敗: " + uri, e);
         }
     }
 }
