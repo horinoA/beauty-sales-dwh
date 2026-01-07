@@ -3,7 +3,7 @@
 <mapper namespace="com.beauty.beauty_sales_dwh.mapper.RawCustomerMapper">
 
     <insert id="insertRawCustomer">
-        INSERT INTO "raw".customers (
+        INSERT INTO raw.customers (
             app_company_id,
             json_body,
             fetched_at
