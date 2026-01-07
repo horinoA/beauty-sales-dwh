@@ -4,8 +4,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.StepExecution;
-import org.springframework.batch.core.annotation.BeforeStep;
+import org.springframework.batch.core.StepExecutionListener;
+//import org.springframework.batch.core.annotation.BeforeStep;
 import org.springframework.batch.item.ItemReader;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
@@ -23,7 +25,7 @@ import lombok.extern.slf4j.Slf4j;
  * APIレスポンスが配列 [ {...}, {...} ] の形式であることを前提とします。
  */
 @Slf4j
-public abstract class AbstractSmaregiItemReader implements ItemReader<Map<String, Object>> {
+public abstract class AbstractSmaregiItemReader implements ItemReader<Map<String, Object>> , StepExecutionListener{
 
     private final RestTemplate restTemplate;
     protected String accessToken;
@@ -36,7 +38,8 @@ public abstract class AbstractSmaregiItemReader implements ItemReader<Map<String
 
     protected abstract String getApiUrl(int page);
 
-    @BeforeStep
+    //@BeforeStep
+    @Override
     public void beforeStep(StepExecution stepExecution) {
         this.accessToken = (String) stepExecution.getJobExecution()
                 .getExecutionContext().get(SmaregiAuthTasklet.KEY_ACCESS_TOKEN);
@@ -46,6 +49,11 @@ public abstract class AbstractSmaregiItemReader implements ItemReader<Map<String
         }
     }
 
+    @Override
+    public ExitStatus afterStep(StepExecution stepExecution) {
+        return null;
+    }
+    
     @Override
     public Map<String, Object> read() {
         if (currentIterator == null || !currentIterator.hasNext()) {
