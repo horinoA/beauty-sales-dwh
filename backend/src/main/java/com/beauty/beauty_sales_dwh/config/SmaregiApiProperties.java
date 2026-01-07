@@ -10,9 +10,12 @@ import lombok.Data;
 @Data // Lombok: Getter/Setterを自動生成
 public class SmaregiApiProperties {
 
-    // smaregi.api.url に対応
-    private String url;
+    // smaregi.auth-url に対応 (https://id.smaregi.dev)
+    private String authUrl;
 
+    // smaregi.base-url に対応 (https://api.smaregi.dev)
+    private String baseUrl;
+    
     // smaregi.api.contract-id に対応 (ハイフンはキャメルケースに自動変換されます)
     private String contractId;
 

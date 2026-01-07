@@ -1,5 +1,8 @@
 package com.beauty.beauty_sales_dwh.batch.reader;
 
+import java.net.URI;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
@@ -45,7 +48,7 @@ public class SmaregiCustomerItemReader extends AbstractSmaregiItemReader {
             maxDate = OffsetDateTime.of(2000, 1, 1, 0, 0, 0,0,ZoneOffset.ofHours(9));
         }
         
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssXXX");
         this.updDateTimeFrom = maxDate.format(formatter);
         
         log.info("CustomerReader初期化完了: upd_date_time-from={}", this.updDateTimeFrom);
@@ -53,12 +56,29 @@ public class SmaregiCustomerItemReader extends AbstractSmaregiItemReader {
 
     // URL生成
     @Override
-    protected String getApiUrl(int page) {
+    protected URI getApiUrl(int page) {
         // ベースURL
-        String baseUrl = properties.getUrl() + "/" +properties.getContractId() + "/pos/customers";
-        
-        // パラメータ付きURLを生成して返す
-        return String.format("%s?limit=1000&page=%d&upd_date_time-from=%s",
-                baseUrl, page, this.updDateTimeFrom);
+        String baseUrl = properties.getBaseUrl() + "/" +properties.getContractId() + "/pos/customers";
+        try {
+            // ★ここが決定版：Java標準のURLEncoderを使う
+            // これを行うと:
+            // "2000-01-01T00:00:00+09:00" 
+            //    ↓
+            // "2000-01-01T00%3A00%3A00%2B09%3A00" (完全にURLセーフな形) になります
+            String encodedDate = URLEncoder.encode(this.updDateTimeFrom, StandardCharsets.UTF_8);
+
+            // エンコード済みの文字列を使ってURLを組み立てる
+            String urlString = String.format("%s?limit=1000&page=%d&upd_date_time-from=%s",
+                    baseUrl, page, encodedDate);
+            
+            // ログに出して確認（%2B になっているはずです）
+            log.info("Request URL: {}", urlString);
+
+            // そのままURIオブジェクトにする
+            return URI.create(urlString);
+
+        } catch (Exception e) {
+            throw new RuntimeException("URLエンコードに失敗しました", e);
+        }
     }
 }

@@ -58,7 +58,8 @@ public class SmaregiAuthTasklet implements Tasklet {
         HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(body, headers);
 
         // 3. トークン発行APIのエンドポイントURL構築
-        String tokenUrl = properties.getUrl() + "/app/" + properties.getContractId() + "/token";
+        String tokenUrl = properties.getAuthUrl() + "/app/" + properties.getContractId() + "/token";
+        System.out.println(tokenUrl);
         
         try {
             // 4. APIコール実行

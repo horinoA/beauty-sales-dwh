@@ -44,7 +44,7 @@ public class SmaregiCustomerItemReaderTest {
 
         // 2. 設定クラス (Properties) の準備
         SmaregiApiProperties properties = new SmaregiApiProperties();
-        properties.setUrl("https://api.smaregi.dev");
+        properties.setBaseUrl("https://api.smaregi.dev");
         properties.setContractId("test_contract");
 
         // 3. Mapper (DB) のモック化
