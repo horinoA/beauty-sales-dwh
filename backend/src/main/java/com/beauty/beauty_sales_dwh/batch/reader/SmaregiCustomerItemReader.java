@@ -60,10 +60,10 @@ public class SmaregiCustomerItemReader extends AbstractSmaregiItemReader {
         // ベースURL
         String baseUrl = properties.getBaseUrl() + "/" +properties.getContractId() + "/pos/customers";
         try {
-            // ★ここが決定版：Java標準のURLEncoderを使う
+            // Java標準のURLEncoderを使う
             // これを行うと:
             // "2000-01-01T00:00:00+09:00" 
-            //    ↓
+            //   ↓
             // "2000-01-01T00%3A00%3A00%2B09%3A00" (完全にURLセーフな形) になります
             String encodedDate = URLEncoder.encode(this.updDateTimeFrom, StandardCharsets.UTF_8);
 

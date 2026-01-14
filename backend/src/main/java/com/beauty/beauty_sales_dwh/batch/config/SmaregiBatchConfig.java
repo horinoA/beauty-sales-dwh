@@ -15,10 +15,16 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.PlatformTransactionManager;
 
+import com.beauty.beauty_sales_dwh.batch.processor.CategoryGroupRawDataProcessor;
+import com.beauty.beauty_sales_dwh.batch.processor.CategoryRawDataProcessor;
 import com.beauty.beauty_sales_dwh.batch.processor.CustomerRawDataProcessor;
+import com.beauty.beauty_sales_dwh.batch.reader.SmaregiCategoryGroupItemReader;
+import com.beauty.beauty_sales_dwh.batch.reader.SmaregiCategoryItemReader;
 import com.beauty.beauty_sales_dwh.batch.reader.SmaregiCustomerItemReader;
 import com.beauty.beauty_sales_dwh.batch.tasklet.CustomerTransformTasklet;
 import com.beauty.beauty_sales_dwh.batch.tasklet.SmaregiAuthTasklet;
+import com.beauty.beauty_sales_dwh.domain.CategoryGroupRawData;
+import com.beauty.beauty_sales_dwh.domain.CategoryRawData;
 import com.beauty.beauty_sales_dwh.domain.CustomerRawData;
 
 import lombok.RequiredArgsConstructor;
@@ -26,7 +32,7 @@ import lombok.RequiredArgsConstructor;
 /**
  * スマレジデータ取込ジョブの設定クラス
  * Step 1: 認証 (Tasklet)
- * Step 2: 顧客データ取込 (Chunk: Reader -> Processor -> Writer)
+ * Step 2: 各種マスタデータ取込 (Chunk: Reader -> Processor -> Writer)
  * Step 3: データ整形 (Tasklet)
  */
 @Configuration
@@ -36,34 +42,44 @@ public class SmaregiBatchConfig {
     // --- インフラストラクチャ ---
     private final JobRepository jobRepository;
     private final PlatformTransactionManager transactionManager;
-    private final SqlSessionFactory sqlSessionFactory; // MyBatis用
+    private final SqlSessionFactory sqlSessionFactory;
 
-    // --- コンポーネント (これまでに作ったもの) ---
-    private final SmaregiAuthTasklet smaregiAuthTasklet;          // Step 1
-    private final SmaregiCustomerItemReader smaregiCustomerReader; // Step 2 (Read)
-    private final CustomerRawDataProcessor customerProcessor;      // Step 2 (Process)
-    private final CustomerTransformTasklet customerTransformTasklet;// Step 3
+    // --- Tasklet ---
+    private final SmaregiAuthTasklet smaregiAuthTasklet;
+    private final CustomerTransformTasklet customerTransformTasklet;
+
+    // --- Readers ---
+    private final SmaregiCustomerItemReader smaregiCustomerReader;
+    private final SmaregiCategoryItemReader smaregiCategoryReader;
+    private final SmaregiCategoryGroupItemReader smaregiCategoryGroupReader;
+
+    // --- Processors ---
+    private final CustomerRawDataProcessor customerProcessor;
+    private final CategoryRawDataProcessor categoryProcessor;
+    private final CategoryGroupRawDataProcessor categoryGroupProcessor;
+
 
     // =================================================================================
     // 1. Job 定義 (メインフロー)
     // =================================================================================
     @Bean
-    public Job importSmaregiCustomerJob() {
-        return new JobBuilder("importSmaregiCustomerJob", jobRepository)
-                .incrementer(new RunIdIncrementer()) // 実行ごとにIDをインクリメント(何度でも実行可能にする)
-                .start(step1Auth())      // 認証
-                .next(step2Fetch())      // 取込
-                .next(step3Transform())  // 整形
+    public Job importSmaregiRawDataJob() {
+        return new JobBuilder("importSmaregiRawDataJob", jobRepository)
+                .incrementer(new RunIdIncrementer())
+                .start(step1Auth())
+                .next(stepFetchCustomers())
+                .next(stepFetchCategories())
+                .next(stepFetchCategoryGroups())
+                .next(stepTransformCustomers())
                 .build();
     }
 
     // =================================================================================
     // 2. Step 定義
     // =================================================================================
-
+    /*
     /**
      * Step 1: 認証タスク
-     * APIトークンを取得し、ExecutionContextに保存します。
      */
     @Bean
     public Step step1Auth() {
@@ -72,46 +88,90 @@ public class SmaregiBatchConfig {
                 .build();
     }
 
+    /** 
+      * Step 2: データ取込 (Chunkモデル) 
+      * APIから読み込み -> JSON変換 -> DB保存 (RAWテーブル)
+      * MyBatisを使ってRAWテーブルへ一括INSERTします。
+      * Writerは下で定義した3. Writer Bean 定義を使用 
+    */
     /**
-     * Step 2: データ取込 (Chunkモデル)
-     * APIから読み込み -> JSON変換 -> DB保存 (RAWテーブル)
+     * Step 2.1: 顧客データ取込
      */
     @Bean
-    public Step step2Fetch() {
-        return new StepBuilder("step2Fetch", jobRepository)
-                .<Map<String, Object>, CustomerRawData>chunk(100, transactionManager) // 100件ごとにコミット
+    public Step stepFetchCustomers() {
+        return new StepBuilder("stepFetchCustomers", jobRepository)
+                .<Map<String, Object>, CustomerRawData>chunk(100, transactionManager)
+                // 100件ごとにコミット                                                                    
                 .reader(smaregiCustomerReader)
                 .processor(customerProcessor)
-                .writer(customerWriter()) // 下で定義したMyBatisWriterを使用
+                .writer(customerWriter())
+                .build();
+    }
+    
+    /**
+     * Step 2.2: カテゴリデータ取込
+     */
+    @Bean
+    public Step stepFetchCategories() {
+        return new StepBuilder("stepFetchCategories", jobRepository)
+                .<Map<String, Object>, CategoryRawData>chunk(100, transactionManager)
+                // 100件ごとにコミット                                                                    
+                .reader(smaregiCategoryReader)
+                .processor(categoryProcessor)
+                .writer(categoryWriter())
                 .build();
     }
 
     /**
-     * Step 3: データ整形タスク
-     * RAWテーブルから正規テーブルへデータを移します。
+     * Step 2.3: カテゴリグループデータ取込
      */
     @Bean
-    public Step step3Transform() {
-        return new StepBuilder("step3Transform", jobRepository)
+    public Step stepFetchCategoryGroups() {
+        return new StepBuilder("stepFetchCategoryGroups", jobRepository)
+                .<Map<String, Object>, CategoryGroupRawData>chunk(100, transactionManager)
+                // 100件ごとにコミット                                                                    
+                .reader(smaregiCategoryGroupReader)
+                .processor(categoryGroupProcessor)
+                .writer(categoryGroupWriter())
+                .build();
+    }
+
+
+    /**
+     * Step 3: 顧客データ整形タスク
+     */
+    @Bean
+    public Step stepTransformCustomers() {
+        return new StepBuilder("stepTransformCustomers", jobRepository)
                 .tasklet(customerTransformTasklet, transactionManager)
                 .build();
     }
 
     // =================================================================================
-    // 3. Helper 定義 (Writerなど)
+    // 3. Writer Bean 定義
     // =================================================================================
 
-    /**
-     * Step 2用 Writer
-     * MyBatisを使ってRAWテーブルへ一括INSERTします。
-     * RawCustomerMapper.xml の insertRawCustomer を呼び出します。
-     */
     @Bean
     public ItemWriter<CustomerRawData> customerWriter() {
         return new MyBatisBatchItemWriterBuilder<CustomerRawData>()
                 .sqlSessionFactory(sqlSessionFactory)
-                // XMLの namespace + id を指定します (間違えないよう注意！)
                 .statementId("com.beauty.beauty_sales_dwh.mapper.RawCustomerMapper.insertRawCustomer")
+                .build();
+    }
+    
+    @Bean
+    public ItemWriter<CategoryRawData> categoryWriter() {
+        return new MyBatisBatchItemWriterBuilder<CategoryRawData>()
+                .sqlSessionFactory(sqlSessionFactory)
+                .statementId("com.beauty.beauty_sales_dwh.mapper.RawCategoryMapper.insertRawCategory")
+                .build();
+    }
+
+    @Bean
+    public ItemWriter<CategoryGroupRawData> categoryGroupWriter() {
+        return new MyBatisBatchItemWriterBuilder<CategoryGroupRawData>()
+                .sqlSessionFactory(sqlSessionFactory)
+                .statementId("com.beauty.beauty_sales_dwh.mapper.RawCategoryGroupMapper.insertRawCategoryGroup")
                 .build();
     }
 }
