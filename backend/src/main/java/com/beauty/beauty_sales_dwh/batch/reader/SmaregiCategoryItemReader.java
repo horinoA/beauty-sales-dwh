@@ -26,8 +26,13 @@ public class SmaregiCategoryItemReader extends AbstractSmaregiItemReader {
     @Override
     protected URI getApiUrl(int page) {
         String baseUrl = properties.getBaseUrl() + "/" + properties.getContractId() + "/pos/categories";
+        try {
         String urlString = String.format("%s?limit=1000&page=%d", baseUrl, page);
         log.info("Request URL for Categories: {}", urlString);
         return URI.create(urlString);
+        } catch (Exception e) {
+            throw new RuntimeException("URLエンコードに失敗しました", e);
+        }
+
     }
 }
