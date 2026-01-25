@@ -3,7 +3,7 @@
 <mapper namespace="com.beauty.beauty_sales_dwh.mapper.CustomerTransformMapper">
 
     <select id="findMaxFetchedAt" resultType="java.time.OffsetDateTime">
-        SELECT MAX(fetched_at) FROM raw.customers
+        SELECT MAX(fetched_at) FROM raw.customers WHERE app_company_id = #{companyId}
     </select>
 
     <insert id="upsertCustomersFromRaw">
@@ -23,7 +23,7 @@
             FROM 
                 raw.customers
             WHERE 
-                fetched_at >= #{fromDate} 
+                fetched_at >= #{fromDate} AND app_company_id = #{companyId}
         ),
         formatted_data AS (
             SELECT

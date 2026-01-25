@@ -23,7 +23,7 @@ public class CustomerRawDataProcessor implements ItemProcessor<Map<String, Objec
         // 1. Map -> JSON文字列
         String json = objectMapper.writeValueAsString(item);
         // 2. 設定ファイルから読み込んだIDを使用
-        Integer companyId = Integer.valueOf(vendorProperties.getId());
+        Long companyId = Long.valueOf(vendorProperties.getId());
         
         // 3. 企業IDを付与してWriterへ渡す
         return new CustomerRawData(companyId, json);

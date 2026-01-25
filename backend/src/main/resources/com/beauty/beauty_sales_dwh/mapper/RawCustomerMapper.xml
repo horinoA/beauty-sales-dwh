@@ -16,7 +16,7 @@
 
     <select id="findMaxFetchedAt" resultType="java.time.OffsetDateTime">
         SELECT MAX(fetched_at)
-        FROM raw.customers
+        FROM raw.customers  WHERE app_company_id = #{companyId}
     </select>
 
 </mapper>

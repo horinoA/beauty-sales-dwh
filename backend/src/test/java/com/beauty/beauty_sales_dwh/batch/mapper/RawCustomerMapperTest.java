@@ -30,7 +30,7 @@ class RawCustomerMapperTest {
         // --- 準備 (Given) ---
         // テスト用のダミーデータ作成
         String dummyJson = "{\"customerId\": \"123\", \"name\": \"Test User\"}";
-        CustomerRawData data = new CustomerRawData(4096, dummyJson);
+        CustomerRawData data = new CustomerRawData(4096L, dummyJson);
 
         // --- 実行 (When) ---
         // 1. データをINSERT

@@ -8,6 +8,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CategoryGroupRawData {
-    private Integer companyId; // 企業ID
+    private Long companyId; // 企業ID
     private String jsonBody;   // APIレスポンス(JSON文字列)
 }

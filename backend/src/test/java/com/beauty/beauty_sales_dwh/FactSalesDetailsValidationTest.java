@@ -7,6 +7,7 @@ import java.util.Set;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
 import com.beauty.beauty_sales_dwh.analytics.sales.FactSalesDetail;
 
@@ -14,6 +15,7 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
 
 @SpringBootTest
+@ActiveProfiles("test")
 public class FactSalesDetailsValidationTest {
 
     @Autowired
