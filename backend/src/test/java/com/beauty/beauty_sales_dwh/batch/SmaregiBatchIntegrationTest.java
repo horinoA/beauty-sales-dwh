@@ -71,7 +71,7 @@ public class SmaregiBatchIntegrationTest {
         mockCustomersApi(2); // 2件の顧客データを返すモック
         mockCategoriesApi(0); // 0件のカテゴリデータを返すモック
         mockCategoryGroupsApi(0); // 0件のカテゴリグループデータを返すモック
-
+        mockProductsApi(0);     //0件の製品データを返すモック
         // --- Job Execution ---
         JobExecution jobExecution = jobLauncherTestUtils.launchJob();
 
@@ -89,6 +89,37 @@ public class SmaregiBatchIntegrationTest {
     }
 
     @Test
+    @DisplayName("ステップテスト: プロダクトデータ取込が正常終了すること")
+    public void testFeProductApiExecution() throws Exception {
+        // --- API Mocks ---
+        mockAuth();
+        mockCustomersApi(0); // 顧客APIは空
+        mockCategoriesApi(2); // カテゴリAPIは0件返す
+        mockCategoryGroupsApi(2); // カテゴリグループAPIは空
+        mockProductsApi(2);     //2件の製品データを返すモック
+
+        // --- Job Execution ---
+        JobExecution jobExecution = jobLauncherTestUtils.launchJob();
+
+        // --- Assertions ---
+        assertThat(jobExecution.getExitStatus()).isEqualTo(ExitStatus.COMPLETED);
+
+       // 各テーブルの件数確認
+        assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM raw.customers", Integer.class)).isEqualTo(0);
+        assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM raw.categories", Integer.class)).isEqualTo(2);
+        assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM raw.category_groups", Integer.class)).isEqualTo(2);
+        assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM raw.products", Integer.class)).isEqualTo(2);
+
+        // 登録されたJSONの内容を確認
+        String jsonBody = jdbcTemplate.queryForObject("SELECT json_body FROM raw.products WHERE product_id = 1", String.class);
+        JsonNode jsonNode = objectMapper.readTree(jsonBody);
+        assertThat(jsonNode.get("productId").asText()).isEqualTo("1001");
+        assertThat(jsonNode.get("productName").asText()).isEqualTo("カット料金");
+        mockServer.verify();
+ 
+    }
+
+    @Test
     @DisplayName("ステップテスト: カテゴリデータ取込が正常終了すること")
     public void testFetchCategoriesStep() throws Exception {
         // --- API Mocks ---
@@ -96,6 +127,7 @@ public class SmaregiBatchIntegrationTest {
         mockCustomersApi(0); // 顧客APIは空
         mockCategoriesApi(2); // カテゴリAPIは2件返す
         mockCategoryGroupsApi(0); // カテゴリグループAPIは空
+        mockProductsApi(0);     //0件の製品データを返すモック
 
         // --- Job Execution ---
         JobExecution jobExecution = jobLauncherTestUtils.launchJob();
@@ -125,6 +157,7 @@ public class SmaregiBatchIntegrationTest {
         mockCustomersApi(0);
         mockCategoriesApi(0);
         mockCategoryGroupsApi(2); // カテゴリグループAPIは2件返す
+        mockProductsApi(0);
 
         // --- Job Execution ---
         JobExecution jobExecution = jobLauncherTestUtils.launchJob();
@@ -195,8 +228,8 @@ public class SmaregiBatchIntegrationTest {
         if (count > 0) {
             json = """
                 [
-                  {"categoryId": "101", "categoryName": "Cuts"},
-                  {"categoryId": "102", "categoryName": "Colors"}
+                  {"categoryId": "101", "categoryName": "Cuts","categoryGroupId": "1"},
+                  {"categoryId": "102", "categoryName": "Colors","categoryGroupId": "2"}
                 ]
             """;
         }
@@ -236,6 +269,32 @@ public class SmaregiBatchIntegrationTest {
         // ONLY expect page 2 if data is returned for page 1
         if (count > 0) {
             // Page 2
+            mockServer.expect(requestTo(String.format("%s?limit=1000&page=2", baseUrl)))
+                .andExpect(method(GET))
+                .andRespond(withSuccess("[]", MediaType.APPLICATION_JSON));
+        }
+    }
+
+    private void mockProductsApi(int count) {
+        String json = "[]";
+        if (count > 0) {
+            // テストに必要な最低限の項目定義
+            json = """
+                [
+                  {"productId": "1001", "productName": "カット料金", "price": "5000","categoryId": "101"},
+                  {"productId": "1002", "productName": "カラー料金", "price": "6000","categoryId": "102"}
+                ]
+            """;
+        }
+        String baseUrl = smaregiApiProperties.getBaseUrl() + "/" + smaregiApiProperties.getContractId() + "/pos/products";
+
+        // Page 1 の期待値
+        mockServer.expect(requestTo(String.format("%s?limit=1000&page=1", baseUrl)))
+            .andExpect(method(GET))
+            .andRespond(withSuccess(json, MediaType.APPLICATION_JSON));
+
+        // データがある場合のみ Page 2 (空配列) を期待する
+        if (count > 0) {
             mockServer.expect(requestTo(String.format("%s?limit=1000&page=2", baseUrl)))
                 .andExpect(method(GET))
                 .andRespond(withSuccess("[]", MediaType.APPLICATION_JSON));

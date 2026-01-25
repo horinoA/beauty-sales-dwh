@@ -20,7 +20,7 @@ public interface CustomerTransformMapper {
      * @param fromDate  この日時より新しいデータを対象とする
      * @return 更新・挿入された件数
      */
-    int upsertCustomersFromRaw(@Param("companyId") Integer companyId, 
+    int upsertCustomersFromRaw(@Param("companyId") Long companyId, 
                                @Param("fromDate") OffsetDateTime fromDate);
     
 }

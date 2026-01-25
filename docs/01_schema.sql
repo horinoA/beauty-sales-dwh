@@ -60,12 +60,12 @@ CREATE TABLE dwh.dim_category_groups (
     insert_data_time timestamp with time zone,
     update_data_time timestamp with time zone
 );
-
+1
 
 ALTER TABLE dwh.dim_category_groups OWNER TO beauty_user;
 
 --
--- Name: dim_customers; Type: TABLE; Schema: dwh; Owner: beauty_user
+-- Name: dim_customers; Type: TABLE; Schema: dwh; Owner: beauty_user1
 --
 
 CREATE TABLE dwh.dim_customers (

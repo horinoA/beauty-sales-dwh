@@ -7,8 +7,11 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -21,6 +24,7 @@ import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.item.ExecutionContext;
 import org.springframework.batch.test.MetaDataInstanceFactory;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
 
@@ -28,6 +32,7 @@ import com.beauty.beauty_sales_dwh.batch.tasklet.SmaregiAuthTasklet;
 import com.beauty.beauty_sales_dwh.config.SmaregiApiProperties;
 import com.beauty.beauty_sales_dwh.mapper.RawCustomerMapper;
 
+@ActiveProfiles("test")
 @ExtendWith(MockitoExtension.class) // ★1. JUnit5とMockitoを連携
 public class SmaregiCustomerItemReaderTest {
 
@@ -69,6 +74,12 @@ public class SmaregiCustomerItemReaderTest {
         OffsetDateTime lastImportedAt = OffsetDateTime.of(2023, 1, 1, 10, 0, 0, 0, ZoneOffset.ofHours(9));
         when(rawCustomerMapper.findMaxFetchedAt()).thenReturn(lastImportedAt);
 
+        // 日付を文字列化 パターン: yyyy-MM-dd'T'HH:mm:ssXXX (XXXはタイムゾーンオフセット)
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssXXX");
+        String dateStr = lastImportedAt.format(formatter);
+        // それをURLエンコードする (2023-01-01T10%3A00%3A00%2B09%3A00)
+        String encodedDateParam = "upd_date_time-from=" + URLEncoder.encode(dateStr, StandardCharsets.UTF_8);
+
         // C. APIのモック定義 (ここが重要！)
         // 想定されるリクエストURL: .../pos/customers?limit=1000&page=1&upd_date_time-from=2023-01-01T10:00:00
         // レスポンス: 顧客2人分のJSON配列
@@ -77,7 +88,8 @@ public class SmaregiCustomerItemReaderTest {
         // --- 1回目のAPIコール (Page 1) ---
         mockServer.expect(requestTo(containsString("/pos/customers"))) // URLの一部がマッチすればOK
                 .andExpect(requestTo(containsString("page=1")))       // ページ番号確認
-                .andExpect(requestTo(containsString("upd_date_time-from=2023-01-01T10:00:00"))) // 日付パラメータ確認(URLエンコード注意)
+                .andExpect(requestTo(containsString(encodedDateParam))) 
+                //.andExpect(requestTo(containsString("upd_date_time-from=2023-01-01T10:00:00"))) // 日付パラメータ確認(URLエンコード注意)
                 .andRespond(withSuccess(mockJsonResponse, MediaType.APPLICATION_JSON));
         
         // --- 2回目のAPIコール (Page 2)  ---

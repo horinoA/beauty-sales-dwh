@@ -10,7 +10,7 @@ import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.stereotype.Component;
 
 import com.beauty.beauty_sales_dwh.config.AppVendorProperties;
-import com.beauty.beauty_sales_dwh.mapper.CustomerTransformMapper;
+import com.beauty.beauty_sales_dwh.mapper.ProductTransformMapper;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,19 +18,18 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class CustomerTransformTasklet implements Tasklet {
-
-    private final CustomerTransformMapper mapper;
+public class ProductTransformTasklet implements Tasklet {
+    
+    private final ProductTransformMapper mapper;
     private final AppVendorProperties vendorProperties; // プロパティクラス
-
+    
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
-        log.info("Step 3: データ整形処理を開始します...");
+        log.info("Step 3: Product関連のデータ整形処理を開始します...");
 
         // 1. プロパティから会社IDを取得
-        // (AppVendorPropertiesはStringで定義していた想定なので変換)
         Long companyId = Long.valueOf(vendorProperties.getId());
-
+        
         // 2. DBから最終更新日時を取得 (SQLの結果を利用)
         OffsetDateTime maxUpdatedAt = mapper.findMaxFetchedAt();
         
@@ -43,10 +42,15 @@ public class CustomerTransformTasklet implements Tasklet {
         }
 
         // 3. MyBatis経由でUPSERT実行
-        int count = mapper.upsertCustomersFromRaw(companyId, maxUpdatedAt);
+        int categoryGroupCount = mapper.upsertCategoryGroupsFromRaw(companyId, maxUpdatedAt);
+        log.info("{} 件のデータを dwh.dim_category_groups に反映しました。", categoryGroupCount);
+
+        int productCount = mapper.upsertProductsFromRaw(companyId, maxUpdatedAt);
+        log.info("{} 件のデータを dwh.dim_products に反映しました。", productCount);
         
-        log.info("Step 3: 完了。{} 件のデータを DIM_CUSTOMERS に反映しました。", count);
+        log.info("Step 3: Product関連のデータ整形処理が完了しました。");
 
         return RepeatStatus.FINISHED;
     }
+    
 }

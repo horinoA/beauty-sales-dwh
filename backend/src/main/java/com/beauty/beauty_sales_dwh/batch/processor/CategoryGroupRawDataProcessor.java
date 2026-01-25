@@ -23,7 +23,7 @@ public class CategoryGroupRawDataProcessor implements ItemProcessor<Map<String, 
         // 1. Map -> JSON文字列
         String json = objectMapper.writeValueAsString(item);
         // 2. 設定ファイルから読み込んだIDを使用
-        Integer companyId = Integer.valueOf(vendorProperties.getId());
+        Long companyId = Long.valueOf(vendorProperties.getId());
         
         // 3. 企業IDを付与してWriterへ渡す
         return new CategoryGroupRawData(companyId, json);

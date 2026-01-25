@@ -18,14 +18,18 @@ import org.springframework.transaction.PlatformTransactionManager;
 import com.beauty.beauty_sales_dwh.batch.processor.CategoryGroupRawDataProcessor;
 import com.beauty.beauty_sales_dwh.batch.processor.CategoryRawDataProcessor;
 import com.beauty.beauty_sales_dwh.batch.processor.CustomerRawDataProcessor;
+import com.beauty.beauty_sales_dwh.batch.processor.ProductRawDataProcessor;
 import com.beauty.beauty_sales_dwh.batch.reader.SmaregiCategoryGroupItemReader;
 import com.beauty.beauty_sales_dwh.batch.reader.SmaregiCategoryItemReader;
 import com.beauty.beauty_sales_dwh.batch.reader.SmaregiCustomerItemReader;
+import com.beauty.beauty_sales_dwh.batch.reader.SmaregiProductItemReader;
 import com.beauty.beauty_sales_dwh.batch.tasklet.CustomerTransformTasklet;
+import com.beauty.beauty_sales_dwh.batch.tasklet.ProductTransformTasklet;
 import com.beauty.beauty_sales_dwh.batch.tasklet.SmaregiAuthTasklet;
 import com.beauty.beauty_sales_dwh.domain.CategoryGroupRawData;
 import com.beauty.beauty_sales_dwh.domain.CategoryRawData;
 import com.beauty.beauty_sales_dwh.domain.CustomerRawData;
+import com.beauty.beauty_sales_dwh.domain.ProductRawData;
 
 import lombok.RequiredArgsConstructor;
 
@@ -47,16 +51,19 @@ public class SmaregiBatchConfig {
     // --- Tasklet ---
     private final SmaregiAuthTasklet smaregiAuthTasklet;
     private final CustomerTransformTasklet customerTransformTasklet;
+    private final ProductTransformTasklet productTransformTasklet;
 
     // --- Readers ---
     private final SmaregiCustomerItemReader smaregiCustomerReader;
     private final SmaregiCategoryItemReader smaregiCategoryReader;
     private final SmaregiCategoryGroupItemReader smaregiCategoryGroupReader;
+    private final SmaregiProductItemReader smaregiProductReader;
 
     // --- Processors ---
     private final CustomerRawDataProcessor customerProcessor;
     private final CategoryRawDataProcessor categoryProcessor;
     private final CategoryGroupRawDataProcessor categoryGroupProcessor;
+    private final ProductRawDataProcessor productProcessor;
 
 
     // =================================================================================
@@ -70,7 +77,9 @@ public class SmaregiBatchConfig {
                 .next(stepFetchCustomers())
                 .next(stepFetchCategories())
                 .next(stepFetchCategoryGroups())
+                .next(stepFetchProducts())
                 .next(stepTransformCustomers())
+                .next(stepTransformProducts())
                 .build();
     }
 
@@ -136,6 +145,20 @@ public class SmaregiBatchConfig {
                 .build();
     }
 
+    /**
+     * Step 2.4: 商品データ取込
+     */
+    @Bean
+    public Step stepFetchProducts() {
+        return new StepBuilder("stepFetchProducts", jobRepository)
+                .<Map<String, Object>, ProductRawData>chunk(100, transactionManager)
+                // 100件ごとにコミット
+                .reader(smaregiProductReader)
+                .processor(productProcessor)
+                .writer(productWriter())
+                .build();
+    }
+
 
     /**
      * Step 3: 顧客データ整形タスク
@@ -144,6 +167,16 @@ public class SmaregiBatchConfig {
     public Step stepTransformCustomers() {
         return new StepBuilder("stepTransformCustomers", jobRepository)
                 .tasklet(customerTransformTasklet, transactionManager)
+                .build();
+    }
+
+    /**
+     * Step 3: 商品関連データ整形タスク
+     */
+    @Bean
+    public Step stepTransformProducts() {
+        return new StepBuilder("stepTransformProducts", jobRepository)
+                .tasklet(productTransformTasklet, transactionManager)
                 .build();
     }
 
@@ -172,6 +205,14 @@ public class SmaregiBatchConfig {
         return new MyBatisBatchItemWriterBuilder<CategoryGroupRawData>()
                 .sqlSessionFactory(sqlSessionFactory)
                 .statementId("com.beauty.beauty_sales_dwh.mapper.RawCategoryGroupMapper.insertRawCategoryGroup")
+                .build();
+    }
+
+    @Bean
+    public ItemWriter<ProductRawData> productWriter() {
+        return new MyBatisBatchItemWriterBuilder<ProductRawData>()
+                .sqlSessionFactory(sqlSessionFactory)
+                .statementId("com.beauty.beauty_sales_dwh.mapper.RawProductMapper.insertRawProduct")
                 .build();
     }
 }
