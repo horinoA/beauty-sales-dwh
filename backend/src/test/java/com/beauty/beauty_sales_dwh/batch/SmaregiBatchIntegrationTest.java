@@ -58,7 +58,7 @@ public class SmaregiBatchIntegrationTest {
     @BeforeEach
     public void setUp() {
         mockServer = MockRestServiceServer.bindTo(restTemplate).build();
-        jdbcTemplate.execute("TRUNCATE TABLE raw.customers, raw.categories, raw.category_groups RESTART IDENTITY");
+        jdbcTemplate.execute("TRUNCATE TABLE raw.products,raw.customers, raw.categories, raw.category_groups RESTART IDENTITY");
         jdbcTemplate.execute("TRUNCATE TABLE dwh.dim_customers RESTART IDENTITY");
         
     }
