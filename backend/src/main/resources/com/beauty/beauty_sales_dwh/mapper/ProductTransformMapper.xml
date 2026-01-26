@@ -3,12 +3,12 @@
 <mapper namespace="com.beauty.beauty_sales_dwh.mapper.ProductTransformMapper">
 
     <select id="findMaxFetchedAt" resultType="java.time.OffsetDateTime">
-        SELECT MAX(fetched_at) FROM raw.categories WHERE app_company_id = #{companyId}
+        SELECT MAX(fetched_at) FROM raw.products WHERE app_company_id = #{companyId}
     </select>
 
     <insert id="upsertCategoryGroupsFromRaw">
         WITH raw_category_groups AS (
-            SELECT
+            SELECT DISTINCT ON (json_body ->> 'categoryGroupId')
                 (json_body ->> 'categoryGroupId') AS category_group_id,
                 (json_body ->> 'categoryGroupName') AS category_group_name,
                 (json_body ->> 'insDateTime')  AS ins_date_time,
@@ -17,6 +17,8 @@
                 raw.category_groups
             WHERE
                 fetched_at >= #{fromDate} AND app_company_id = #{companyId}
+            ORDER BY
+                (json_body ->> 'categoryGroupId'), fetched_at DESC
         )
         INSERT INTO dwh.dim_category_groups (
             app_company_id,
@@ -41,16 +43,18 @@
 
     <insert id="upsertProductsFromRaw">
         WITH raw_category AS (
-            SELECT
+            SELECT DISTINCT ON (json_body ->> 'categoryId')
                 (json_body ->> 'categoryId') AS category_id,
                 (json_body ->> 'categoryGroupId') AS category_group_id
             FROM
                 raw.categories
             WHERE
                 fetched_at >= #{fromDate} AND app_company_id = #{companyId}
+            ORDER BY 
+                (json_body ->> 'categoryId'), fetched_at DESC
         ),
         raw_product AS (
-            SELECT
+            SELECT DISTINCT ON (json_body ->> 'productId')
                 (json_body ->> 'productId') AS product_id,
                 (json_body ->> 'categoryId') AS category_id,
                 (json_body ->> 'productName') AS product_name,
@@ -62,6 +66,8 @@
                 raw.products
             WHERE
                 fetched_at >= #{fromDate} AND app_company_id = #{companyId}
+            ORDER BY
+                (json_body ->> 'productId'), fetched_at DESC
         )
         INSERT INTO dwh.dim_products (
             app_company_id,
