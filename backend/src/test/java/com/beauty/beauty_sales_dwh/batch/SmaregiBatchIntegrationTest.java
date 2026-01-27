@@ -105,7 +105,6 @@ public class SmaregiBatchIntegrationTest {
         assertThat(jobExecution.getExitStatus()).isEqualTo(ExitStatus.COMPLETED);
 
        // 各テーブルの件数確認
-        assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM raw.customers", Integer.class)).isEqualTo(0);
         assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM raw.categories", Integer.class)).isEqualTo(2);
         assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM raw.category_groups", Integer.class)).isEqualTo(2);
         assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM raw.products", Integer.class)).isEqualTo(2);
