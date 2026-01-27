@@ -12,6 +12,7 @@ import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
+import com.beauty.beauty_sales_dwh.config.AppVendorProperties;
 import com.beauty.beauty_sales_dwh.config.SmaregiApiProperties;
 import com.beauty.beauty_sales_dwh.mapper.RawCustomerMapper;
 
@@ -23,6 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 public class SmaregiCustomerItemReader extends AbstractSmaregiItemReader {
 
     private final SmaregiApiProperties properties;
+    private final AppVendorProperties vendorProperties;
     private final RawCustomerMapper rawCustomerMapper;
 
     private String updDateTimeFrom; // テーブル最新更新日
@@ -30,10 +32,12 @@ public class SmaregiCustomerItemReader extends AbstractSmaregiItemReader {
     // コンストラクタ注入
     public SmaregiCustomerItemReader(RestTemplate restTemplate,
                                      SmaregiApiProperties properties,
-                                     RawCustomerMapper rawCustomerMapper) {
+                                     RawCustomerMapper rawCustomerMapper,
+                                     AppVendorProperties appVendorProperties) {
         super(restTemplate); // 親クラスにRestTemplateを渡す
         this.properties = properties;
         this.rawCustomerMapper = rawCustomerMapper;
+        this.vendorProperties = appVendorProperties;
     }
 
     // 親クラスの beforeStep も実行しつつ、自分独自の初期化（日付取得）も行う
@@ -42,8 +46,12 @@ public class SmaregiCustomerItemReader extends AbstractSmaregiItemReader {
         // 1. 親クラスの処理（トークン取得）を必ず呼ぶ
         super.beforeStep(stepExecution);
 
-        // 2. DBから最終更新日時を取得
-        OffsetDateTime maxDate = rawCustomerMapper.findMaxFetchedAt();
+        // 2. プロパティから会社IDを取得
+        // (AppVendorPropertiesはStringで定義していた想定なので変換)
+        Long companyId = Long.valueOf(vendorProperties.getId());
+
+        // 3s. DBから最終更新日時を取得
+        OffsetDateTime maxDate = rawCustomerMapper.findMaxFetchedAt(companyId);
         if (maxDate == null) {
             maxDate = OffsetDateTime.of(2000, 1, 1, 0, 0, 0,0,ZoneOffset.ofHours(9));
         }

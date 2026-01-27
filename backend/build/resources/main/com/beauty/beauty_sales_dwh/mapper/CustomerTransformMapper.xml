@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.beauty.beauty_sales_dwh.mapper.CustomerTransformMapper">
+
+    <select id="findMaxFetchedAt" resultType="java.time.OffsetDateTime">
+        SELECT MAX(fetched_at) FROM raw.customers WHERE app_company_id = #{companyId}
+    </select>
+
+    <insert id="upsertCustomersFromRaw">
+        WITH raw_data AS (
+            SELECT 
+                (json_body ->> 'customerId')   AS raw_customer_id,
+                (json_body ->> 'lastName')     AS last_name,
+                (json_body ->> 'firstName')    AS first_name,
+                (json_body ->> 'lastKana')     AS last_kana,
+                (json_body ->> 'firstKana')    AS first_kana,  
+                (json_body ->> 'phoneNumber')  AS phone_number,
+                (json_body ->> 'mobileNumber') AS mobile_number,
+                (json_body ->> 'storeId')      AS store_id,
+                (json_body ->> 'insDateTime')  AS ins_date_time,
+                (json_body ->> 'updDateTime')  AS upd_date_time,
+                (json_body ->> 'status')       AS status_code
+            FROM 
+                raw.customers
+            WHERE 
+                fetched_at >= #{fromDate} AND app_company_id = #{companyId}
+        ),
+        formatted_data AS (
+            SELECT
+                #{companyId} AS app_company_id,
+                raw_customer_id::BIGINT AS customer_id,
+                last_name || '_' || first_name AS customer_name,
+                last_kana || '_' || first_kana AS customer_kana,
+                phone_number,
+                mobile_number,
+                store_id,
+                CASE status_code 
+                    WHEN '0' THEN false
+                    ELSE true
+                END AS is_deleted,
+                CAST(ins_date_time AS TIMESTAMPTZ) AS insert_data_time,
+                CAST(upd_date_time AS TIMESTAMPTZ) AS update_data_time
+            FROM 
+                raw_data
+        )
+        INSERT INTO dwh.dim_customers (
+            app_company_id,
+            customer_id,
+            customer_name,
+            customer_kana,
+            phone_number,
+            mobile_number,
+            store_id,
+            is_deleted,
+            insert_data_time,
+            update_data_time
+        )
+        SELECT * FROM formatted_data
+        ON CONFLICT ON CONSTRAINT dim_customers_pkey
+        DO UPDATE SET
+            customer_name    = EXCLUDED.customer_name,
+            customer_kana    = EXCLUDED.customer_kana,
+            phone_number     = EXCLUDED.phone_number,
+            mobile_number    = EXCLUDED.mobile_number,
+            store_id         = EXCLUDED.store_id,
+            is_deleted       = EXCLUDED.is_deleted,
+            update_data_time = EXCLUDED.update_data_time
+    </insert>
+
+</mapper>

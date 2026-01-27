@@ -29,6 +29,7 @@ import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
 
 import com.beauty.beauty_sales_dwh.batch.tasklet.SmaregiAuthTasklet;
+import com.beauty.beauty_sales_dwh.config.AppVendorProperties;
 import com.beauty.beauty_sales_dwh.config.SmaregiApiProperties;
 import com.beauty.beauty_sales_dwh.mapper.RawCustomerMapper;
 
@@ -52,11 +53,14 @@ public class SmaregiCustomerItemReaderTest {
         properties.setBaseUrl("https://api.smaregi.dev");
         properties.setContractId("test_contract");
 
+        AppVendorProperties vendorProperties = new AppVendorProperties();
+        vendorProperties.setId("4096"); // テスト用の会社ID (String想定)
+
         // 3. Mapper (DB) のモック化
         rawCustomerMapper = mock(RawCustomerMapper.class);
 
         // 4. テスト対象の Reader をインスタンス化
-        reader = new SmaregiCustomerItemReader(restTemplate, properties, rawCustomerMapper);
+        reader = new SmaregiCustomerItemReader(restTemplate, properties, rawCustomerMapper,vendorProperties);
     }
 
     @Test
@@ -72,7 +76,7 @@ public class SmaregiCustomerItemReaderTest {
         // B. DBから取得する「最終更新日時」を定義
         // 例: 2023-01-01 10:00:00 (+09:00)
         OffsetDateTime lastImportedAt = OffsetDateTime.of(2023, 1, 1, 10, 0, 0, 0, ZoneOffset.ofHours(9));
-        when(rawCustomerMapper.findMaxFetchedAt()).thenReturn(lastImportedAt);
+        when(rawCustomerMapper.findMaxFetchedAt(4096L)).thenReturn(lastImportedAt);
 
         // 日付を文字列化 パターン: yyyy-MM-dd'T'HH:mm:ssXXX (XXXはタイムゾーンオフセット)
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssXXX");

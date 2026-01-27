@@ -37,7 +37,7 @@ class RawCustomerMapperTest {
         rawCustomerMapper.insertRawCustomer(data);
 
         // 2. 最大日付を取得
-        OffsetDateTime maxDate = rawCustomerMapper.findMaxFetchedAt();
+        OffsetDateTime maxDate = rawCustomerMapper.findMaxFetchedAt(4096L);
 
         // --- 検証 (Then) ---
         // INSERTした直後なので、日付が取得できているはず
@@ -57,7 +57,7 @@ class RawCustomerMapperTest {
         //   論理的にはデータがなければnullになることを確認します。
         
         // ここではあえて検証をスキップせず、戻り値の型チェックだけ行います
-        OffsetDateTime maxDate = rawCustomerMapper.findMaxFetchedAt();
+        OffsetDateTime maxDate = rawCustomerMapper.findMaxFetchedAt(4096L);
         
         // データが入っていれば日時、なければnull。エラーにならなければOKとする
         System.out.println("現在のDBの最大日時: " + maxDate);
