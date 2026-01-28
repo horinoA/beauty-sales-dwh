@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.beauty.beauty_sales_dwh.BeautySalesDwhApplicationTests" tests="1" skipped="0" failures="0" errors="0" timestamp="2026-01-27T23:27:44.399Z" hostname="AkikoHorinonoMacBook-Air.local" time="0.376">
+<testsuite name="com.beauty.beauty_sales_dwh.BeautySalesDwhApplicationTests" tests="1" skipped="0" failures="0" errors="0" timestamp="2026-01-28T21:03:04.548Z" hostname="AkikoHorinonoMacBook-Air.local" time="0.403">
   <properties/>
-  <testcase name="contextLoads()" classname="com.beauty.beauty_sales_dwh.BeautySalesDwhApplicationTests" time="0.376"/>
-  <system-out><![CDATA[08:27:42.798 [Test worker] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [com.beauty.beauty_sales_dwh.BeautySalesDwhApplicationTests]: BeautySalesDwhApplicationTests does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
-08:27:42.864 [Test worker] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration com.beauty.beauty_sales_dwh.BeautySalesDwhApplication for test class com.beauty.beauty_sales_dwh.BeautySalesDwhApplicationTests
+  <testcase name="contextLoads()" classname="com.beauty.beauty_sales_dwh.BeautySalesDwhApplicationTests" time="0.403"/>
+  <system-out><![CDATA[06:03:02.915 [Test worker] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [com.beauty.beauty_sales_dwh.BeautySalesDwhApplicationTests]: BeautySalesDwhApplicationTests does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+06:03:02.976 [Test worker] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration com.beauty.beauty_sales_dwh.BeautySalesDwhApplication for test class com.beauty.beauty_sales_dwh.BeautySalesDwhApplicationTests
 
   .   ____          _            __ _ _
  /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
@@ -14,14 +14,14 @@
 
  :: Spring Boot ::                (v3.5.8)
 
-2026-01-28T08:27:43.038+09:00  INFO 19838 --- [beauty-sales-dwh] [    Test worker] c.b.b.BeautySalesDwhApplicationTests     : Starting BeautySalesDwhApplicationTests using Java 21.0.9 with PID 19838 (started by horinoakiko in /Users/horinoakiko/Documents/beauty-sales-dwh/backend)
-2026-01-28T08:27:43.039+09:00  INFO 19838 --- [beauty-sales-dwh] [    Test worker] c.b.b.BeautySalesDwhApplicationTests     : The following 1 profile is active: "test"
-2026-01-28T08:27:43.432+09:00  INFO 19838 --- [beauty-sales-dwh] [    Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JDBC repositories in DEFAULT mode.
-2026-01-28T08:27:43.461+09:00  INFO 19838 --- [beauty-sales-dwh] [    Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 26 ms. Found 1 JDBC repository interface.
-2026-01-28T08:27:43.638+09:00  INFO 19838 --- [beauty-sales-dwh] [    Test worker] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
-2026-01-28T08:27:43.758+09:00  INFO 19838 --- [beauty-sales-dwh] [    Test worker] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@27ffd9f8
-2026-01-28T08:27:43.759+09:00  INFO 19838 --- [beauty-sales-dwh] [    Test worker] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
-2026-01-28T08:27:44.393+09:00  INFO 19838 --- [beauty-sales-dwh] [    Test worker] c.b.b.BeautySalesDwhApplicationTests     : Started BeautySalesDwhApplicationTests in 1.469 seconds (process running for 2.155)
+2026-01-29T06:03:03.161+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] c.b.b.BeautySalesDwhApplicationTests     : Starting BeautySalesDwhApplicationTests using Java 21.0.9 with PID 24114 (started by horinoakiko in /Users/horinoakiko/Documents/beauty-sales-dwh/backend)
+2026-01-29T06:03:03.162+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] c.b.b.BeautySalesDwhApplicationTests     : The following 1 profile is active: "test"
+2026-01-29T06:03:03.536+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JDBC repositories in DEFAULT mode.
+2026-01-29T06:03:03.568+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 28 ms. Found 1 JDBC repository interface.
+2026-01-29T06:03:03.755+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-01-29T06:03:03.870+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@7d66a126
+2026-01-29T06:03:03.871+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-01-29T06:03:04.540+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] c.b.b.BeautySalesDwhApplicationTests     : Started BeautySalesDwhApplicationTests in 1.504 seconds (process running for 2.096)
 ]]></system-out>
   <system-err><![CDATA[Mockito is currently self-attaching to enable the inline-mock-maker. This will no longer work in future releases of the JDK. Please add Mockito as an agent to your build as described in Mockito's documentation: https://javadoc.io/doc/org.mockito/mockito-core/latest/org.mockito/org/mockito/Mockito.html#0.3
 WARNING: A Java agent has been loaded dynamically (/Users/horinoakiko/.gradle/caches/modules-2/files-2.1/net.bytebuddy/byte-buddy-agent/1.17.8/f09415827a71be7ed621c7bd02550678f28bc81c/byte-buddy-agent-1.17.8.jar)
