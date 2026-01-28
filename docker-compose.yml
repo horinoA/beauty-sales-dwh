@@ -47,27 +47,27 @@ services:
   # ==============================
   # 3. Backend (Spring Boot)
   # ==============================
-  backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-    container_name: beauty-dwh-backend
-    ports:
-      - "8080:8080"
-    environment:
+  #backend:
+  #  build:
+  #    context: ./backend
+  #    dockerfile: Dockerfile
+  #  container_name: beauty-dwh-backend
+  #  ports:
+  #    - "8080:8080"
+  #  environment:
       # DB接続設定 (コンテナ内のホスト名はサービス名 'db' になる)
-      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/${POSTGRES_DB}
-      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
-      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
-      SMAREGI_CONTRACT_ID: ${SMAREGI_CONTRACT_ID}
-      SMAREGI_CLIENT_ID: ${SMAREGI_CLIENT_ID}
-      SMAREGI_CLIENT_SECRET: ${SMAREGI_CLIENT_SECRET}
-      TZ: ${TZ}
-    depends_on:
-      db:
-        condition: service_healthy # DBの起動完了を待ってから起動
-    networks:
-      - app-network
+  #    SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/${POSTGRES_DB}
+  #    SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
+  #    SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
+  #    SMAREGI_CONTRACT_ID: ${SMAREGI_CONTRACT_ID}
+  #    SMAREGI_CLIENT_ID: ${SMAREGI_CLIENT_ID}
+  #    SMAREGI_CLIENT_SECRET: ${SMAREGI_CLIENT_SECRET}
+  #    TZ: ${TZ}
+  #  depends_on:
+  #    db:
+  #      condition: service_healthy # DBの起動完了を待ってから起動
+  #  networks:
+  #    - app-network
     # 開発中はローカルのソースコード変更を反映させるため、マウント推奨
     # (下記はMavenを使用する場合の例。Jar実行のみならコメントアウトでOK)
     # volumes:

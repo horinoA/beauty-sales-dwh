@@ -1,23 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.beauty.beauty_sales_dwh.DimCustomerValifationTest" tests="13" skipped="0" failures="0" errors="0" timestamp="2026-01-27T23:27:44.781Z" hostname="AkikoHorinonoMacBook-Air.local" time="0.122">
+<testsuite name="com.beauty.beauty_sales_dwh.DimCustomerValifationTest" tests="13" skipped="0" failures="0" errors="0" timestamp="2026-01-28T21:03:04.962Z" hostname="AkikoHorinonoMacBook-Air.local" time="0.109">
   <properties/>
-  <testcase name="電話番号: 数字とハイフンのみならOK" classname="com.beauty.beauty_sales_dwh.DimCustomerValifationTest" time="0.045"/>
-  <testcase name="氏名エラー: 文字数オーバー (101文字)" classname="com.beauty.beauty_sales_dwh.DimCustomerValifationTest" time="0.01"/>
-  <testcase name="電話番号エラー: 文字数オーバー (51文字)" classname="com.beauty.beauty_sales_dwh.DimCustomerValifationTest" time="0.004"/>
+  <testcase name="電話番号: 数字とハイフンのみならOK" classname="com.beauty.beauty_sales_dwh.DimCustomerValifationTest" time="0.039"/>
+  <testcase name="氏名エラー: 文字数オーバー (101文字)" classname="com.beauty.beauty_sales_dwh.DimCustomerValifationTest" time="0.009"/>
+  <testcase name="電話番号エラー: 文字数オーバー (51文字)" classname="com.beauty.beauty_sales_dwh.DimCustomerValifationTest" time="0.003"/>
   <testcase name="電話番号: ハイフンなし数字のみもOK" classname="com.beauty.beauty_sales_dwh.DimCustomerValifationTest" time="0.003"/>
   <testcase name="来店日整合性: 片方がnullならチェックをスキップしてOK" classname="com.beauty.beauty_sales_dwh.DimCustomerValifationTest" time="0.002"/>
-  <testcase name="来店日整合性: 初回 == 最終 ならOK" classname="com.beauty.beauty_sales_dwh.DimCustomerValifationTest" time="0.004"/>
-  <testcase name="氏名: 許可された文字種が全て通ること" classname="com.beauty.beauty_sales_dwh.DimCustomerValifationTest" time="0.005"/>
-  <testcase name="氏名エラー: 禁止文字(&lt;, &gt;, @, !)が含まれる" classname="com.beauty.beauty_sales_dwh.DimCustomerValifationTest" time="0.004"/>
+  <testcase name="来店日整合性: 初回 == 最終 ならOK" classname="com.beauty.beauty_sales_dwh.DimCustomerValifationTest" time="0.002"/>
+  <testcase name="氏名: 許可された文字種が全て通ること" classname="com.beauty.beauty_sales_dwh.DimCustomerValifationTest" time="0.002"/>
+  <testcase name="氏名エラー: 禁止文字(&lt;, &gt;, @, !)が含まれる" classname="com.beauty.beauty_sales_dwh.DimCustomerValifationTest" time="0.003"/>
   <testcase name="来店日整合性エラー: 初回 &gt; 最終 の場合はエラー" classname="com.beauty.beauty_sales_dwh.DimCustomerValifationTest" time="0.003"/>
   <testcase name="来店日整合性: 初回 &lt;= 最終 ならOK" classname="com.beauty.beauty_sales_dwh.DimCustomerValifationTest" time="0.002"/>
-  <testcase name="携帯番号エラー: 英字や記号が含まれる" classname="com.beauty.beauty_sales_dwh.DimCustomerValifationTest" time="0.024"/>
+  <testcase name="携帯番号エラー: 英字や記号が含まれる" classname="com.beauty.beauty_sales_dwh.DimCustomerValifationTest" time="0.027"/>
   <testcase name="defaultValueTest()" classname="com.beauty.beauty_sales_dwh.DimCustomerValifationTest" time="0.006"/>
-  <testcase name="電話番号エラー: 英字や記号が含まれる" classname="com.beauty.beauty_sales_dwh.DimCustomerValifationTest" time="0.002"/>
-  <system-out><![CDATA[2026-01-28T08:27:44.778+09:00  INFO 19838 --- [beauty-sales-dwh] [    Test worker] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.beauty.beauty_sales_dwh.DimCustomerValifationTest]: DimCustomerValifationTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
-2026-01-28T08:27:44.779+09:00  INFO 19838 --- [beauty-sales-dwh] [    Test worker] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.beauty.beauty_sales_dwh.BeautySalesDwhApplication for test class com.beauty.beauty_sales_dwh.DimCustomerValifationTest
+  <testcase name="電話番号エラー: 英字や記号が含まれる" classname="com.beauty.beauty_sales_dwh.DimCustomerValifationTest" time="0.003"/>
+  <system-out><![CDATA[2026-01-29T06:03:04.955+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.beauty.beauty_sales_dwh.DimCustomerValifationTest]: DimCustomerValifationTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-01-29T06:03:04.958+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.beauty.beauty_sales_dwh.BeautySalesDwhApplication for test class com.beauty.beauty_sales_dwh.DimCustomerValifationTest
 [ConstraintViolationImpl{interpolatedMessage='顧客名は漢字、ひらがな、カタカナ、英数字(半角/全角)、スペース、記号(ー 々)、アンダーバーのみのみ入力可です', propertyPath=customerName, rootBeanClass=class com.beauty.beauty_sales_dwh.analytics.customer.DimCustomer, messageTemplate='{DimCustomer.customerName.pattern}'}]
-DimCustomer[appCompanyId=1, customerId=10002, customerName=佐藤_花子, customerKana=サトウ_ハナコ, phoneNumber=null, mobileNumber=null, storeId=1, firstVisitDate=null, lastVisitDate=null, visitCount=0, isDeleted=false, insertDataTime=2026-01-28T08:27:44.896406+09:00, updateDataTime=2026-01-28T08:27:44.896418+09:00]
+DimCustomer[appCompanyId=1, customerId=10002, customerName=佐藤_花子, customerKana=サトウ_ハナコ, phoneNumber=null, mobileNumber=null, storeId=1, firstVisitDate=null, lastVisitDate=null, visitCount=0, isDeleted=false, insertDataTime=2026-01-29T06:03:05.063435+09:00, updateDataTime=2026-01-29T06:03:05.063449+09:00]
 ]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

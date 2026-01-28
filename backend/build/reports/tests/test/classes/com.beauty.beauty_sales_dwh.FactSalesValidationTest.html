@@ -41,7 +41,7 @@
 </td>
 <td>
 <div class="infoBox" id="duration">
-<div class="counter">0.027s</div>
+<div class="counter">0.032s</div>
 <p>duration</p>
 </div>
 </td>
@@ -79,7 +79,7 @@
 </thead>
 <tr>
 <td class="success">smaregiIdOKtest()</td>
-<td class="success">0.001s</td>
+<td class="success">0.002s</td>
 <td class="success">passed</td>
 </tr>
 <tr>
@@ -89,22 +89,22 @@
 </tr>
 <tr>
 <td class="success">sumareziNullOk()</td>
-<td class="success">0.001s</td>
+<td class="success">0.002s</td>
 <td class="success">passed</td>
 </tr>
 <tr>
 <td class="success">validTransactionAmount()</td>
-<td class="success">0.002s</td>
+<td class="success">0.003s</td>
 <td class="success">passed</td>
 </tr>
 <tr>
 <td class="success">validateMessageFromProperties()</td>
-<td class="success">0.002s</td>
+<td class="success">0.003s</td>
 <td class="success">passed</td>
 </tr>
 <tr>
 <td class="success">validateSnowFlake()</td>
-<td class="success">0.012s</td>
+<td class="success">0.013s</td>
 <td class="success">passed</td>
 </tr>
 <tr>
@@ -117,16 +117,16 @@
 <div class="tab">
 <h2>Standard output</h2>
 <span class="code">
-<pre>2026-01-28T08:27:44.934+09:00  INFO 19838 --- [beauty-sales-dwh] [    Test worker] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.beauty.beauty_sales_dwh.FactSalesValidationTest]: FactSalesValidationTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
-2026-01-28T08:27:44.935+09:00  INFO 19838 --- [beauty-sales-dwh] [    Test worker] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.beauty.beauty_sales_dwh.BeautySalesDwhApplication for test class com.beauty.beauty_sales_dwh.FactSalesValidationTest
+<pre>2026-01-29T06:03:05.106+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.beauty.beauty_sales_dwh.FactSalesValidationTest]: FactSalesValidationTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-01-29T06:03:05.106+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.beauty.beauty_sales_dwh.BeautySalesDwhApplication for test class com.beauty.beauty_sales_dwh.FactSalesValidationTest
 message = IDは1〜999999999の間で指定してください
 messageTemplate = {sumaregi.id.size}
-rootBean = FactSales[appCompanyId=4069, transactionHeadId=0, transactionDateTime=2026-01-28T08:27:44.952717+09:00, transactionDate=2026-01-28, customerId=1, staffId=1, storeId=1, amountTotal=1000, amountSubtotal=1000, amountTaxInclude=1100, amountTaxExclude=1000, amountSubtotalDiscountPrice=0, amountFee=0, amountShipping=0, discountPoint=0, discountCoupon=0, transactionType=SALES, isVoid=false]
+rootBean = FactSales[appCompanyId=4069, transactionHeadId=0, transactionDateTime=2026-01-29T06:03:05.124739+09:00, transactionDate=2026-01-29, customerId=1, staffId=1, storeId=1, amountTotal=1000, amountSubtotal=1000, amountTaxInclude=1100, amountTaxExclude=1000, amountSubtotalDiscountPrice=0, amountFee=0, amountShipping=0, discountPoint=0, discountCoupon=0, transactionType=SALES, isVoid=false]
 rootBeanClass = class com.beauty.beauty_sales_dwh.analytics.sales.FactSales
 invalidValue = 0
 propertyPath = transactionHeadId
-leafBean = FactSales[appCompanyId=4069, transactionHeadId=0, transactionDateTime=2026-01-28T08:27:44.952717+09:00, transactionDate=2026-01-28, customerId=1, staffId=1, storeId=1, amountTotal=1000, amountSubtotal=1000, amountTaxInclude=1100, amountTaxExclude=1000, amountSubtotalDiscountPrice=0, amountFee=0, amountShipping=0, discountPoint=0, discountCoupon=0, transactionType=SALES, isVoid=false]
-descriptor = ConstraintDescriptorImpl{annotation=c.b.b.c.v.ValidSmaregiId, payloads=[], hasComposingConstraints=true, isReportAsSingleInvalidConstraint=false, constraintLocationKind=FIELD, definedOn=DEFINED_LOCALLY, groups=[interface jakarta.validation.groups.Default], attributes={groups=[Ljava.lang.Class;@3398ed12, min=1, message={sumaregi.id.size}, payload=[Ljava.lang.Class;@c555e1e, max=999999999}, constraintType=GENERIC, valueUnwrapping=DEFAULT}
+leafBean = FactSales[appCompanyId=4069, transactionHeadId=0, transactionDateTime=2026-01-29T06:03:05.124739+09:00, transactionDate=2026-01-29, customerId=1, staffId=1, storeId=1, amountTotal=1000, amountSubtotal=1000, amountTaxInclude=1100, amountTaxExclude=1000, amountSubtotalDiscountPrice=0, amountFee=0, amountShipping=0, discountPoint=0, discountCoupon=0, transactionType=SALES, isVoid=false]
+descriptor = ConstraintDescriptorImpl{annotation=c.b.b.c.v.ValidSmaregiId, payloads=[], hasComposingConstraints=true, isReportAsSingleInvalidConstraint=false, constraintLocationKind=FIELD, definedOn=DEFINED_LOCALLY, groups=[interface jakarta.validation.groups.Default], attributes={groups=[Ljava.lang.Class;@6672b0ea, min=1, message={sumaregi.id.size}, payload=[Ljava.lang.Class;@1ccce165, max=999999999}, constraintType=GENERIC, valueUnwrapping=DEFAULT}
 
 </pre>
 </span>
@@ -139,7 +139,7 @@ descriptor = ConstraintDescriptorImpl{annotation=c.b.b.c.v.ValidSmaregiId, paylo
 <input id="line-wrapping-toggle" type="checkbox" autocomplete="off"/>
 </label>
 </div>Generated by 
-<a href="https://www.gradle.org">Gradle 8.14.3</a> at 2026/01/28 8:27:46</p>
+<a href="https://www.gradle.org">Gradle 8.14.3</a> at 2026/01/29 6:03:07</p>
 </div>
 </div>
 </body>
