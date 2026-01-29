@@ -1,14 +1,8 @@
 package com.beauty.beauty_sales_dwh;
 
-import org.springframework.batch.core.Job;
-import org.springframework.batch.core.JobParameters;
-import org.springframework.batch.core.JobParametersBuilder;
-import org.springframework.batch.core.launch.JobLauncher;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Profile;
 import org.springframework.web.client.RestTemplate;
 
 @SpringBootApplication
@@ -26,7 +20,7 @@ public class BeautySalesDwhApplication {
     }
     
 	// ★これを追加：アプリ起動時に強制的にジョブを実行するランナー
-    @Bean
+    /*@Bean
     @Profile("!test")
     public CommandLineRunner runJob(JobLauncher jobLauncher, Job importSmaregiCustomerJob) {
         return args -> {
@@ -45,5 +39,5 @@ public class BeautySalesDwhApplication {
             System.out.println("✅ バッチジョブ起動完了");
             System.out.println("==========================================");
         };
-    }
+    }*/
 }
