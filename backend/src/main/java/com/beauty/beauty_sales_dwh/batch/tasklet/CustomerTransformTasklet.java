@@ -32,7 +32,7 @@ public class CustomerTransformTasklet implements Tasklet {
         Long companyId = Long.valueOf(vendorProperties.getId());
 
         // 2. DBから最終更新日時を取得 (SQLの結果を利用)
-        OffsetDateTime maxUpdatedAt = mapper.findMaxFetchedAt();
+        OffsetDateTime maxUpdatedAt = mapper.findMaxFetchedAt(companyId);
         
         // 初回実行時などでNULLの場合は、十分古い日付を設定
         if (maxUpdatedAt == null) {

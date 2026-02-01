@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.beauty.beauty_sales_dwh.mapper.RawStaffMapper">
+
+    <insert id="insertRawStaff">
+        INSERT INTO raw.staffs (
+            app_company_id,
+            json_body,
+            fetched_at
+        ) VALUES (
+            #{companyId},
+            #{jsonBody}::jsonb,
+            CURRENT_TIMESTAMP
+        )
+    </insert>
+
+    <select id="findMaxFetchedAt" resultType="java.time.OffsetDateTime">
+        SELECT MAX(fetched_at)
+        FROM raw.staffs WHERE app_company_id = #{companyId}
+    </select>
+
+</mapper>

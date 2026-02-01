@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.beauty.beauty_sales_dwh.mapper.ProductTransformMapper">
+
+    <select id="findMaxFetchedAt" resultType="java.time.OffsetDateTime">
+        SELECT MAX(fetched_at) FROM raw.products WHERE app_company_id = #{companyId}
+    </select>
+
+    <insert id="upsertCategoryGroupsFromRaw">
+        WITH raw_category_groups AS (
+            SELECT DISTINCT ON (json_body ->> 'categoryGroupId')
+                (json_body ->> 'categoryGroupId') AS category_group_id,
+                (json_body ->> 'categoryGroupName') AS category_group_name,
+                (json_body ->> 'insDateTime')  AS ins_date_time,
+                (json_body ->> 'updDateTime')  AS upd_date_time
+            FROM
+                raw.category_groups
+            WHERE
+                fetched_at >= #{fromDate} AND app_company_id = #{companyId}
+            ORDER BY
+                (json_body ->> 'categoryGroupId'), fetched_at DESC
+        )
+        INSERT INTO dwh.dim_category_groups (
+            app_company_id,
+            cat_group_id,
+            cat_group_name,
+            insert_data_time,
+            update_data_time
+        )
+        SELECT
+            #{companyId},
+            category_group_id,
+            category_group_name,
+            CAST(ins_date_time AS TIMESTAMPTZ),
+            CAST(upd_date_time AS TIMESTAMPTZ)
+        FROM
+            raw_category_groups
+        ON CONFLICT ON CONSTRAINT dim_category_groups_pkey
+        DO UPDATE SET
+            cat_group_name   = EXCLUDED.cat_group_name,
+            update_data_time = EXCLUDED.update_data_time
+    </insert>
+
+    <insert id="upsertProductsFromRaw">
+        WITH raw_category AS (
+            SELECT DISTINCT ON (json_body ->> 'categoryId')
+                (json_body ->> 'categoryId') AS category_id,
+                (json_body ->> 'categoryGroupId') AS category_group_id
+            FROM
+                raw.categories
+            WHERE
+                fetched_at >= #{fromDate} AND app_company_id = #{companyId}
+            ORDER BY 
+                (json_body ->> 'categoryId'), fetched_at DESC
+        ),
+        raw_product AS (
+            SELECT DISTINCT ON (json_body ->> 'productId')
+                (json_body ->> 'productId') AS product_id,
+                (json_body ->> 'categoryId') AS category_id,
+                (json_body ->> 'productName') AS product_name,
+                (json_body ->> 'price') AS price,
+                (json_body ->> 'store_id') AS store_id,
+                (json_body ->> 'insDateTime')  AS ins_date_time,
+                (json_body ->> 'updDateTime')  AS upd_date_time
+            FROM
+                raw.products
+            WHERE
+                fetched_at >= #{fromDate} AND app_company_id = #{companyId}
+            ORDER BY
+                (json_body ->> 'productId'), fetched_at DESC
+        )
+        INSERT INTO dwh.dim_products (
+            app_company_id,
+            product_id,
+            product_name,
+            cat_group_id,
+            price,
+            store_id,
+            insert_data_time,
+            update_data_time
+        )
+        SELECT
+            #{companyId} AS app_company_id,
+            product.product_id,
+            product.product_name,
+            category.category_group_id,
+            product.price::INTEGER,
+            product.store_id,
+            CAST(product.ins_date_time AS TIMESTAMPTZ) AS insert_data_time,
+            CAST(product.upd_date_time AS TIMESTAMPTZ) AS update_data_time
+        FROM raw_product AS product
+        LEFT JOIN raw_category AS category
+        ON product.category_id = category.category_id
+        ON CONFLICT ON CONSTRAINT dim_products_pkey
+        DO UPDATE SET
+            product_name     = EXCLUDED.product_name,
+            cat_group_id     = EXCLUDED.cat_group_id,
+            price            = EXCLUDED.price,
+            store_id         = EXCLUDED.store_id,
+            update_data_time = EXCLUDED.update_data_time;
+    </insert>
+
+</mapper>
