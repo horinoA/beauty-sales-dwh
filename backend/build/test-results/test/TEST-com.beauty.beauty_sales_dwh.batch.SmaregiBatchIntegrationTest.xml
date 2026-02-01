@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.beauty.beauty_sales_dwh.batch.SmaregiBatchIntegrationTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2026-01-28T21:03:05.800Z" hostname="AkikoHorinonoMacBook-Air.local" time="0.997">
+<testsuite name="com.beauty.beauty_sales_dwh.batch.SmaregiBatchIntegrationTest" tests="5" skipped="0" failures="0" errors="0" timestamp="2026-01-29T23:32:17.809Z" hostname="AkikoHorinonoMacBook-Air.local" time="1.339">
   <properties/>
-  <testcase name="ステップテスト: カテゴリグループデータ取込が正常終了すること" classname="com.beauty.beauty_sales_dwh.batch.SmaregiBatchIntegrationTest" time="0.4"/>
-  <testcase name="統合テスト: 認証からデータ整形までJob全体が正常終了すること（顧客データ2件）" classname="com.beauty.beauty_sales_dwh.batch.SmaregiBatchIntegrationTest" time="0.206"/>
-  <testcase name="ステップテスト: プロダクトデータ取込が正常終了すること" classname="com.beauty.beauty_sales_dwh.batch.SmaregiBatchIntegrationTest" time="0.201"/>
-  <testcase name="ステップテスト: カテゴリデータ取込が正常終了すること" classname="com.beauty.beauty_sales_dwh.batch.SmaregiBatchIntegrationTest" time="0.189"/>
-  <system-out><![CDATA[2026-01-29T06:03:05.449+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.beauty.beauty_sales_dwh.batch.SmaregiBatchIntegrationTest]: SmaregiBatchIntegrationTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
-2026-01-29T06:03:05.462+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.beauty.beauty_sales_dwh.BeautySalesDwhApplication for test class com.beauty.beauty_sales_dwh.batch.SmaregiBatchIntegrationTest
-2026-01-29T06:03:05.466+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] m.p.springdotenv.DotenvPropertySource    : Initialized Dotenv with DotenvConfig{directory=null, filename=null, ignoreIfMalformed=false, ignoreIfMissing=true, systemProperties=false, prefix=null}
+  <testcase name="ステップテスト: スタッフデータ取込が正常終了すること" classname="com.beauty.beauty_sales_dwh.batch.SmaregiBatchIntegrationTest" time="0.43"/>
+  <testcase name="ステップテスト: カテゴリグループデータ取込が正常終了すること" classname="com.beauty.beauty_sales_dwh.batch.SmaregiBatchIntegrationTest" time="0.247"/>
+  <testcase name="統合テスト: 認証からデータ整形までJob全体が正常終了すること（顧客データ2件）" classname="com.beauty.beauty_sales_dwh.batch.SmaregiBatchIntegrationTest" time="0.22"/>
+  <testcase name="ステップテスト: プロダクトデータ取込が正常終了すること" classname="com.beauty.beauty_sales_dwh.batch.SmaregiBatchIntegrationTest" time="0.226"/>
+  <testcase name="ステップテスト: カテゴリデータ取込が正常終了すること" classname="com.beauty.beauty_sales_dwh.batch.SmaregiBatchIntegrationTest" time="0.215"/>
+  <system-out><![CDATA[2026-01-30T08:32:17.434+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.beauty.beauty_sales_dwh.batch.SmaregiBatchIntegrationTest]: SmaregiBatchIntegrationTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-01-30T08:32:17.447+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.beauty.beauty_sales_dwh.BeautySalesDwhApplication for test class com.beauty.beauty_sales_dwh.batch.SmaregiBatchIntegrationTest
+2026-01-30T08:32:17.451+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] m.p.springdotenv.DotenvPropertySource    : Initialized Dotenv with DotenvConfig{directory=null, filename=null, ignoreIfMalformed=false, ignoreIfMissing=true, systemProperties=false, prefix=null}
 
   .   ____          _            __ _ _
  /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
@@ -18,148 +19,201 @@
 
  :: Spring Boot ::                (v3.5.8)
 
-2026-01-29T06:03:05.474+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] c.b.b.batch.SmaregiBatchIntegrationTest  : Starting SmaregiBatchIntegrationTest using Java 21.0.9 with PID 24114 (started by horinoakiko in /Users/horinoakiko/Documents/beauty-sales-dwh/backend)
-2026-01-29T06:03:05.475+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] c.b.b.batch.SmaregiBatchIntegrationTest  : The following 1 profile is active: "test"
-2026-01-29T06:03:05.584+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JDBC repositories in DEFAULT mode.
-2026-01-29T06:03:05.594+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 8 ms. Found 1 JDBC repository interface.
-2026-01-29T06:03:05.629+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] com.zaxxer.hikari.HikariDataSource       : HikariPool-2 - Starting...
-2026-01-29T06:03:05.648+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] com.zaxxer.hikari.pool.HikariPool        : HikariPool-2 - Added connection org.postgresql.jdbc.PgConnection@5481001f
-2026-01-29T06:03:05.648+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] com.zaxxer.hikari.HikariDataSource       : HikariPool-2 - Start completed.
-2026-01-29T06:03:05.798+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] c.b.b.batch.SmaregiBatchIntegrationTest  : Started SmaregiBatchIntegrationTest in 0.334 seconds (process running for 3.354)
-2026-01-29T06:03:05.884+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] o.s.b.c.l.s.TaskExecutorJobLauncher      : Job: [SimpleJob: [name=importSmaregiRawDataJob]] launched with the following parameters: [{'random':'{value=2364117538579878510, type=class java.lang.Long, identifying=true}'}]
-2026-01-29T06:03:05.912+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.job.SimpleStepHandler     : Executing step: [step1Auth]
-2026-01-29T06:03:05.921+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] c.b.b.batch.tasklet.SmaregiAuthTasklet   : Step 1: スマレジAPI認証を開始します...
+2026-01-30T08:32:17.461+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] c.b.b.batch.SmaregiBatchIntegrationTest  : Starting SmaregiBatchIntegrationTest using Java 21.0.9 with PID 14582 (started by horinoakiko in /Users/horinoakiko/Documents/beauty-sales-dwh/backend)
+2026-01-30T08:32:17.461+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] c.b.b.batch.SmaregiBatchIntegrationTest  : The following 1 profile is active: "test"
+2026-01-30T08:32:17.580+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JDBC repositories in DEFAULT mode.
+2026-01-30T08:32:17.591+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 9 ms. Found 1 JDBC repository interface.
+2026-01-30T08:32:17.631+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] com.zaxxer.hikari.HikariDataSource       : HikariPool-2 - Starting...
+2026-01-30T08:32:17.654+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] com.zaxxer.hikari.pool.HikariPool        : HikariPool-2 - Added connection org.postgresql.jdbc.PgConnection@33de9d85
+2026-01-30T08:32:17.654+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] com.zaxxer.hikari.HikariDataSource       : HikariPool-2 - Start completed.
+2026-01-30T08:32:17.807+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] c.b.b.batch.SmaregiBatchIntegrationTest  : Started SmaregiBatchIntegrationTest in 0.359 seconds (process running for 3.277)
+2026-01-30T08:32:17.906+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] o.s.b.c.l.s.TaskExecutorJobLauncher      : Job: [SimpleJob: [name=importSmaregiRawDataJob]] launched with the following parameters: [{'random':'{value=-5406467104925742391, type=class java.lang.Long, identifying=true}'}]
+2026-01-30T08:32:17.932+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.job.SimpleStepHandler     : Executing step: [step1Auth]
+2026-01-30T08:32:17.941+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] c.b.b.batch.tasklet.SmaregiAuthTasklet   : Step 1: スマレジAPI認証を開始します...
 https://id.smaregi.dev/app/sb_skp459u4/token
-2026-01-29T06:03:05.926+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] c.b.b.batch.tasklet.SmaregiAuthTasklet   : 認証成功。アクセストークンを取得しました。次ステップへ進みます。
-2026-01-29T06:03:05.932+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.step.AbstractStep         : Step: [step1Auth] executed in 19ms
-2026-01-29T06:03:05.954+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.job.SimpleStepHandler     : Executing step: [stepFetchCustomers]
-2026-01-29T06:03:05.977+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.r.SmaregiCustomerItemReader      : CustomerReader初期化完了: upd_date_time-from=2000-01-01T00:00:00+09:00
-2026-01-29T06:03:05.982+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.r.SmaregiCustomerItemReader      : Request URL: https://api.smaregi.dev/sb_skp459u4/pos/customers?limit=1000&page=1&upd_date_time-from=2000-01-01T00%3A00%3A00%2B09%3A00
-2026-01-29T06:03:05.992+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.step.AbstractStep         : Step: [stepFetchCustomers] executed in 37ms
-2026-01-29T06:03:06.026+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.job.SimpleStepHandler     : Executing step: [stepFetchCategories]
-2026-01-29T06:03:06.035+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.r.SmaregiCategoryItemReader      : Request URL for Categories: https://api.smaregi.dev/sb_skp459u4/pos/categories?limit=1000&page=1
-2026-01-29T06:03:06.040+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.step.AbstractStep         : Step: [stepFetchCategories] executed in 13ms
-2026-01-29T06:03:06.061+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.job.SimpleStepHandler     : Executing step: [stepFetchCategoryGroups]
-2026-01-29T06:03:06.068+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.r.SmaregiCategoryGroupItemReader : Request URL for Category Groups: https://api.smaregi.dev/sb_skp459u4/pos/category_groups?limit=1000&page=1
-2026-01-29T06:03:06.069+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.r.SmaregiCategoryGroupItemReader : Request URL for Category Groups: https://api.smaregi.dev/sb_skp459u4/pos/category_groups?limit=1000&page=2
-2026-01-29T06:03:06.079+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.step.AbstractStep         : Step: [stepFetchCategoryGroups] executed in 18ms
-2026-01-29T06:03:06.098+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.job.SimpleStepHandler     : Executing step: [stepFetchProducts]
-2026-01-29T06:03:06.103+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.reader.SmaregiProductItemReader  : Request URL for Products: https://api.smaregi.dev/sb_skp459u4/pos/products?limit=1000&page=1
-2026-01-29T06:03:06.109+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.step.AbstractStep         : Step: [stepFetchProducts] executed in 10ms
-2026-01-29T06:03:06.123+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.job.SimpleStepHandler     : Executing step: [stepTransformCustomers]
-2026-01-29T06:03:06.127+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.t.CustomerTransformTasklet       : Step 3: データ整形処理を開始します...
-2026-01-29T06:03:06.128+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.t.CustomerTransformTasklet       : 初回実行、またはデータが存在しないため、全件処理対象とします。基準日: 2000-01-01T00:00+09:00
-2026-01-29T06:03:06.130+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.t.CustomerTransformTasklet       : Step 3: 完了。0 件のデータを DIM_CUSTOMERS に反映しました。
-2026-01-29T06:03:06.139+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.step.AbstractStep         : Step: [stepTransformCustomers] executed in 16ms
-2026-01-29T06:03:06.157+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.job.SimpleStepHandler     : Executing step: [stepTransformProducts]
-2026-01-29T06:03:06.161+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.tasklet.ProductTransformTasklet  : Step 3: Product関連のデータ整形処理を開始します...
-2026-01-29T06:03:06.163+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.tasklet.ProductTransformTasklet  : 初回実行、またはデータが存在しないため、全件処理対象とします。基準日: 2000-01-01T00:00+09:00
-2026-01-29T06:03:06.166+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.tasklet.ProductTransformTasklet  : 2 件のデータを dwh.dim_category_groups に反映しました。
-2026-01-29T06:03:06.169+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.tasklet.ProductTransformTasklet  : 0 件のデータを dwh.dim_products に反映しました。
-2026-01-29T06:03:06.169+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.tasklet.ProductTransformTasklet  : Step 3: Product関連のデータ整形処理が完了しました。
-2026-01-29T06:03:06.175+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.step.AbstractStep         : Step: [stepTransformProducts] executed in 17ms
-2026-01-29T06:03:06.189+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] o.s.b.c.l.s.TaskExecutorJobLauncher      : Job: [SimpleJob: [name=importSmaregiRawDataJob]] completed with the following parameters: [{'random':'{value=2364117538579878510, type=class java.lang.Long, identifying=true}'}] and the following status: [COMPLETED] in 296ms
-2026-01-29T06:03:06.236+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] o.s.b.c.l.s.TaskExecutorJobLauncher      : Job: [SimpleJob: [name=importSmaregiRawDataJob]] launched with the following parameters: [{'random':'{value=1663317371519512576, type=class java.lang.Long, identifying=true}'}]
-2026-01-29T06:03:06.247+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.job.SimpleStepHandler     : Executing step: [step1Auth]
-2026-01-29T06:03:06.252+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] c.b.b.batch.tasklet.SmaregiAuthTasklet   : Step 1: スマレジAPI認証を開始します...
+2026-01-30T08:32:17.958+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] c.b.b.batch.tasklet.SmaregiAuthTasklet   : 認証成功。アクセストークンを取得しました。次ステップへ進みます。
+2026-01-30T08:32:17.966+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.step.AbstractStep         : Step: [step1Auth] executed in 33ms
+2026-01-30T08:32:17.982+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.job.SimpleStepHandler     : Executing step: [stepFetchCustomers]
+2026-01-30T08:32:18.001+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.r.SmaregiCustomerItemReader      : CustomerReader初期化完了: upd_date_time-from=2000-01-01T00:00:00+09:00
+2026-01-30T08:32:18.005+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.r.SmaregiCustomerItemReader      : Request URL: https://api.smaregi.dev/sb_skp459u4/pos/customers?limit=1000&page=1&upd_date_time-from=2000-01-01T00%3A00%3A00%2B09%3A00
+2026-01-30T08:32:18.012+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.step.AbstractStep         : Step: [stepFetchCustomers] executed in 30ms
+2026-01-30T08:32:18.026+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.job.SimpleStepHandler     : Executing step: [stepFetchCategories]
+2026-01-30T08:32:18.031+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.r.SmaregiCategoryItemReader      : Request URL for Categories: https://api.smaregi.dev/sb_skp459u4/pos/categories?limit=1000&page=1
+2026-01-30T08:32:18.038+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.step.AbstractStep         : Step: [stepFetchCategories] executed in 11ms
+2026-01-30T08:32:18.057+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.job.SimpleStepHandler     : Executing step: [stepFetchCategoryGroups]
+2026-01-30T08:32:18.062+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.r.SmaregiCategoryGroupItemReader : Request URL for Category Groups: https://api.smaregi.dev/sb_skp459u4/pos/category_groups?limit=1000&page=1
+2026-01-30T08:32:18.066+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.step.AbstractStep         : Step: [stepFetchCategoryGroups] executed in 9ms
+2026-01-30T08:32:18.083+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.job.SimpleStepHandler     : Executing step: [stepFetchProducts]
+2026-01-30T08:32:18.093+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.reader.SmaregiProductItemReader  : Request URL for Products: https://api.smaregi.dev/sb_skp459u4/pos/products?limit=1000&page=1
+2026-01-30T08:32:18.098+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.step.AbstractStep         : Step: [stepFetchProducts] executed in 15ms
+2026-01-30T08:32:18.113+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.job.SimpleStepHandler     : Executing step: [stepFetchStaffs]
+2026-01-30T08:32:18.120+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.reader.SmaregiStaffItemReader    : StaffReader初期化完了: upd_date_time-from=2000-01-01T00:00:00+09:00
+2026-01-30T08:32:18.126+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.reader.SmaregiStaffItemReader    : Request URL: https://api.smaregi.dev/sb_skp459u4/pos/staffs?limit=1000&page=1&upd_date_time-from=2000-01-01T00%3A00%3A00%2B09%3A00
+2026-01-30T08:32:18.128+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.reader.SmaregiStaffItemReader    : Request URL: https://api.smaregi.dev/sb_skp459u4/pos/staffs?limit=1000&page=2&upd_date_time-from=2000-01-01T00%3A00%3A00%2B09%3A00
+2026-01-30T08:32:18.163+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.step.AbstractStep         : Step: [stepFetchStaffs] executed in 49ms
+2026-01-30T08:32:18.178+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.job.SimpleStepHandler     : Executing step: [stepTransformCustomers]
+2026-01-30T08:32:18.183+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.t.CustomerTransformTasklet       : Step 3: データ整形処理を開始します...
+2026-01-30T08:32:18.184+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.t.CustomerTransformTasklet       : 初回実行、またはデータが存在しないため、全件処理対象とします。基準日: 2000-01-01T00:00+09:00
+2026-01-30T08:32:18.187+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.t.CustomerTransformTasklet       : Step 3: 完了。0 件のデータを DIM_CUSTOMERS に反映しました。
+2026-01-30T08:32:18.190+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.step.AbstractStep         : Step: [stepTransformCustomers] executed in 12ms
+2026-01-30T08:32:18.206+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.job.SimpleStepHandler     : Executing step: [stepTransformProducts]
+2026-01-30T08:32:18.211+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.tasklet.ProductTransformTasklet  : Step 3: Product関連のデータ整形処理を開始します...
+2026-01-30T08:32:18.213+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.tasklet.ProductTransformTasklet  : 初回実行、またはデータが存在しないため、全件処理対象とします。基準日: 2000-01-01T00:00+09:00
+2026-01-30T08:32:18.215+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.tasklet.ProductTransformTasklet  : 0 件のデータを dwh.dim_category_groups に反映しました。
+2026-01-30T08:32:18.217+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.tasklet.ProductTransformTasklet  : 0 件のデータを dwh.dim_products に反映しました。
+2026-01-30T08:32:18.217+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.tasklet.ProductTransformTasklet  : Step 3: Product関連のデータ整形処理が完了しました。
+2026-01-30T08:32:18.220+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.step.AbstractStep         : Step: [stepTransformProducts] executed in 14ms
+2026-01-30T08:32:18.231+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] o.s.b.c.l.s.TaskExecutorJobLauncher      : Job: [SimpleJob: [name=importSmaregiRawDataJob]] completed with the following parameters: [{'random':'{value=-5406467104925742391, type=class java.lang.Long, identifying=true}'}] and the following status: [COMPLETED] in 316ms
+2026-01-30T08:32:18.278+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] o.s.b.c.l.s.TaskExecutorJobLauncher      : Job: [SimpleJob: [name=importSmaregiRawDataJob]] launched with the following parameters: [{'random':'{value=-3147519258436349763, type=class java.lang.Long, identifying=true}'}]
+2026-01-30T08:32:18.291+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.job.SimpleStepHandler     : Executing step: [step1Auth]
+2026-01-30T08:32:18.298+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] c.b.b.batch.tasklet.SmaregiAuthTasklet   : Step 1: スマレジAPI認証を開始します...
 https://id.smaregi.dev/app/sb_skp459u4/token
-2026-01-29T06:03:06.252+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] c.b.b.batch.tasklet.SmaregiAuthTasklet   : 認証成功。アクセストークンを取得しました。次ステップへ進みます。
-2026-01-29T06:03:06.256+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.step.AbstractStep         : Step: [step1Auth] executed in 9ms
-2026-01-29T06:03:06.269+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.job.SimpleStepHandler     : Executing step: [stepFetchCustomers]
-2026-01-29T06:03:06.273+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.r.SmaregiCustomerItemReader      : CustomerReader初期化完了: upd_date_time-from=2000-01-01T00:00:00+09:00
-2026-01-29T06:03:06.276+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.r.SmaregiCustomerItemReader      : Request URL: https://api.smaregi.dev/sb_skp459u4/pos/customers?limit=1000&page=1&upd_date_time-from=2000-01-01T00%3A00%3A00%2B09%3A00
-2026-01-29T06:03:06.276+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.r.SmaregiCustomerItemReader      : Request URL: https://api.smaregi.dev/sb_skp459u4/pos/customers?limit=1000&page=2&upd_date_time-from=2000-01-01T00%3A00%3A00%2B09%3A00
-2026-01-29T06:03:06.284+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.step.AbstractStep         : Step: [stepFetchCustomers] executed in 14ms
-2026-01-29T06:03:06.296+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.job.SimpleStepHandler     : Executing step: [stepFetchCategories]
-2026-01-29T06:03:06.300+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.r.SmaregiCategoryItemReader      : Request URL for Categories: https://api.smaregi.dev/sb_skp459u4/pos/categories?limit=1000&page=1
-2026-01-29T06:03:06.305+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.step.AbstractStep         : Step: [stepFetchCategories] executed in 8ms
-2026-01-29T06:03:06.317+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.job.SimpleStepHandler     : Executing step: [stepFetchCategoryGroups]
-2026-01-29T06:03:06.321+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.r.SmaregiCategoryGroupItemReader : Request URL for Category Groups: https://api.smaregi.dev/sb_skp459u4/pos/category_groups?limit=1000&page=1
-2026-01-29T06:03:06.324+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.step.AbstractStep         : Step: [stepFetchCategoryGroups] executed in 7ms
-2026-01-29T06:03:06.337+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.job.SimpleStepHandler     : Executing step: [stepFetchProducts]
-2026-01-29T06:03:06.342+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.reader.SmaregiProductItemReader  : Request URL for Products: https://api.smaregi.dev/sb_skp459u4/pos/products?limit=1000&page=1
-2026-01-29T06:03:06.346+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.step.AbstractStep         : Step: [stepFetchProducts] executed in 7ms
-2026-01-29T06:03:06.358+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.job.SimpleStepHandler     : Executing step: [stepTransformCustomers]
-2026-01-29T06:03:06.362+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.t.CustomerTransformTasklet       : Step 3: データ整形処理を開始します...
-2026-01-29T06:03:06.363+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.t.CustomerTransformTasklet       : 初回実行、またはデータが存在しないため、全件処理対象とします。基準日: 2000-01-01T00:00+09:00
-2026-01-29T06:03:06.365+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.t.CustomerTransformTasklet       : Step 3: 完了。2 件のデータを DIM_CUSTOMERS に反映しました。
-2026-01-29T06:03:06.369+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.step.AbstractStep         : Step: [stepTransformCustomers] executed in 10ms
-2026-01-29T06:03:06.382+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.job.SimpleStepHandler     : Executing step: [stepTransformProducts]
-2026-01-29T06:03:06.386+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.tasklet.ProductTransformTasklet  : Step 3: Product関連のデータ整形処理を開始します...
-2026-01-29T06:03:06.388+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.tasklet.ProductTransformTasklet  : 初回実行、またはデータが存在しないため、全件処理対象とします。基準日: 2000-01-01T00:00+09:00
-2026-01-29T06:03:06.389+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.tasklet.ProductTransformTasklet  : 0 件のデータを dwh.dim_category_groups に反映しました。
-2026-01-29T06:03:06.390+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.tasklet.ProductTransformTasklet  : 0 件のデータを dwh.dim_products に反映しました。
-2026-01-29T06:03:06.390+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.tasklet.ProductTransformTasklet  : Step 3: Product関連のデータ整形処理が完了しました。
-2026-01-29T06:03:06.394+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.step.AbstractStep         : Step: [stepTransformProducts] executed in 11ms
-2026-01-29T06:03:06.404+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] o.s.b.c.l.s.TaskExecutorJobLauncher      : Job: [SimpleJob: [name=importSmaregiRawDataJob]] completed with the following parameters: [{'random':'{value=1663317371519512576, type=class java.lang.Long, identifying=true}'}] and the following status: [COMPLETED] in 163ms
-2026-01-29T06:03:06.440+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] o.s.b.c.l.s.TaskExecutorJobLauncher      : Job: [SimpleJob: [name=importSmaregiRawDataJob]] launched with the following parameters: [{'random':'{value=1684747621352876765, type=class java.lang.Long, identifying=true}'}]
-2026-01-29T06:03:06.450+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.job.SimpleStepHandler     : Executing step: [step1Auth]
-2026-01-29T06:03:06.456+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] c.b.b.batch.tasklet.SmaregiAuthTasklet   : Step 1: スマレジAPI認証を開始します...
+2026-01-30T08:32:18.299+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] c.b.b.batch.tasklet.SmaregiAuthTasklet   : 認証成功。アクセストークンを取得しました。次ステップへ進みます。
+2026-01-30T08:32:18.302+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.step.AbstractStep         : Step: [step1Auth] executed in 11ms
+2026-01-30T08:32:18.316+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.job.SimpleStepHandler     : Executing step: [stepFetchCustomers]
+2026-01-30T08:32:18.320+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.r.SmaregiCustomerItemReader      : CustomerReader初期化完了: upd_date_time-from=2000-01-01T00:00:00+09:00
+2026-01-30T08:32:18.322+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.r.SmaregiCustomerItemReader      : Request URL: https://api.smaregi.dev/sb_skp459u4/pos/customers?limit=1000&page=1&upd_date_time-from=2000-01-01T00%3A00%3A00%2B09%3A00
+2026-01-30T08:32:18.326+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.step.AbstractStep         : Step: [stepFetchCustomers] executed in 10ms
+2026-01-30T08:32:18.339+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.job.SimpleStepHandler     : Executing step: [stepFetchCategories]
+2026-01-30T08:32:18.344+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.r.SmaregiCategoryItemReader      : Request URL for Categories: https://api.smaregi.dev/sb_skp459u4/pos/categories?limit=1000&page=1
+2026-01-30T08:32:18.348+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.step.AbstractStep         : Step: [stepFetchCategories] executed in 8ms
+2026-01-30T08:32:18.364+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.job.SimpleStepHandler     : Executing step: [stepFetchCategoryGroups]
+2026-01-30T08:32:18.369+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.r.SmaregiCategoryGroupItemReader : Request URL for Category Groups: https://api.smaregi.dev/sb_skp459u4/pos/category_groups?limit=1000&page=1
+2026-01-30T08:32:18.369+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.r.SmaregiCategoryGroupItemReader : Request URL for Category Groups: https://api.smaregi.dev/sb_skp459u4/pos/category_groups?limit=1000&page=2
+2026-01-30T08:32:18.376+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.step.AbstractStep         : Step: [stepFetchCategoryGroups] executed in 12ms
+2026-01-30T08:32:18.391+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.job.SimpleStepHandler     : Executing step: [stepFetchProducts]
+2026-01-30T08:32:18.396+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.reader.SmaregiProductItemReader  : Request URL for Products: https://api.smaregi.dev/sb_skp459u4/pos/products?limit=1000&page=1
+2026-01-30T08:32:18.400+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.step.AbstractStep         : Step: [stepFetchProducts] executed in 9ms
+2026-01-30T08:32:18.414+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.job.SimpleStepHandler     : Executing step: [stepFetchStaffs]
+2026-01-30T08:32:18.418+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.reader.SmaregiStaffItemReader    : StaffReader初期化完了: upd_date_time-from=2000-01-01T00:00:00+09:00
+2026-01-30T08:32:18.420+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.reader.SmaregiStaffItemReader    : Request URL: https://api.smaregi.dev/sb_skp459u4/pos/staffs?limit=1000&page=1&upd_date_time-from=2000-01-01T00%3A00%3A00%2B09%3A00
+2026-01-30T08:32:18.424+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.step.AbstractStep         : Step: [stepFetchStaffs] executed in 9ms
+2026-01-30T08:32:18.438+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.job.SimpleStepHandler     : Executing step: [stepTransformCustomers]
+2026-01-30T08:32:18.443+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.t.CustomerTransformTasklet       : Step 3: データ整形処理を開始します...
+2026-01-30T08:32:18.444+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.t.CustomerTransformTasklet       : 初回実行、またはデータが存在しないため、全件処理対象とします。基準日: 2000-01-01T00:00+09:00
+2026-01-30T08:32:18.445+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.t.CustomerTransformTasklet       : Step 3: 完了。0 件のデータを DIM_CUSTOMERS に反映しました。
+2026-01-30T08:32:18.449+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.step.AbstractStep         : Step: [stepTransformCustomers] executed in 10ms
+2026-01-30T08:32:18.461+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.job.SimpleStepHandler     : Executing step: [stepTransformProducts]
+2026-01-30T08:32:18.465+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.tasklet.ProductTransformTasklet  : Step 3: Product関連のデータ整形処理を開始します...
+2026-01-30T08:32:18.466+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.tasklet.ProductTransformTasklet  : 初回実行、またはデータが存在しないため、全件処理対象とします。基準日: 2000-01-01T00:00+09:00
+2026-01-30T08:32:18.468+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.tasklet.ProductTransformTasklet  : 2 件のデータを dwh.dim_category_groups に反映しました。
+2026-01-30T08:32:18.469+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.tasklet.ProductTransformTasklet  : 0 件のデータを dwh.dim_products に反映しました。
+2026-01-30T08:32:18.470+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.tasklet.ProductTransformTasklet  : Step 3: Product関連のデータ整形処理が完了しました。
+2026-01-30T08:32:18.473+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.step.AbstractStep         : Step: [stepTransformProducts] executed in 11ms
+2026-01-30T08:32:18.482+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] o.s.b.c.l.s.TaskExecutorJobLauncher      : Job: [SimpleJob: [name=importSmaregiRawDataJob]] completed with the following parameters: [{'random':'{value=-3147519258436349763, type=class java.lang.Long, identifying=true}'}] and the following status: [COMPLETED] in 200ms
+2026-01-30T08:32:18.520+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] o.s.b.c.l.s.TaskExecutorJobLauncher      : Job: [SimpleJob: [name=importSmaregiRawDataJob]] launched with the following parameters: [{'random':'{value=5476826284947759789, type=class java.lang.Long, identifying=true}'}]
+2026-01-30T08:32:18.531+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.job.SimpleStepHandler     : Executing step: [step1Auth]
+2026-01-30T08:32:18.535+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] c.b.b.batch.tasklet.SmaregiAuthTasklet   : Step 1: スマレジAPI認証を開始します...
 https://id.smaregi.dev/app/sb_skp459u4/token
-2026-01-29T06:03:06.456+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] c.b.b.batch.tasklet.SmaregiAuthTasklet   : 認証成功。アクセストークンを取得しました。次ステップへ進みます。
-2026-01-29T06:03:06.460+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.step.AbstractStep         : Step: [step1Auth] executed in 9ms
-2026-01-29T06:03:06.474+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.job.SimpleStepHandler     : Executing step: [stepFetchCustomers]
-2026-01-29T06:03:06.478+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.r.SmaregiCustomerItemReader      : CustomerReader初期化完了: upd_date_time-from=2000-01-01T00:00:00+09:00
-2026-01-29T06:03:06.480+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.r.SmaregiCustomerItemReader      : Request URL: https://api.smaregi.dev/sb_skp459u4/pos/customers?limit=1000&page=1&upd_date_time-from=2000-01-01T00%3A00%3A00%2B09%3A00
-2026-01-29T06:03:06.484+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.step.AbstractStep         : Step: [stepFetchCustomers] executed in 9ms
-2026-01-29T06:03:06.496+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.job.SimpleStepHandler     : Executing step: [stepFetchCategories]
-2026-01-29T06:03:06.501+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.r.SmaregiCategoryItemReader      : Request URL for Categories: https://api.smaregi.dev/sb_skp459u4/pos/categories?limit=1000&page=1
-2026-01-29T06:03:06.501+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.r.SmaregiCategoryItemReader      : Request URL for Categories: https://api.smaregi.dev/sb_skp459u4/pos/categories?limit=1000&page=2
-2026-01-29T06:03:06.508+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.step.AbstractStep         : Step: [stepFetchCategories] executed in 11ms
-2026-01-29T06:03:06.519+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.job.SimpleStepHandler     : Executing step: [stepFetchCategoryGroups]
-2026-01-29T06:03:06.523+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.r.SmaregiCategoryGroupItemReader : Request URL for Category Groups: https://api.smaregi.dev/sb_skp459u4/pos/category_groups?limit=1000&page=1
-2026-01-29T06:03:06.524+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.r.SmaregiCategoryGroupItemReader : Request URL for Category Groups: https://api.smaregi.dev/sb_skp459u4/pos/category_groups?limit=1000&page=2
-2026-01-29T06:03:06.529+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.step.AbstractStep         : Step: [stepFetchCategoryGroups] executed in 9ms
-2026-01-29T06:03:06.540+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.job.SimpleStepHandler     : Executing step: [stepFetchProducts]
-2026-01-29T06:03:06.544+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.reader.SmaregiProductItemReader  : Request URL for Products: https://api.smaregi.dev/sb_skp459u4/pos/products?limit=1000&page=1
-2026-01-29T06:03:06.544+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.reader.SmaregiProductItemReader  : Request URL for Products: https://api.smaregi.dev/sb_skp459u4/pos/products?limit=1000&page=2
-2026-01-29T06:03:06.551+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.step.AbstractStep         : Step: [stepFetchProducts] executed in 10ms
-2026-01-29T06:03:06.562+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.job.SimpleStepHandler     : Executing step: [stepTransformCustomers]
-2026-01-29T06:03:06.566+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.t.CustomerTransformTasklet       : Step 3: データ整形処理を開始します...
-2026-01-29T06:03:06.567+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.t.CustomerTransformTasklet       : 初回実行、またはデータが存在しないため、全件処理対象とします。基準日: 2000-01-01T00:00+09:00
-2026-01-29T06:03:06.568+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.t.CustomerTransformTasklet       : Step 3: 完了。0 件のデータを DIM_CUSTOMERS に反映しました。
-2026-01-29T06:03:06.572+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.step.AbstractStep         : Step: [stepTransformCustomers] executed in 9ms
-2026-01-29T06:03:06.583+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.job.SimpleStepHandler     : Executing step: [stepTransformProducts]
-2026-01-29T06:03:06.587+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.tasklet.ProductTransformTasklet  : Step 3: Product関連のデータ整形処理を開始します...
-2026-01-29T06:03:06.588+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.tasklet.ProductTransformTasklet  : 初回実行、またはデータが存在しないため、全件処理対象とします。基準日: 2000-01-01T00:00+09:00
-2026-01-29T06:03:06.590+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.tasklet.ProductTransformTasklet  : 2 件のデータを dwh.dim_category_groups に反映しました。
-2026-01-29T06:03:06.591+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.tasklet.ProductTransformTasklet  : 2 件のデータを dwh.dim_products に反映しました。
-2026-01-29T06:03:06.591+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.tasklet.ProductTransformTasklet  : Step 3: Product関連のデータ整形処理が完了しました。
-2026-01-29T06:03:06.594+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.step.AbstractStep         : Step: [stepTransformProducts] executed in 10ms
-2026-01-29T06:03:06.603+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] o.s.b.c.l.s.TaskExecutorJobLauncher      : Job: [SimpleJob: [name=importSmaregiRawDataJob]] completed with the following parameters: [{'random':'{value=1684747621352876765, type=class java.lang.Long, identifying=true}'}] and the following status: [COMPLETED] in 160ms
-2026-01-29T06:03:06.635+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] o.s.b.c.l.s.TaskExecutorJobLauncher      : Job: [SimpleJob: [name=importSmaregiRawDataJob]] launched with the following parameters: [{'random':'{value=-1759445504200783000, type=class java.lang.Long, identifying=true}'}]
-2026-01-29T06:03:06.646+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.job.SimpleStepHandler     : Executing step: [step1Auth]
-2026-01-29T06:03:06.651+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] c.b.b.batch.tasklet.SmaregiAuthTasklet   : Step 1: スマレジAPI認証を開始します...
+2026-01-30T08:32:18.535+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] c.b.b.batch.tasklet.SmaregiAuthTasklet   : 認証成功。アクセストークンを取得しました。次ステップへ進みます。
+2026-01-30T08:32:18.539+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.step.AbstractStep         : Step: [step1Auth] executed in 7ms
+2026-01-30T08:32:18.551+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.job.SimpleStepHandler     : Executing step: [stepFetchCustomers]
+2026-01-30T08:32:18.555+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.r.SmaregiCustomerItemReader      : CustomerReader初期化完了: upd_date_time-from=2000-01-01T00:00:00+09:00
+2026-01-30T08:32:18.557+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.r.SmaregiCustomerItemReader      : Request URL: https://api.smaregi.dev/sb_skp459u4/pos/customers?limit=1000&page=1&upd_date_time-from=2000-01-01T00%3A00%3A00%2B09%3A00
+2026-01-30T08:32:18.557+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.r.SmaregiCustomerItemReader      : Request URL: https://api.smaregi.dev/sb_skp459u4/pos/customers?limit=1000&page=2&upd_date_time-from=2000-01-01T00%3A00%3A00%2B09%3A00
+2026-01-30T08:32:18.563+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.step.AbstractStep         : Step: [stepFetchCustomers] executed in 11ms
+2026-01-30T08:32:18.575+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.job.SimpleStepHandler     : Executing step: [stepFetchCategories]
+2026-01-30T08:32:18.580+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.r.SmaregiCategoryItemReader      : Request URL for Categories: https://api.smaregi.dev/sb_skp459u4/pos/categories?limit=1000&page=1
+2026-01-30T08:32:18.584+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.step.AbstractStep         : Step: [stepFetchCategories] executed in 8ms
+2026-01-30T08:32:18.596+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.job.SimpleStepHandler     : Executing step: [stepFetchCategoryGroups]
+2026-01-30T08:32:18.600+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.r.SmaregiCategoryGroupItemReader : Request URL for Category Groups: https://api.smaregi.dev/sb_skp459u4/pos/category_groups?limit=1000&page=1
+2026-01-30T08:32:18.604+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.step.AbstractStep         : Step: [stepFetchCategoryGroups] executed in 7ms
+2026-01-30T08:32:18.617+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.job.SimpleStepHandler     : Executing step: [stepFetchProducts]
+2026-01-30T08:32:18.621+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.reader.SmaregiProductItemReader  : Request URL for Products: https://api.smaregi.dev/sb_skp459u4/pos/products?limit=1000&page=1
+2026-01-30T08:32:18.625+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.step.AbstractStep         : Step: [stepFetchProducts] executed in 8ms
+2026-01-30T08:32:18.636+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.job.SimpleStepHandler     : Executing step: [stepFetchStaffs]
+2026-01-30T08:32:18.641+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.reader.SmaregiStaffItemReader    : StaffReader初期化完了: upd_date_time-from=2000-01-01T00:00:00+09:00
+2026-01-30T08:32:18.643+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.reader.SmaregiStaffItemReader    : Request URL: https://api.smaregi.dev/sb_skp459u4/pos/staffs?limit=1000&page=1&upd_date_time-from=2000-01-01T00%3A00%3A00%2B09%3A00
+2026-01-30T08:32:18.647+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.step.AbstractStep         : Step: [stepFetchStaffs] executed in 10ms
+2026-01-30T08:32:18.658+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.job.SimpleStepHandler     : Executing step: [stepTransformCustomers]
+2026-01-30T08:32:18.663+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.t.CustomerTransformTasklet       : Step 3: データ整形処理を開始します...
+2026-01-30T08:32:18.664+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.t.CustomerTransformTasklet       : 初回実行、またはデータが存在しないため、全件処理対象とします。基準日: 2000-01-01T00:00+09:00
+2026-01-30T08:32:18.665+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.t.CustomerTransformTasklet       : Step 3: 完了。2 件のデータを DIM_CUSTOMERS に反映しました。
+2026-01-30T08:32:18.669+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.step.AbstractStep         : Step: [stepTransformCustomers] executed in 10ms
+2026-01-30T08:32:18.682+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.job.SimpleStepHandler     : Executing step: [stepTransformProducts]
+2026-01-30T08:32:18.687+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.tasklet.ProductTransformTasklet  : Step 3: Product関連のデータ整形処理を開始します...
+2026-01-30T08:32:18.688+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.tasklet.ProductTransformTasklet  : 初回実行、またはデータが存在しないため、全件処理対象とします。基準日: 2000-01-01T00:00+09:00
+2026-01-30T08:32:18.689+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.tasklet.ProductTransformTasklet  : 0 件のデータを dwh.dim_category_groups に反映しました。
+2026-01-30T08:32:18.691+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.tasklet.ProductTransformTasklet  : 0 件のデータを dwh.dim_products に反映しました。
+2026-01-30T08:32:18.691+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.tasklet.ProductTransformTasklet  : Step 3: Product関連のデータ整形処理が完了しました。
+2026-01-30T08:32:18.694+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.step.AbstractStep         : Step: [stepTransformProducts] executed in 12ms
+2026-01-30T08:32:18.703+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] o.s.b.c.l.s.TaskExecutorJobLauncher      : Job: [SimpleJob: [name=importSmaregiRawDataJob]] completed with the following parameters: [{'random':'{value=5476826284947759789, type=class java.lang.Long, identifying=true}'}] and the following status: [COMPLETED] in 179ms
+2026-01-30T08:32:18.741+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] o.s.b.c.l.s.TaskExecutorJobLauncher      : Job: [SimpleJob: [name=importSmaregiRawDataJob]] launched with the following parameters: [{'random':'{value=-8957191313252318761, type=class java.lang.Long, identifying=true}'}]
+2026-01-30T08:32:18.750+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.job.SimpleStepHandler     : Executing step: [step1Auth]
+2026-01-30T08:32:18.754+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] c.b.b.batch.tasklet.SmaregiAuthTasklet   : Step 1: スマレジAPI認証を開始します...
 https://id.smaregi.dev/app/sb_skp459u4/token
-2026-01-29T06:03:06.652+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] c.b.b.batch.tasklet.SmaregiAuthTasklet   : 認証成功。アクセストークンを取得しました。次ステップへ進みます。
-2026-01-29T06:03:06.656+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.step.AbstractStep         : Step: [step1Auth] executed in 9ms
-2026-01-29T06:03:06.668+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.job.SimpleStepHandler     : Executing step: [stepFetchCustomers]
-2026-01-29T06:03:06.672+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.r.SmaregiCustomerItemReader      : CustomerReader初期化完了: upd_date_time-from=2000-01-01T00:00:00+09:00
-2026-01-29T06:03:06.674+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.r.SmaregiCustomerItemReader      : Request URL: https://api.smaregi.dev/sb_skp459u4/pos/customers?limit=1000&page=1&upd_date_time-from=2000-01-01T00%3A00%3A00%2B09%3A00
-2026-01-29T06:03:06.678+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.step.AbstractStep         : Step: [stepFetchCustomers] executed in 9ms
-2026-01-29T06:03:06.689+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.job.SimpleStepHandler     : Executing step: [stepFetchCategories]
-2026-01-29T06:03:06.694+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.r.SmaregiCategoryItemReader      : Request URL for Categories: https://api.smaregi.dev/sb_skp459u4/pos/categories?limit=1000&page=1
-2026-01-29T06:03:06.694+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.r.SmaregiCategoryItemReader      : Request URL for Categories: https://api.smaregi.dev/sb_skp459u4/pos/categories?limit=1000&page=2
-2026-01-29T06:03:06.700+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.step.AbstractStep         : Step: [stepFetchCategories] executed in 10ms
-2026-01-29T06:03:06.712+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.job.SimpleStepHandler     : Executing step: [stepFetchCategoryGroups]
-2026-01-29T06:03:06.716+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.r.SmaregiCategoryGroupItemReader : Request URL for Category Groups: https://api.smaregi.dev/sb_skp459u4/pos/category_groups?limit=1000&page=1
-2026-01-29T06:03:06.719+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.step.AbstractStep         : Step: [stepFetchCategoryGroups] executed in 7ms
-2026-01-29T06:03:06.730+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.job.SimpleStepHandler     : Executing step: [stepFetchProducts]
-2026-01-29T06:03:06.734+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.reader.SmaregiProductItemReader  : Request URL for Products: https://api.smaregi.dev/sb_skp459u4/pos/products?limit=1000&page=1
-2026-01-29T06:03:06.738+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.step.AbstractStep         : Step: [stepFetchProducts] executed in 7ms
-2026-01-29T06:03:06.748+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.job.SimpleStepHandler     : Executing step: [stepTransformCustomers]
-2026-01-29T06:03:06.752+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.t.CustomerTransformTasklet       : Step 3: データ整形処理を開始します...
-2026-01-29T06:03:06.753+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.t.CustomerTransformTasklet       : 初回実行、またはデータが存在しないため、全件処理対象とします。基準日: 2000-01-01T00:00+09:00
-2026-01-29T06:03:06.754+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.t.CustomerTransformTasklet       : Step 3: 完了。0 件のデータを DIM_CUSTOMERS に反映しました。
-2026-01-29T06:03:06.758+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.step.AbstractStep         : Step: [stepTransformCustomers] executed in 9ms
-2026-01-29T06:03:06.771+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.job.SimpleStepHandler     : Executing step: [stepTransformProducts]
-2026-01-29T06:03:06.776+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.tasklet.ProductTransformTasklet  : Step 3: Product関連のデータ整形処理を開始します...
-2026-01-29T06:03:06.777+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.tasklet.ProductTransformTasklet  : 初回実行、またはデータが存在しないため、全件処理対象とします。基準日: 2000-01-01T00:00+09:00
-2026-01-29T06:03:06.778+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.tasklet.ProductTransformTasklet  : 0 件のデータを dwh.dim_category_groups に反映しました。
-2026-01-29T06:03:06.780+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.tasklet.ProductTransformTasklet  : 0 件のデータを dwh.dim_products に反映しました。
-2026-01-29T06:03:06.780+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.tasklet.ProductTransformTasklet  : Step 3: Product関連のデータ整形処理が完了しました。
-2026-01-29T06:03:06.784+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.step.AbstractStep         : Step: [stepTransformProducts] executed in 12ms
-2026-01-29T06:03:06.793+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] o.s.b.c.l.s.TaskExecutorJobLauncher      : Job: [SimpleJob: [name=importSmaregiRawDataJob]] completed with the following parameters: [{'random':'{value=-1759445504200783000, type=class java.lang.Long, identifying=true}'}] and the following status: [COMPLETED] in 154ms
+2026-01-30T08:32:18.755+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] c.b.b.batch.tasklet.SmaregiAuthTasklet   : 認証成功。アクセストークンを取得しました。次ステップへ進みます。
+2026-01-30T08:32:18.760+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.step.AbstractStep         : Step: [step1Auth] executed in 9ms
+2026-01-30T08:32:18.773+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.job.SimpleStepHandler     : Executing step: [stepFetchCustomers]
+2026-01-30T08:32:18.776+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.r.SmaregiCustomerItemReader      : CustomerReader初期化完了: upd_date_time-from=2000-01-01T00:00:00+09:00
+2026-01-30T08:32:18.779+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.r.SmaregiCustomerItemReader      : Request URL: https://api.smaregi.dev/sb_skp459u4/pos/customers?limit=1000&page=1&upd_date_time-from=2000-01-01T00%3A00%3A00%2B09%3A00
+2026-01-30T08:32:18.782+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.step.AbstractStep         : Step: [stepFetchCustomers] executed in 9ms
+2026-01-30T08:32:18.794+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.job.SimpleStepHandler     : Executing step: [stepFetchCategories]
+2026-01-30T08:32:18.798+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.r.SmaregiCategoryItemReader      : Request URL for Categories: https://api.smaregi.dev/sb_skp459u4/pos/categories?limit=1000&page=1
+2026-01-30T08:32:18.798+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.r.SmaregiCategoryItemReader      : Request URL for Categories: https://api.smaregi.dev/sb_skp459u4/pos/categories?limit=1000&page=2
+2026-01-30T08:32:18.804+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.step.AbstractStep         : Step: [stepFetchCategories] executed in 10ms
+2026-01-30T08:32:18.816+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.job.SimpleStepHandler     : Executing step: [stepFetchCategoryGroups]
+2026-01-30T08:32:18.820+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.r.SmaregiCategoryGroupItemReader : Request URL for Category Groups: https://api.smaregi.dev/sb_skp459u4/pos/category_groups?limit=1000&page=1
+2026-01-30T08:32:18.821+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.r.SmaregiCategoryGroupItemReader : Request URL for Category Groups: https://api.smaregi.dev/sb_skp459u4/pos/category_groups?limit=1000&page=2
+2026-01-30T08:32:18.826+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.step.AbstractStep         : Step: [stepFetchCategoryGroups] executed in 9ms
+2026-01-30T08:32:18.839+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.job.SimpleStepHandler     : Executing step: [stepFetchProducts]
+2026-01-30T08:32:18.845+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.reader.SmaregiProductItemReader  : Request URL for Products: https://api.smaregi.dev/sb_skp459u4/pos/products?limit=1000&page=1
+2026-01-30T08:32:18.845+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.reader.SmaregiProductItemReader  : Request URL for Products: https://api.smaregi.dev/sb_skp459u4/pos/products?limit=1000&page=2
+2026-01-30T08:32:18.852+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.step.AbstractStep         : Step: [stepFetchProducts] executed in 12ms
+2026-01-30T08:32:18.864+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.job.SimpleStepHandler     : Executing step: [stepFetchStaffs]
+2026-01-30T08:32:18.867+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.reader.SmaregiStaffItemReader    : StaffReader初期化完了: upd_date_time-from=2000-01-01T00:00:00+09:00
+2026-01-30T08:32:18.869+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.reader.SmaregiStaffItemReader    : Request URL: https://api.smaregi.dev/sb_skp459u4/pos/staffs?limit=1000&page=1&upd_date_time-from=2000-01-01T00%3A00%3A00%2B09%3A00
+2026-01-30T08:32:18.873+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.step.AbstractStep         : Step: [stepFetchStaffs] executed in 8ms
+2026-01-30T08:32:18.884+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.job.SimpleStepHandler     : Executing step: [stepTransformCustomers]
+2026-01-30T08:32:18.889+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.t.CustomerTransformTasklet       : Step 3: データ整形処理を開始します...
+2026-01-30T08:32:18.890+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.t.CustomerTransformTasklet       : 初回実行、またはデータが存在しないため、全件処理対象とします。基準日: 2000-01-01T00:00+09:00
+2026-01-30T08:32:18.891+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.t.CustomerTransformTasklet       : Step 3: 完了。0 件のデータを DIM_CUSTOMERS に反映しました。
+2026-01-30T08:32:18.895+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.step.AbstractStep         : Step: [stepTransformCustomers] executed in 9ms
+2026-01-30T08:32:18.906+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.job.SimpleStepHandler     : Executing step: [stepTransformProducts]
+2026-01-30T08:32:18.910+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.tasklet.ProductTransformTasklet  : Step 3: Product関連のデータ整形処理を開始します...
+2026-01-30T08:32:18.911+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.tasklet.ProductTransformTasklet  : 初回実行、またはデータが存在しないため、全件処理対象とします。基準日: 2000-01-01T00:00+09:00
+2026-01-30T08:32:18.912+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.tasklet.ProductTransformTasklet  : 2 件のデータを dwh.dim_category_groups に反映しました。
+2026-01-30T08:32:18.914+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.tasklet.ProductTransformTasklet  : 2 件のデータを dwh.dim_products に反映しました。
+2026-01-30T08:32:18.914+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.tasklet.ProductTransformTasklet  : Step 3: Product関連のデータ整形処理が完了しました。
+2026-01-30T08:32:18.918+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.step.AbstractStep         : Step: [stepTransformProducts] executed in 11ms
+2026-01-30T08:32:18.929+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] o.s.b.c.l.s.TaskExecutorJobLauncher      : Job: [SimpleJob: [name=importSmaregiRawDataJob]] completed with the following parameters: [{'random':'{value=-8957191313252318761, type=class java.lang.Long, identifying=true}'}] and the following status: [COMPLETED] in 183ms
+2026-01-30T08:32:18.963+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] o.s.b.c.l.s.TaskExecutorJobLauncher      : Job: [SimpleJob: [name=importSmaregiRawDataJob]] launched with the following parameters: [{'random':'{value=6241335211094684040, type=class java.lang.Long, identifying=true}'}]
+2026-01-30T08:32:18.973+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.job.SimpleStepHandler     : Executing step: [step1Auth]
+2026-01-30T08:32:18.977+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] c.b.b.batch.tasklet.SmaregiAuthTasklet   : Step 1: スマレジAPI認証を開始します...
+https://id.smaregi.dev/app/sb_skp459u4/token
+2026-01-30T08:32:18.977+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] c.b.b.batch.tasklet.SmaregiAuthTasklet   : 認証成功。アクセストークンを取得しました。次ステップへ進みます。
+2026-01-30T08:32:18.980+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.step.AbstractStep         : Step: [step1Auth] executed in 7ms
+2026-01-30T08:32:18.993+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.job.SimpleStepHandler     : Executing step: [stepFetchCustomers]
+2026-01-30T08:32:18.996+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.r.SmaregiCustomerItemReader      : CustomerReader初期化完了: upd_date_time-from=2000-01-01T00:00:00+09:00
+2026-01-30T08:32:18.998+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.r.SmaregiCustomerItemReader      : Request URL: https://api.smaregi.dev/sb_skp459u4/pos/customers?limit=1000&page=1&upd_date_time-from=2000-01-01T00%3A00%3A00%2B09%3A00
+2026-01-30T08:32:19.001+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.step.AbstractStep         : Step: [stepFetchCustomers] executed in 8ms
+2026-01-30T08:32:19.013+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.job.SimpleStepHandler     : Executing step: [stepFetchCategories]
+2026-01-30T08:32:19.018+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.r.SmaregiCategoryItemReader      : Request URL for Categories: https://api.smaregi.dev/sb_skp459u4/pos/categories?limit=1000&page=1
+2026-01-30T08:32:19.018+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.r.SmaregiCategoryItemReader      : Request URL for Categories: https://api.smaregi.dev/sb_skp459u4/pos/categories?limit=1000&page=2
+2026-01-30T08:32:19.023+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.step.AbstractStep         : Step: [stepFetchCategories] executed in 9ms
+2026-01-30T08:32:19.037+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.job.SimpleStepHandler     : Executing step: [stepFetchCategoryGroups]
+2026-01-30T08:32:19.042+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.r.SmaregiCategoryGroupItemReader : Request URL for Category Groups: https://api.smaregi.dev/sb_skp459u4/pos/category_groups?limit=1000&page=1
+2026-01-30T08:32:19.047+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.step.AbstractStep         : Step: [stepFetchCategoryGroups] executed in 10ms
+2026-01-30T08:32:19.060+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.job.SimpleStepHandler     : Executing step: [stepFetchProducts]
+2026-01-30T08:32:19.065+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.reader.SmaregiProductItemReader  : Request URL for Products: https://api.smaregi.dev/sb_skp459u4/pos/products?limit=1000&page=1
+2026-01-30T08:32:19.069+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.step.AbstractStep         : Step: [stepFetchProducts] executed in 9ms
+2026-01-30T08:32:19.082+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.job.SimpleStepHandler     : Executing step: [stepFetchStaffs]
+2026-01-30T08:32:19.085+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.reader.SmaregiStaffItemReader    : StaffReader初期化完了: upd_date_time-from=2000-01-01T00:00:00+09:00
+2026-01-30T08:32:19.087+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.reader.SmaregiStaffItemReader    : Request URL: https://api.smaregi.dev/sb_skp459u4/pos/staffs?limit=1000&page=1&upd_date_time-from=2000-01-01T00%3A00%3A00%2B09%3A00
+2026-01-30T08:32:19.091+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.step.AbstractStep         : Step: [stepFetchStaffs] executed in 9ms
+2026-01-30T08:32:19.103+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.job.SimpleStepHandler     : Executing step: [stepTransformCustomers]
+2026-01-30T08:32:19.107+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.t.CustomerTransformTasklet       : Step 3: データ整形処理を開始します...
+2026-01-30T08:32:19.108+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.t.CustomerTransformTasklet       : 初回実行、またはデータが存在しないため、全件処理対象とします。基準日: 2000-01-01T00:00+09:00
+2026-01-30T08:32:19.110+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.t.CustomerTransformTasklet       : Step 3: 完了。0 件のデータを DIM_CUSTOMERS に反映しました。
+2026-01-30T08:32:19.114+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.step.AbstractStep         : Step: [stepTransformCustomers] executed in 10ms
+2026-01-30T08:32:19.125+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.job.SimpleStepHandler     : Executing step: [stepTransformProducts]
+2026-01-30T08:32:19.129+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.tasklet.ProductTransformTasklet  : Step 3: Product関連のデータ整形処理を開始します...
+2026-01-30T08:32:19.130+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.tasklet.ProductTransformTasklet  : 初回実行、またはデータが存在しないため、全件処理対象とします。基準日: 2000-01-01T00:00+09:00
+2026-01-30T08:32:19.131+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.tasklet.ProductTransformTasklet  : 0 件のデータを dwh.dim_category_groups に反映しました。
+2026-01-30T08:32:19.133+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.tasklet.ProductTransformTasklet  : 0 件のデータを dwh.dim_products に反映しました。
+2026-01-30T08:32:19.133+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.tasklet.ProductTransformTasklet  : Step 3: Product関連のデータ整形処理が完了しました。
+2026-01-30T08:32:19.136+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] o.s.batch.core.step.AbstractStep         : Step: [stepTransformProducts] executed in 10ms
+2026-01-30T08:32:19.144+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] o.s.b.c.l.s.TaskExecutorJobLauncher      : Job: [SimpleJob: [name=importSmaregiRawDataJob]] completed with the following parameters: [{'random':'{value=6241335211094684040, type=class java.lang.Long, identifying=true}'}] and the following status: [COMPLETED] in 178ms
 ]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

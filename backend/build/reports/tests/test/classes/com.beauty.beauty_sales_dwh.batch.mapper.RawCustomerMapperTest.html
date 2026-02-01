@@ -41,7 +41,7 @@
 </td>
 <td>
 <div class="infoBox" id="duration">
-<div class="counter">0.015s</div>
+<div class="counter">0.021s</div>
 <p>duration</p>
 </div>
 </td>
@@ -81,13 +81,13 @@
 <tr>
 <td class="success">テーブルが空の場合はnullが返ること（初回実行時の想定）</td>
 <td class="success">testFindMaxFechedAt_EmptyTable()</td>
-<td class="success">0.004s</td>
+<td class="success">0.006s</td>
 <td class="success">passed</td>
 </tr>
 <tr>
 <td class="success">データのINSERTと最大日付の取得ができること</td>
 <td class="success">testInsertAndFindMaxImportedAt()</td>
-<td class="success">0.011s</td>
+<td class="success">0.015s</td>
 <td class="success">passed</td>
 </tr>
 </table>
@@ -95,9 +95,9 @@
 <div class="tab">
 <h2>Standard output</h2>
 <span class="code">
-<pre>2026-01-29T06:03:06.799+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.beauty.beauty_sales_dwh.batch.mapper.RawCustomerMapperTest]: RawCustomerMapperTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
-2026-01-29T06:03:06.816+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.beauty.beauty_sales_dwh.BeautySalesDwhApplication for test class com.beauty.beauty_sales_dwh.batch.mapper.RawCustomerMapperTest
-2026-01-29T06:03:06.819+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] m.p.springdotenv.DotenvPropertySource    : Initialized Dotenv with DotenvConfig{directory=null, filename=null, ignoreIfMalformed=false, ignoreIfMissing=true, systemProperties=false, prefix=null}
+<pre>2026-01-30T08:32:19.150+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.beauty.beauty_sales_dwh.batch.mapper.RawCustomerMapperTest]: RawCustomerMapperTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-01-30T08:32:19.169+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.beauty.beauty_sales_dwh.BeautySalesDwhApplication for test class com.beauty.beauty_sales_dwh.batch.mapper.RawCustomerMapperTest
+2026-01-30T08:32:19.173+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] m.p.springdotenv.DotenvPropertySource    : Initialized Dotenv with DotenvConfig{directory=null, filename=null, ignoreIfMalformed=false, ignoreIfMissing=true, systemProperties=false, prefix=null}
 
   .   ____          _            __ _ _
  /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
@@ -108,13 +108,13 @@
 
  :: Spring Boot ::                (v3.5.8)
 
-2026-01-29T06:03:06.828+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.mapper.RawCustomerMapperTest     : Starting RawCustomerMapperTest using Java 21.0.9 with PID 24114 (started by horinoakiko in /Users/horinoakiko/Documents/beauty-sales-dwh/backend)
-2026-01-29T06:03:06.828+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.mapper.RawCustomerMapperTest     : The following 1 profile is active: &quot;test&quot;
-2026-01-29T06:03:06.897+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] com.zaxxer.hikari.HikariDataSource       : HikariPool-3 - Starting...
-2026-01-29T06:03:06.936+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] com.zaxxer.hikari.pool.HikariPool        : HikariPool-3 - Added connection org.postgresql.jdbc.PgConnection@6ccf06f1
-2026-01-29T06:03:06.936+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] com.zaxxer.hikari.HikariDataSource       : HikariPool-3 - Start completed.
-2026-01-29T06:03:06.960+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.mapper.RawCustomerMapperTest     : Started RawCustomerMapperTest in 0.143 seconds (process running for 4.516)
-取得された最大日時: 2026-01-28T21:03:06.965525Z
+2026-01-30T08:32:19.186+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.mapper.RawCustomerMapperTest     : Starting RawCustomerMapperTest using Java 21.0.9 with PID 14582 (started by horinoakiko in /Users/horinoakiko/Documents/beauty-sales-dwh/backend)
+2026-01-30T08:32:19.186+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.mapper.RawCustomerMapperTest     : The following 1 profile is active: &quot;test&quot;
+2026-01-30T08:32:19.257+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] com.zaxxer.hikari.HikariDataSource       : HikariPool-3 - Starting...
+2026-01-30T08:32:19.274+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] com.zaxxer.hikari.pool.HikariPool        : HikariPool-3 - Added connection org.postgresql.jdbc.PgConnection@38f2342b
+2026-01-30T08:32:19.274+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] com.zaxxer.hikari.HikariDataSource       : HikariPool-3 - Start completed.
+2026-01-30T08:32:19.301+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.mapper.RawCustomerMapperTest     : Started RawCustomerMapperTest in 0.13 seconds (process running for 4.771)
+取得された最大日時: 2026-01-29T23:32:19.307208Z
 現在のDBの最大日時: null
 </pre>
 </span>
@@ -127,7 +127,7 @@
 <input id="line-wrapping-toggle" type="checkbox" autocomplete="off"/>
 </label>
 </div>Generated by 
-<a href="https://www.gradle.org">Gradle 8.14.3</a> at 2026/01/29 6:03:07</p>
+<a href="https://www.gradle.org">Gradle 8.14.3</a> at 2026/01/30 8:32:19</p>
 </div>
 </div>
 </body>

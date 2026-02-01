@@ -19,10 +19,12 @@ import com.beauty.beauty_sales_dwh.batch.processor.CategoryGroupRawDataProcessor
 import com.beauty.beauty_sales_dwh.batch.processor.CategoryRawDataProcessor;
 import com.beauty.beauty_sales_dwh.batch.processor.CustomerRawDataProcessor;
 import com.beauty.beauty_sales_dwh.batch.processor.ProductRawDataProcessor;
+import com.beauty.beauty_sales_dwh.batch.processor.StaffRawDataProcessor;
 import com.beauty.beauty_sales_dwh.batch.reader.SmaregiCategoryGroupItemReader;
 import com.beauty.beauty_sales_dwh.batch.reader.SmaregiCategoryItemReader;
 import com.beauty.beauty_sales_dwh.batch.reader.SmaregiCustomerItemReader;
 import com.beauty.beauty_sales_dwh.batch.reader.SmaregiProductItemReader;
+import com.beauty.beauty_sales_dwh.batch.reader.SmaregiStaffItemReader;
 import com.beauty.beauty_sales_dwh.batch.tasklet.CustomerTransformTasklet;
 import com.beauty.beauty_sales_dwh.batch.tasklet.ProductTransformTasklet;
 import com.beauty.beauty_sales_dwh.batch.tasklet.SmaregiAuthTasklet;
@@ -30,6 +32,7 @@ import com.beauty.beauty_sales_dwh.domain.CategoryGroupRawData;
 import com.beauty.beauty_sales_dwh.domain.CategoryRawData;
 import com.beauty.beauty_sales_dwh.domain.CustomerRawData;
 import com.beauty.beauty_sales_dwh.domain.ProductRawData;
+import com.beauty.beauty_sales_dwh.domain.StaffRawData;
 
 import lombok.RequiredArgsConstructor;
 
@@ -58,12 +61,14 @@ public class SmaregiBatchConfig {
     private final SmaregiCategoryItemReader smaregiCategoryReader;
     private final SmaregiCategoryGroupItemReader smaregiCategoryGroupReader;
     private final SmaregiProductItemReader smaregiProductReader;
+    private final SmaregiStaffItemReader smaregiStaffReader;
 
     // --- Processors ---
     private final CustomerRawDataProcessor customerProcessor;
     private final CategoryRawDataProcessor categoryProcessor;
     private final CategoryGroupRawDataProcessor categoryGroupProcessor;
     private final ProductRawDataProcessor productProcessor;
+    private final StaffRawDataProcessor staffProcessor;
 
 
     // =================================================================================
@@ -78,6 +83,7 @@ public class SmaregiBatchConfig {
                 .next(stepFetchCategories())
                 .next(stepFetchCategoryGroups())
                 .next(stepFetchProducts())
+                .next(stepFetchStaffs())
                 .next(stepTransformCustomers())
                 .next(stepTransformProducts())
                 .build();
@@ -159,6 +165,20 @@ public class SmaregiBatchConfig {
                 .build();
     }
 
+    /**
+     * Step 2.5: スタッフデータ取込
+     */
+    @Bean
+    public Step stepFetchStaffs() {
+        return new StepBuilder("stepFetchStaffs", jobRepository)
+                .<Map<String, Object>, StaffRawData>chunk(100, transactionManager)
+                // 100件ごとにコミット
+                .reader(smaregiStaffReader)
+                .processor(staffProcessor)
+                .writer(staffWriter())
+                .build();
+    }
+
 
     /**
      * Step 3: 顧客データ整形タスク
@@ -213,6 +233,14 @@ public class SmaregiBatchConfig {
         return new MyBatisBatchItemWriterBuilder<ProductRawData>()
                 .sqlSessionFactory(sqlSessionFactory)
                 .statementId("com.beauty.beauty_sales_dwh.mapper.RawProductMapper.insertRawProduct")
+                .build();
+    }
+
+    @Bean
+    public ItemWriter<StaffRawData> staffWriter() {
+        return new MyBatisBatchItemWriterBuilder<StaffRawData>()
+                .sqlSessionFactory(sqlSessionFactory)
+                .statementId("com.beauty.beauty_sales_dwh.mapper.RawStaffMapper.insertRawStaff")
                 .build();
     }
 }

@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.beauty.beauty_sales_dwh.batch.reader.SmaregiCustomerItemReaderTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2026-01-28T21:03:06.979Z" hostname="AkikoHorinonoMacBook-Air.local" time="0.126">
+<testsuite name="com.beauty.beauty_sales_dwh.batch.reader.SmaregiCustomerItemReaderTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2026-01-29T23:32:19.555Z" hostname="AkikoHorinonoMacBook-Air.local" time="0.163">
   <properties/>
-  <testcase name="正常系: APIから2件のデータを取得し、1件ずつReadできること" classname="com.beauty.beauty_sales_dwh.batch.reader.SmaregiCustomerItemReaderTest" time="0.126"/>
-  <system-out><![CDATA[2026-01-29T06:03:07.098+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.r.SmaregiCustomerItemReader      : CustomerReader初期化完了: upd_date_time-from=2023-01-01T10:00:00+09:00
-2026-01-29T06:03:07.099+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.r.SmaregiCustomerItemReader      : Request URL: https://api.smaregi.dev/test_contract/pos/customers?limit=1000&page=1&upd_date_time-from=2023-01-01T10%3A00%3A00%2B09%3A00
-2026-01-29T06:03:07.102+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.r.SmaregiCustomerItemReader      : Request URL: https://api.smaregi.dev/test_contract/pos/customers?limit=1000&page=2&upd_date_time-from=2023-01-01T10%3A00%3A00%2B09%3A00
+  <testcase name="正常系: APIから2件のデータを取得し、1件ずつReadできること" classname="com.beauty.beauty_sales_dwh.batch.reader.SmaregiCustomerItemReaderTest" time="0.163"/>
+  <system-out><![CDATA[2026-01-30T08:32:19.711+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.r.SmaregiCustomerItemReader      : CustomerReader初期化完了: upd_date_time-from=2023-01-01T10:00:00+09:00
+2026-01-30T08:32:19.712+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.r.SmaregiCustomerItemReader      : Request URL: https://api.smaregi.dev/test_contract/pos/customers?limit=1000&page=1&upd_date_time-from=2023-01-01T10%3A00%3A00%2B09%3A00
+2026-01-30T08:32:19.716+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] c.b.b.b.r.SmaregiCustomerItemReader      : Request URL: https://api.smaregi.dev/test_contract/pos/customers?limit=1000&page=2&upd_date_time-from=2023-01-01T10%3A00%3A00%2B09%3A00
 ]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>
