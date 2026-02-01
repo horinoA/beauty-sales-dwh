@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.beauty.beauty_sales_dwh.OtherModelValifationTest" tests="6" skipped="0" failures="0" errors="0" timestamp="2026-01-28T21:03:05.419Z" hostname="AkikoHorinonoMacBook-Air.local" time="0.023">
+<testsuite name="com.beauty.beauty_sales_dwh.OtherModelValifationTest" tests="6" skipped="0" failures="0" errors="0" timestamp="2026-01-29T23:32:17.400Z" hostname="AkikoHorinonoMacBook-Air.local" time="0.026">
   <properties/>
-  <testcase name="dimStaffRank()" classname="com.beauty.beauty_sales_dwh.OtherModelValifationTest" time="0.005"/>
-  <testcase name="dimproductTest()" classname="com.beauty.beauty_sales_dwh.OtherModelValifationTest" time="0.005"/>
+  <testcase name="dimStaffRank()" classname="com.beauty.beauty_sales_dwh.OtherModelValifationTest" time="0.006"/>
+  <testcase name="dimproductTest()" classname="com.beauty.beauty_sales_dwh.OtherModelValifationTest" time="0.008"/>
   <testcase name="DimStaffTest()" classname="com.beauty.beauty_sales_dwh.OtherModelValifationTest" time="0.002"/>
-  <testcase name="dimStaffStaffName()" classname="com.beauty.beauty_sales_dwh.OtherModelValifationTest" time="0.001"/>
+  <testcase name="dimStaffStaffName()" classname="com.beauty.beauty_sales_dwh.OtherModelValifationTest" time="0.002"/>
   <testcase name="dimCategoryGroupTest()" classname="com.beauty.beauty_sales_dwh.OtherModelValifationTest" time="0.005"/>
   <testcase name="dimStaffemployFlag()" classname="com.beauty.beauty_sales_dwh.OtherModelValifationTest" time="0.002"/>
-  <system-out><![CDATA[2026-01-29T06:03:05.417+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.beauty.beauty_sales_dwh.OtherModelValifationTest]: OtherModelValifationTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
-2026-01-29T06:03:05.418+09:00  INFO 24114 --- [beauty-sales-dwh] [    Test worker] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.beauty.beauty_sales_dwh.BeautySalesDwhApplication for test class com.beauty.beauty_sales_dwh.OtherModelValifationTest
-DimProduct[appCompanyId=1, productId=20001, productName=デザインカット(S/B込), catGroupId=100, price=5500, storeId=1, insertDataTime=2026-01-29T06:03:05.425940+09:00, updateDataTime=2026-01-29T06:03:05.425953+09:00]
-DimStaff[appCompanyId=1, staffId=30001, staffName=美容_師太郎, rank=トップスタイリスト, storeId=1, employFlag=1, insertDataTime=2026-01-29T06:03:05.432445+09:00, updateDataTime=2026-01-29T06:03:05.432455+09:00]
-DimCategoryGroup[appCompanyId=1, catGroupId=100, catGroupName=カットメニュー, insertDataTime=2026-01-29T06:03:05.436136+09:00, updateDataTime=2026-01-29T06:03:05.436145+09:00]
+  <system-out><![CDATA[2026-01-30T08:32:17.399+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.beauty.beauty_sales_dwh.OtherModelValifationTest]: OtherModelValifationTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-01-30T08:32:17.400+09:00  INFO 14582 --- [beauty-sales-dwh] [    Test worker] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.beauty.beauty_sales_dwh.BeautySalesDwhApplication for test class com.beauty.beauty_sales_dwh.OtherModelValifationTest
+DimProduct[appCompanyId=1, productId=20001, productName=デザインカット(S/B込), catGroupId=100, price=5500, storeId=1, insertDataTime=2026-01-30T08:32:17.408297+09:00, updateDataTime=2026-01-30T08:32:17.408307+09:00]
+DimStaff[appCompanyId=1, staffId=30001, staffName=美容_師太郎, rank=トップスタイリスト, storeId=1, employFlag=1, insertDataTime=2026-01-30T08:32:17.416132+09:00, updateDataTime=2026-01-30T08:32:17.416145+09:00]
+DimCategoryGroup[appCompanyId=1, catGroupId=100, catGroupName=カットメニュー, insertDataTime=2026-01-30T08:32:17.420735+09:00, updateDataTime=2026-01-30T08:32:17.420742+09:00]
 ]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

@@ -58,7 +58,7 @@ public class SmaregiBatchIntegrationTest {
     @BeforeEach
     public void setUp() {
         mockServer = MockRestServiceServer.bindTo(restTemplate).build();
-        jdbcTemplate.execute("TRUNCATE TABLE raw.products,raw.customers, raw.categories, raw.category_groups RESTART IDENTITY");
+        jdbcTemplate.execute("TRUNCATE TABLE raw.products,raw.customers, raw.categories, raw.category_groups, raw.staffs RESTART IDENTITY");
         jdbcTemplate.execute("TRUNCATE TABLE dwh.dim_customers RESTART IDENTITY");
         
     }
@@ -72,6 +72,7 @@ public class SmaregiBatchIntegrationTest {
         mockCategoriesApi(0); // 0件のカテゴリデータを返すモック
         mockCategoryGroupsApi(0); // 0件のカテゴリグループデータを返すモック
         mockProductsApi(0);     //0件の製品データを返すモック
+        mockStaffsApi(0); // 0件のスタッフデータを返すモック
         // --- Job Execution ---
         JobExecution jobExecution = jobLauncherTestUtils.launchJob();
 
@@ -97,6 +98,7 @@ public class SmaregiBatchIntegrationTest {
         mockCategoriesApi(2); // カテゴリAPIは0件返す
         mockCategoryGroupsApi(2); // カテゴリグループAPIは空
         mockProductsApi(2);     //2件の製品データを返すモック
+        mockStaffsApi(0); // 0件のスタッフデータを返すモック
 
         // --- Job Execution ---
         JobExecution jobExecution = jobLauncherTestUtils.launchJob();
@@ -127,6 +129,7 @@ public class SmaregiBatchIntegrationTest {
         mockCategoriesApi(2); // カテゴリAPIは2件返す
         mockCategoryGroupsApi(0); // カテゴリグループAPIは空
         mockProductsApi(0);     //0件の製品データを返すモック
+        mockStaffsApi(0); // 0件のスタッフデータを返すモック
 
         // --- Job Execution ---
         JobExecution jobExecution = jobLauncherTestUtils.launchJob();
@@ -157,6 +160,7 @@ public class SmaregiBatchIntegrationTest {
         mockCategoriesApi(0);
         mockCategoryGroupsApi(2); // カテゴリグループAPIは2件返す
         mockProductsApi(0);
+        mockStaffsApi(0); // 0件のスタッフデータを返すモック
 
         // --- Job Execution ---
         JobExecution jobExecution = jobLauncherTestUtils.launchJob();
@@ -174,6 +178,35 @@ public class SmaregiBatchIntegrationTest {
         JsonNode jsonNode = objectMapper.readTree(jsonBody);
         assertThat(jsonNode.get("categoryGroupId").asText()).isEqualTo("1");
         assertThat(jsonNode.get("categoryGroupName").asText()).isEqualTo("Technical");
+
+        mockServer.verify();
+    }
+    
+    @Test
+    @DisplayName("ステップテスト: スタッフデータ取込が正常終了すること")
+    public void testFetchStaffsStep() throws Exception {
+        // --- API Mocks ---
+        mockAuth();
+        mockCustomersApi(0);
+        mockCategoriesApi(0);
+        mockCategoryGroupsApi(0);
+        mockProductsApi(0);
+        mockStaffsApi(2); // 2件のスタッフデータを返すモック
+
+        // --- Job Execution ---
+        JobExecution jobExecution = jobLauncherTestUtils.launchJob();
+
+        // --- Assertions ---
+        assertThat(jobExecution.getExitStatus()).isEqualTo(ExitStatus.COMPLETED);
+        
+        // 各テーブルの件数確認
+        assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM raw.staffs", Integer.class)).isEqualTo(2);
+
+        // 登録されたJSONの内容を確認
+        String jsonBody = jdbcTemplate.queryForObject("SELECT json_body FROM raw.staffs WHERE staff_id = 1", String.class);
+        JsonNode jsonNode = objectMapper.readTree(jsonBody);
+        assertThat(jsonNode.get("staffId").asText()).isEqualTo("1");
+        assertThat(jsonNode.get("staffName").asText()).isEqualTo("従業員A");
 
         mockServer.verify();
     }
@@ -295,6 +328,38 @@ public class SmaregiBatchIntegrationTest {
         // データがある場合のみ Page 2 (空配列) を期待する
         if (count > 0) {
             mockServer.expect(requestTo(String.format("%s?limit=1000&page=2", baseUrl)))
+                .andExpect(method(GET))
+                .andRespond(withSuccess("[]", MediaType.APPLICATION_JSON));
+        }
+    }
+
+    private void mockStaffsApi(int count) {
+        String json = "[]";
+        if (count > 0) {
+            json = """
+                [
+                  {"staffId": "1", "staffName": "従業員A", "rank": "スタイリスト"},
+                  {"staffId": "2", "staffName": "従業員B", "rank": "アシスタント"}
+                ]
+            """;
+        }
+        String baseUrl = smaregiApiProperties.getBaseUrl() + "/" + smaregiApiProperties.getContractId() + "/pos/staffs";
+
+        OffsetDateTime defaultDate = OffsetDateTime.of(2000, 1, 1, 0, 0, 0, 0, ZoneOffset.ofHours(9));
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssXXX");
+        String encodedDate = URLEncoder.encode(defaultDate.format(formatter), StandardCharsets.UTF_8);
+
+        // Page 1 expectation
+        String urlPage1 = String.format("%s?limit=1000&page=1&upd_date_time-from=%s", baseUrl, encodedDate);
+        mockServer.expect(requestTo(urlPage1))
+            .andExpect(method(GET))
+            .andRespond(withSuccess(json, MediaType.APPLICATION_JSON));
+        
+        // ONLY expect page 2 if data is returned for page 1
+        if (count > 0) {
+            // Page 2 expectation (returns empty)
+            String urlPage2 = String.format("%s?limit=1000&page=2&upd_date_time-from=%s", baseUrl, encodedDate);
+            mockServer.expect(requestTo(urlPage2))
                 .andExpect(method(GET))
                 .andRespond(withSuccess("[]", MediaType.APPLICATION_JSON));
         }
