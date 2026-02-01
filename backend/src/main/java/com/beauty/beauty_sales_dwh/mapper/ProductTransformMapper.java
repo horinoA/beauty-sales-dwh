@@ -12,7 +12,7 @@ public interface ProductTransformMapper {
      * rawテーブルの最終更新日時を取得します。
      * データがない場合は NULL が返ります。
      */
-    OffsetDateTime findMaxFetchedAt();
+    OffsetDateTime findMaxFetchedAt(@Param("companyId") Long companyId);
     
     /**
      * RAWデータをdwh.dim_category_groupsテーブルへUPSERTします。

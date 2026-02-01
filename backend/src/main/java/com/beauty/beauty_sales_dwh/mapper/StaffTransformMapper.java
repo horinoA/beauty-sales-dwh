@@ -6,21 +6,21 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 @Mapper
-public interface CustomerTransformMapper {
-
+public interface StaffTransformMapper {
+    
     /**
      * rawテーブルの最終更新日時を取得します。
      * データがない場合は NULL が返ります。
      */
-    OffsetDateTime findMaxFetchedAt(@Param("companyId") Long companyId);
+    OffsetDateTime findMaxFetchedAt();
 
     /**
-     * RAWデータをDimテーブルへUPSERTします。
-     * * @param companyId プロパティから取得した会社ID
+     * RAWデータをdwh.dim_staffsテーブルへUPSERTします。
+     * @param companyId プロパティから取得した会社ID
      * @param fromDate  この日時より新しいデータを対象とする
      * @return 更新・挿入された件数
      */
-    int upsertCustomersFromRaw(@Param("companyId") Long companyId, 
-                               @Param("fromDate") OffsetDateTime fromDate);
-    
+    int upsertStaffsFromRaw(@Param("companyId") Long companyId,
+                              @Param("fromDate") OffsetDateTime fromDate);
+
 }
