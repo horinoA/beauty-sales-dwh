@@ -8,6 +8,7 @@ erDiagram
         BIGSERIAL transaction_id PK "DB内管理ID"
         TIMESTAMPTZ fetched_at "取得日時(Timezoneあり)"
         JSONB json_body "APIレスポンス全文"
+        BOOLEAN details_extracted "SpringBatchにて追加処理時のflag"
     }
 
     RAW_TRANSACTION_DETAILS:::RAW {
