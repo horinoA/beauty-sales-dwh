@@ -9,10 +9,10 @@ import org.apache.ibatis.annotations.Param;
 public interface CustomerTransformMapper {
 
     /**
-     * rawテーブルの最終更新日時を取得します。
+     * dwh.dim_customersテーブルの最終更新日時を取得します。
      * データがない場合は NULL が返ります。
      */
-    OffsetDateTime findMaxFetchedAt(@Param("companyId") Long companyId);
+    OffsetDateTime findMaxUpdateDataTimeFromDimCustomers(@Param("companyId") Long companyId);
 
     /**
      * RAWデータをDimテーブルへUPSERTします。

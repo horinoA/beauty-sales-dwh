@@ -2,8 +2,8 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.beauty.beauty_sales_dwh.mapper.CustomerTransformMapper">
 
-    <select id="findMaxFetchedAt" resultType="java.time.OffsetDateTime">
-        SELECT MAX(fetched_at) FROM raw.customers WHERE app_company_id = #{companyId}
+    <select id="findMaxUpdateDataTimeFromDimCustomers" resultType="java.time.OffsetDateTime">
+        SELECT MAX(update_data_time) FROM dwh.dim_customers WHERE app_company_id = #{companyId}
     </select>
 
     <insert id="upsertCustomersFromRaw">
@@ -23,7 +23,7 @@
             FROM 
                 raw.customers
             WHERE 
-                fetched_at >= #{fromDate} AND app_company_id = #{companyId}
+                (json_body ->> 'updDateTime')::TIMESTAMPTZ >= #{fromDate} AND app_company_id = #{companyId}
         ),
         formatted_data AS (
             SELECT

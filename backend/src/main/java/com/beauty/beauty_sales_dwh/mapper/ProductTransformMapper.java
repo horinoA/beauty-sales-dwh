@@ -9,10 +9,12 @@ import org.apache.ibatis.annotations.Param;
 public interface ProductTransformMapper { 
 
     /**
-     * rawテーブルの最終更新日時を取得します。
+     * dwh.dim_productsテーブルの最終更新日時を取得します。
      * データがない場合は NULL が返ります。
      */
-    OffsetDateTime findMaxFetchedAt(@Param("companyId") Long companyId);
+    OffsetDateTime findMaxUpdateDataTimeFromDimProducts(@Param("companyId") Long companyId);
+
+    OffsetDateTime findMaxUpdateDataTimeFromDimCategoryGroups(@Param("companyId") Long companyId);
     
     /**
      * RAWデータをdwh.dim_category_groupsテーブルへUPSERTします。

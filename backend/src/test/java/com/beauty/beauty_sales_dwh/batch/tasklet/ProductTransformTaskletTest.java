@@ -1,6 +1,10 @@
 package com.beauty.beauty_sales_dwh.batch.tasklet;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.time.OffsetDateTime;
 
@@ -46,7 +50,10 @@ public class ProductTransformTaskletTest {
     void testExecute_callsMappersWithCompanyId() throws Exception {
         // --- Mock Setup ---
         OffsetDateTime mockDate = OffsetDateTime.now();
-        when(mapper.findMaxFetchedAt(COMPANY_ID)).thenReturn(mockDate);
+        // 両方のfindMax...メソッドがnull以外(mockDate)を返すようにスタブを設定
+        when(mapper.findMaxUpdateDataTimeFromDimCategoryGroups(COMPANY_ID)).thenReturn(mockDate);
+        when(mapper.findMaxUpdateDataTimeFromDimProducts(COMPANY_ID)).thenReturn(mockDate);
+        // upsert...の呼び出しもスタブしておく (戻り値は利用しないが、Strict stubbingのため)
         when(mapper.upsertCategoryGroupsFromRaw(COMPANY_ID, mockDate)).thenReturn(3);
         when(mapper.upsertProductsFromRaw(COMPANY_ID, mockDate)).thenReturn(10);
 
@@ -54,20 +61,19 @@ public class ProductTransformTaskletTest {
         productTransformTasklet.execute(stepContribution, chunkContext);
 
         // --- Verification ---
-        // 1. findMaxFetchedAtが正しいcompanyIdで1回呼ばれたことを確認
-        verify(mapper, times(1)).findMaxFetchedAt(COMPANY_ID);
+        // 1. findMax... がそれぞれ正しいcompanyIdで1回呼ばれたことを確認
+        verify(mapper, times(1)).findMaxUpdateDataTimeFromDimCategoryGroups(COMPANY_ID);
+        verify(mapper, times(1)).findMaxUpdateDataTimeFromDimProducts(COMPANY_ID);
         
-        // 2. upsertCategoryGroupsFromRawが正しいcompanyIdと日付で1回呼ばれたことを確認
+        // 2. upsert... が正しいcompanyIdと、スタブしたmockDateで1回呼ばれたことを確認
         verify(mapper, times(1)).upsertCategoryGroupsFromRaw(COMPANY_ID, mockDate);
-        
-        // 3. upsertProductsFromRawが正しいcompanyIdと日付で1回呼ばれたことを確認
         verify(mapper, times(1)).upsertProductsFromRaw(COMPANY_ID, mockDate);
     }
 
     @Test
     void testExecute_handlesNullDate() throws Exception {
         // --- Mock Setup ---
-        when(mapper.findMaxFetchedAt(COMPANY_ID)).thenReturn(null);
+        when(mapper.findMaxUpdateDataTimeFromDimCategoryGroups(COMPANY_ID)).thenReturn(null);
         when(mapper.upsertCategoryGroupsFromRaw(eq(COMPANY_ID), any(OffsetDateTime.class))).thenReturn(2);
         when(mapper.upsertProductsFromRaw(eq(COMPANY_ID), any(OffsetDateTime.class))).thenReturn(8);
 
@@ -76,7 +82,7 @@ public class ProductTransformTaskletTest {
 
         // --- Verification ---
         // 1. findMaxFetchedAtが正しいcompanyIdで1回呼ばれたことを確認
-        verify(mapper, times(1)).findMaxFetchedAt(COMPANY_ID);
+        verify(mapper, times(1)).findMaxUpdateDataTimeFromDimProducts(COMPANY_ID);
         
         // 2. upsertCategoryGroupsFromRawが正しいcompanyIdで、かつ任意の日付で1回呼ばれたことを確認
         verify(mapper, times(1)).upsertCategoryGroupsFromRaw(eq(COMPANY_ID), any(OffsetDateTime.class));

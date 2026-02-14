@@ -30,22 +30,30 @@ public class ProductTransformTasklet implements Tasklet {
         // 1. プロパティから会社IDを取得
         Long companyId = Long.valueOf(vendorProperties.getId());
         
-        // 2. DBから最終更新日時を取得 (SQLの結果を利用)
-        OffsetDateTime maxUpdatedAt = mapper.findMaxFetchedAt(companyId);
-        
-        // 初回実行時などでNULLの場合は、十分古い日付を設定
-        if (maxUpdatedAt == null) {
-            maxUpdatedAt = OffsetDateTime.of(2000, 1, 1, 0, 0, 0, 0, ZoneOffset.ofHours(9));
-            log.info("初回実行、またはデータが存在しないため、全件処理対象とします。基準日: {}", maxUpdatedAt);
+        // 2. dwh.dim_category_groups の最終更新日時を取得
+        OffsetDateTime maxUpdateDataTimeFromDimCategoryGroups = mapper.findMaxUpdateDataTimeFromDimCategoryGroups(companyId);
+        if (maxUpdateDataTimeFromDimCategoryGroups == null) {
+            maxUpdateDataTimeFromDimCategoryGroups = OffsetDateTime.of(2000, 1, 1, 0, 0, 0, 0, ZoneOffset.ofHours(9));
+            log.info("dwh.dim_category_groups: 初回実行、またはデータが存在しないため、全件処理対象とします。基準日: {}", maxUpdateDataTimeFromDimCategoryGroups);
         } else {
-            log.info("差分更新を実行します。基準日: {}", maxUpdatedAt);
+            log.info("dwh.dim_category_groups: 差分更新を実行します。基準日: {}", maxUpdateDataTimeFromDimCategoryGroups);
         }
 
-        // 3. MyBatis経由でUPSERT実行
-        int categoryGroupCount = mapper.upsertCategoryGroupsFromRaw(companyId, maxUpdatedAt);
+        // 3. MyBatis経由でdwh.dim_category_groupsへUPSERT実行
+        int categoryGroupCount = mapper.upsertCategoryGroupsFromRaw(companyId, maxUpdateDataTimeFromDimCategoryGroups);
         log.info("{} 件のデータを dwh.dim_category_groups に反映しました。", categoryGroupCount);
 
-        int productCount = mapper.upsertProductsFromRaw(companyId, maxUpdatedAt);
+        // 4. dwh.dim_products の最終更新日時を取得
+        OffsetDateTime maxUpdateDataTimeFromDimProducts = mapper.findMaxUpdateDataTimeFromDimProducts(companyId);
+        if (maxUpdateDataTimeFromDimProducts == null) {
+            maxUpdateDataTimeFromDimProducts = OffsetDateTime.of(2000, 1, 1, 0, 0, 0, 0, ZoneOffset.ofHours(9));
+            log.info("dwh.dim_products: 初回実行、またはデータが存在しないため、全件処理対象とします。基準日: {}", maxUpdateDataTimeFromDimProducts);
+        } else {
+            log.info("dwh.dim_products: 差分更新を実行します。基準日: {}", maxUpdateDataTimeFromDimProducts);
+        }
+
+        // 5. MyBatis経由でdwh.dim_productsへUPSERT実行
+        int productCount = mapper.upsertProductsFromRaw(companyId, maxUpdateDataTimeFromDimProducts);
         log.info("{} 件のデータを dwh.dim_products に反映しました。", productCount);
         
         log.info("Step 3: Product関連のデータ整形処理が完了しました。");

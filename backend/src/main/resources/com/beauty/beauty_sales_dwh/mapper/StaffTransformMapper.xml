@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.beauty.beauty_sales_dwh.mapper.StaffTransformMapper">
+
+    <insert id="upsertStaffsFromRaw">
+        WITH raw_staffs AS (
+        SELECT DISTINCT ON (json_body ->> 'staffId')
+	        (json_body ->> 'staffId') AS staff_id,
+	        (json_body ->> 'staffName') AS staff_name,
+	        (json_body ->> 'rank') AS rank,
+	        (json_body ->> 'displayFlag') AS employ_flag,
+	        (json_body ->> 'insDateTime') AS insert_data_time,
+	        (json_body ->> 'updDateTime') AS update_data_time 
+        FROM "raw".staffs
+        WHERE
+            fetched_at >= #{fromDate} AND app_company_id = #{companyId}
+        ORDER BY
+            (json_body ->> 'staffId'), fetched_at DESC
+        )
+        INSERT INTO dwh.dim_staffs (
+            app_company_id,
+            staff_id,
+            staff_name,
+            rank,
+            employ_flag,
+            insert_data_time,
+            update_data_time
+        )
+        SELECT
+            #{companyId},
+            staff_id,
+            staff_name,
+            rank,
+            employ_flag,
+            CAST(insert_data_time AS TIMESTAMPTZ),
+            CAST(update_data_time AS TIMESTAMPTZ)
+        FROM
+            raw_staffs
+        ON CONFLICT ON CONSTRAINT dim_staffs_pkey
+        DO UPDATE SET
+            staff_name       = EXCLUDED.staff_name,
+            rank             = EXCLUDED.rank,
+            employ_flag      = EXCLUDED.employ_flag,
+            update_data_time = EXCLUDED.update_data_time
+    </insert>
+</mapper>

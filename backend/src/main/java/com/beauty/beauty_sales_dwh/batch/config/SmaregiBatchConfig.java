@@ -79,6 +79,7 @@ public class SmaregiBatchConfig {
         return new JobBuilder("importSmaregiRawDataJob", jobRepository)
                 .incrementer(new RunIdIncrementer())
                 .start(step1Auth())
+                //.next(stepFetchTransactionsHead()) // Add this line
                 .next(stepFetchCustomers())
                 .next(stepFetchCategories())
                 .next(stepFetchCategoryGroups())
@@ -179,7 +180,6 @@ public class SmaregiBatchConfig {
                 .build();
     }
 
-
     /**
      * Step 3: 顧客データ整形タスク
      */
@@ -241,6 +241,14 @@ public class SmaregiBatchConfig {
         return new MyBatisBatchItemWriterBuilder<StaffRawData>()
                 .sqlSessionFactory(sqlSessionFactory)
                 .statementId("com.beauty.beauty_sales_dwh.mapper.RawStaffMapper.insertRawStaff")
+                .build();
+    }
+
+    @Bean
+    public ItemWriter<com.beauty.beauty_sales_dwh.domain.TransactionRawData> transactionWriter() {
+        return new MyBatisBatchItemWriterBuilder<com.beauty.beauty_sales_dwh.domain.TransactionRawData>()
+                .sqlSessionFactory(sqlSessionFactory)
+                .statementId("com.beauty.beauty_sales_dwh.mapper.RawTransactionMapper.insertRawTransaction")
                 .build();
     }
 }

@@ -28,7 +28,7 @@ public class BeautySalesDwhApplication {
 	// ★これを追加：アプリ起動時に強制的にジョブを実行するランナー
     @Bean
     @Profile("!test")
-    public CommandLineRunner runJob(JobLauncher jobLauncher, Job importSmaregiCustomerJob) {
+    public CommandLineRunner runJob(JobLauncher jobLauncher, Job importSmaregiRawDataJob) {
         return args -> {
             System.out.println("==========================================");
             System.out.println("🚀 バッチジョブを強制起動します...");
@@ -39,7 +39,7 @@ public class BeautySalesDwhApplication {
                     .addLong("executedAt", System.currentTimeMillis())
                     .toJobParameters();
 
-            jobLauncher.run(importSmaregiCustomerJob, jobParameters);
+            jobLauncher.run(importSmaregiRawDataJob, jobParameters);
             
             System.out.println("==========================================");
             System.out.println("✅ バッチジョブ起動完了");

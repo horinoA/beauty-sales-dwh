@@ -1,11 +1,6 @@
 package com.beauty.beauty_sales_dwh.batch.reader;
 
 import java.net.URI;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
 
 import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.configuration.annotation.StepScope;
@@ -25,9 +20,7 @@ public class SmaregiStaffItemReader extends AbstractSmaregiItemReader {
 
     private final SmaregiApiProperties properties;
     private final AppVendorProperties vendorProperties;
-    private final RawStaffMapper rawStaffMapper;
-
-    private String updDateTimeFrom; // テーブル最新更新日
+    private final RawStaffMapper rawStaffMapper; // Keep this for now, even if findMaxFetchedAt is not used here, it might be used elsewhere.
 
     // コンストラクタ注入
     public SmaregiStaffItemReader(RestTemplate restTemplate,
@@ -46,19 +39,11 @@ public class SmaregiStaffItemReader extends AbstractSmaregiItemReader {
         // 1. 親クラスの処理（トークン取得）を必ず呼ぶ
         super.beforeStep(stepExecution);
 
-        // 2. プロパティから会社IDを取得
-        Long companyId = Long.valueOf(vendorProperties.getId());
+        // 2. プロパティから会社IDを取得 (必要に応じて)
+        // Long companyId = Long.valueOf(vendorProperties.getId());
 
-        // 3. DBから最終更新日時を取得
-        OffsetDateTime maxDate = rawStaffMapper.findMaxFetchedAt(companyId);
-        if (maxDate == null) {
-            maxDate = OffsetDateTime.of(2000, 1, 1, 0, 0, 0,0,ZoneOffset.ofHours(9));
-        }
-        
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssXXX");
-        this.updDateTimeFrom = maxDate.format(formatter);
-        
-        log.info("StaffReader初期化完了: upd_date_time-from={}", this.updDateTimeFrom);
+        // ログメッセージを調整
+        log.info("StaffReader初期化完了: 全データを取得します。");
     }
 
     // URL生成
@@ -67,10 +52,9 @@ public class SmaregiStaffItemReader extends AbstractSmaregiItemReader {
         // ベースURL
         String baseUrl = properties.getBaseUrl() + "/" +properties.getContractId() + "/pos/staffs";
         try {
-            String encodedDate = URLEncoder.encode(this.updDateTimeFrom, StandardCharsets.UTF_8);
-
-            String urlString = String.format("%s?limit=1000&page=%d&upd_date_time-from=%s",
-                    baseUrl, page, encodedDate);
+            // upd_date_time-from パラメータを削除
+            String urlString = String.format("%s?limit=1000&page=%d",
+                    baseUrl, page);
             
             log.info("Request URL: {}", urlString);
 

@@ -1,6 +1,10 @@
 package com.beauty.beauty_sales_dwh.batch.tasklet;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.time.OffsetDateTime;
 
@@ -12,7 +16,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.scope.context.ChunkContext;
-import org.springframework.batch.core.step.tasklet.Tasklet;
 
 import com.beauty.beauty_sales_dwh.config.AppVendorProperties;
 import com.beauty.beauty_sales_dwh.mapper.CustomerTransformMapper;
@@ -48,7 +51,7 @@ public class CustomerTransformTaskletTest {
         // --- Mock Setup ---
         // findMaxFetchedAtが呼ばれたら、適当な日付を返す
         OffsetDateTime mockDate = OffsetDateTime.now();
-        when(mapper.findMaxFetchedAt(COMPANY_ID)).thenReturn(mockDate);
+        when(mapper.findMaxUpdateDataTimeFromDimCustomers(COMPANY_ID)).thenReturn(mockDate);
         
         // upsertCustomersFromRawが呼ばれたら、適当な件数を返す
         when(mapper.upsertCustomersFromRaw(COMPANY_ID, mockDate)).thenReturn(5);
@@ -58,7 +61,7 @@ public class CustomerTransformTaskletTest {
 
         // --- Verification ---
         // 1. findMaxFetchedAtが正しいcompanyIdで1回呼ばれたことを確認
-        verify(mapper, times(1)).findMaxFetchedAt(COMPANY_ID);
+        verify(mapper, times(1)).findMaxUpdateDataTimeFromDimCustomers(COMPANY_ID);
         
         // 2. upsertCustomersFromRawが正しいcompanyIdと日付で1回呼ばれたことを確認
         verify(mapper, times(1)).upsertCustomersFromRaw(COMPANY_ID, mockDate);
@@ -68,7 +71,7 @@ public class CustomerTransformTaskletTest {
     void testExecute_handlesNullDate() throws Exception {
         // --- Mock Setup ---
         // findMaxFetchedAtがnullを返すように設定
-        when(mapper.findMaxFetchedAt(COMPANY_ID)).thenReturn(null);
+        when(mapper.findMaxUpdateDataTimeFromDimCustomers(COMPANY_ID)).thenReturn(null);
 
         // upsertCustomersFromRawが呼ばれたら、適当な件数を返す
         // any(OffsetDateTime.class) を使って、日付は問わないようにする
@@ -79,7 +82,7 @@ public class CustomerTransformTaskletTest {
 
         // --- Verification ---
         // 1. findMaxFetchedAtが正しいcompanyIdで1回呼ばれたことを確認
-        verify(mapper, times(1)).findMaxFetchedAt(COMPANY_ID);
+        verify(mapper, times(1)).findMaxUpdateDataTimeFromDimCustomers(COMPANY_ID);
         
         // 2. upsertCustomersFromRawが正しいcompanyIdで、かつ任意の日付で1回呼ばれたことを確認
         verify(mapper, times(1)).upsertCustomersFromRaw(eq(COMPANY_ID), any(OffsetDateTime.class));
