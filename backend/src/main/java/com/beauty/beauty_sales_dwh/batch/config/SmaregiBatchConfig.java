@@ -28,6 +28,7 @@ import com.beauty.beauty_sales_dwh.batch.reader.SmaregiStaffItemReader;
 import com.beauty.beauty_sales_dwh.batch.tasklet.CustomerTransformTasklet;
 import com.beauty.beauty_sales_dwh.batch.tasklet.ProductTransformTasklet;
 import com.beauty.beauty_sales_dwh.batch.tasklet.SmaregiAuthTasklet;
+import com.beauty.beauty_sales_dwh.batch.tasklet.StaffTransformTasklet;
 import com.beauty.beauty_sales_dwh.domain.CategoryGroupRawData;
 import com.beauty.beauty_sales_dwh.domain.CategoryRawData;
 import com.beauty.beauty_sales_dwh.domain.CustomerRawData;
@@ -46,6 +47,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class SmaregiBatchConfig {
 
+
     // --- インフラストラクチャ ---
     private final JobRepository jobRepository;
     private final PlatformTransactionManager transactionManager;
@@ -55,6 +57,7 @@ public class SmaregiBatchConfig {
     private final SmaregiAuthTasklet smaregiAuthTasklet;
     private final CustomerTransformTasklet customerTransformTasklet;
     private final ProductTransformTasklet productTransformTasklet;
+    private final StaffTransformTasklet staffTransformTasklet;
 
     // --- Readers ---
     private final SmaregiCustomerItemReader smaregiCustomerReader;
@@ -69,7 +72,6 @@ public class SmaregiBatchConfig {
     private final CategoryGroupRawDataProcessor categoryGroupProcessor;
     private final ProductRawDataProcessor productProcessor;
     private final StaffRawDataProcessor staffProcessor;
-
 
     // =================================================================================
     // 1. Job 定義 (メインフロー)
@@ -87,6 +89,7 @@ public class SmaregiBatchConfig {
                 .next(stepFetchStaffs())
                 .next(stepTransformCustomers())
                 .next(stepTransformProducts())
+                .next(stepTranceformStaffs())
                 .build();
     }
 
@@ -198,6 +201,16 @@ public class SmaregiBatchConfig {
         return new StepBuilder("stepTransformProducts", jobRepository)
                 .tasklet(productTransformTasklet, transactionManager)
                 .build();
+    }
+
+    /**
+     * Step 3: スタッフデータ整形タスク
+     */
+    @Bean
+    public Step stepTranceformStaffs() {
+        return new StepBuilder("stepTransformTasklet", jobRepository)
+            .tasklet(staffTransformTasklet, transactionManager)
+            .build();
     }
 
     // =================================================================================

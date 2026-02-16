@@ -9,6 +9,11 @@ import org.apache.ibatis.annotations.Param;
 public interface StaffTransformMapper {
     
     /**
+     * dwh.dim_stafsfテーブルの最終更新日時を取得します。
+     * データがない場合は NULL が返ります。
+     */
+    OffsetDateTime findMaxUpdateDataTimeFromDimStaffs(@Param("companyId") Long companyId);
+    /**
      * RAWデータをdwh.dim_staffsテーブルへUPSERTします。
      * @param companyId プロパティから取得した会社ID
      * @param fromDate  この日時より新しいデータを対象とする

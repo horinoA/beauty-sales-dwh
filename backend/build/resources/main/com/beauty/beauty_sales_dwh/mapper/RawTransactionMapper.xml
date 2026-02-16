@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.beauty.beauty_sales_dwh.mapper.RawTransactionMapper">
+
+    <!-- RawTransactionMapper.javaのinsertRawTransactionメソッドに対応 -->
+    <insert id="insertRawTransaction">
+        INSERT INTO raw.transactions (
+            app_company_id,
+            json_body,
+            fetched_at,
+            details_extracted
+        ) VALUES (
+            #{companyId},
+            #{jsonBody}::jsonb,
+            CURRENT_TIMESTAMP,
+            FALSE
+        )
+    </insert>
+
+    <!-- RawTransactionMapper.javaのfindMaxFetchedAtメソッドに対応 -->
+    <select id="findMaxFetchedAt" resultType="java.time.OffsetDateTime">
+        SELECT MAX(fetched_at)
+        FROM raw.transactions
+        WHERE app_company_id = #{companyId}
+    </select>
+
+    <!-- RawTransactionMapper.javaのfindUnprocessedTransactionsメソッドに対応 -->
+    <select id="findUnprocessedTransactions" resultType="com.beauty.beauty_sales_dwh.domain.TransactionRawData">
+        SELECT transaction_id, json_body, app_company_id
+        FROM raw.transactions
+        WHERE app_company_id = #{companyId} AND details_extracted = FALSE
+        ORDER BY fetched_at ASC
+        LIMIT #{limit}
+    </select>
+
+    <!-- RawTransactionMapper.javaのmarkTransactionsAsProcessedメソッドに対応 -->
+    <update id="markTransactionsAsProcessed">
+        UPDATE raw.transactions
+        SET details_extracted = TRUE
+        WHERE transaction_id IN
+        <foreach item="id" collection="list" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+</mapper>
