@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.beauty.beauty_sales_dwh.mapper.RawTransactionDetailMapper">
+
+    <insert id="insertRawTransactionDetail" parameterType="com.beauty.beauty_sales_dwh.domain.TransactionDetailRawData">
+        INSERT INTO raw.transaction_details (
+            transaction_head_id,
+            json_body,
+            file_name,
+            row_number,
+            fetched_at
+        ) VALUES (
+            #{transactionHeadId},
+            #{jsonBody}::jsonb,
+            #{fileName},
+            #{rowNumber},
+            CURRENT_TIMESTAMP
+        )
+    </insert>
+
+</mapper>

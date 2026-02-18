@@ -13,7 +13,6 @@ public interface RawTransactionMapper {
     void insertRawTransaction(TransactionRawData data);
     OffsetDateTime findMaxFetchedAt(@Param("companyId") Long companyId);
 
-    // 新しいメソッド
     List<TransactionRawData> findUnprocessedTransactions(
         @Param("companyId") Long companyId,
         @Param("limit") int limit

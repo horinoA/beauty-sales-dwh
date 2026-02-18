@@ -114,7 +114,6 @@ CREATE TABLE dwh.dim_staffs (
     staff_id character varying(50) NOT NULL,
     staff_name character varying(100),
     rank character varying(50),
-    store_id character varying(50),
     employ_flag integer DEFAULT 1,
     insert_data_time timestamp with time zone,
     update_data_time timestamp with time zone
