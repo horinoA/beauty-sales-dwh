@@ -1,2 +1,5 @@
-.env
-application-test.properties
+# すべてのフォルダ階層にある .env を無視
+**/.env
+
+# すべてのフォルダ階層にある application-test.properties を無視
+**/application-test.properties
