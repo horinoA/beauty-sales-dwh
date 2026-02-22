@@ -1,8 +1,11 @@
 package com.beauty.beauty_sales_dwh.batch.reader;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.*;
-import static org.springframework.test.web.client.response.MockRestResponseCreators.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.header;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
+import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
 import java.util.Map;
 
@@ -17,9 +20,9 @@ import org.springframework.batch.test.context.SpringBatchTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.client.AutoConfigureMockRestServiceServer;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.client.MockRestServiceServer;
 
 import com.beauty.beauty_sales_dwh.batch.tasklet.SmaregiAuthTasklet;
@@ -37,7 +40,7 @@ class SmaregiTransactionItemReaderTest {
     @Autowired
     private MockRestServiceServer mockServer;
 
-    @MockBean
+    @MockitoBean
     private SmaregiApiProperties properties;
 
     private StepExecution stepExecution;
@@ -66,21 +69,26 @@ class SmaregiTransactionItemReaderTest {
             // beforeStep を手動で呼んで初期化
             reader.beforeStep(stepExecution);
 
-            // 期待されるURLの検証
+            // 【重要】すべての期待値（1ページ目と2ページ目）をリクエスト実行前に定義する
+            
+            // 1ページ目の期待値設定
             mockServer.expect(requestTo(org.hamcrest.Matchers.containsString("transaction_datetime-from=2024-01-01T00%3A00%3A00%2B09%3A00")))
                     .andExpect(requestTo(org.hamcrest.Matchers.containsString("transaction_datetime-to=2024-01-31T23%3A59%3A59%2B09%3A00")))
                     .andExpect(header("Authorization", "Bearer test-token"))
                     .andRespond(withSuccess("[{\"transactionId\": \"123\"}]", MediaType.APPLICATION_JSON));
 
-            // 1回目の read
+            // 2ページ目の期待値設定 (ページングの確認用)
+            mockServer.expect(requestTo(org.hamcrest.Matchers.containsString("page=2")))
+                    .andRespond(withSuccess("[]", MediaType.APPLICATION_JSON));
+
+            // --- 実際の実行フェーズ ---
+
+            // 1回目の read (内部で 1ページ目を取得)
             Map<String, Object> item = reader.read();
             assertNotNull(item);
             assertEquals("123", (String) item.get("transactionId"));
 
-            // 2回目の read (ページングの確認)
-            mockServer.expect(requestTo(org.hamcrest.Matchers.containsString("page=2")))
-                    .andRespond(withSuccess("[]", MediaType.APPLICATION_JSON));
-            
+            // 2回目の read (内部で 2ページ目を取得し、空なので終了)
             item = reader.read();
             assertNull(item);
 

@@ -1,12 +1,17 @@
 package com.beauty.beauty_sales_dwh.batch.reader;
 
 import java.net.URI;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 
+import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.configuration.annotation.StepScope;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import com.beauty.beauty_sales_dwh.config.SmaregiApiProperties;
 
@@ -14,55 +19,80 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * スマレジ取引データ取得用 Reader
- * CommandLineRunner 等から渡された JobParameters ("from", "to") を元に
- * 特定期間の取引データをページングしながら取得します。
+ * JobParameters ("from", "to") を元に特定期間の取引データをページングしながら取得します。
  */
 @Component
-@StepScope // Step実行のたびに JobParameters を注入するために必須
+@StepScope
 @Slf4j
 public class SmaregiTransactionItemReader extends AbstractSmaregiItemReader {
 
     private final SmaregiApiProperties properties;
-    private final String from; // yyyy-MM-dd
-    private final String to;   // yyyy-MM-dd
+    
+    // 文字列として保持 (SmaregiCustomerItemReader と同様)
+    private String fromFormatted;
+    private String toFormatted;
 
     public SmaregiTransactionItemReader(
             RestTemplate restTemplate,
-            SmaregiApiProperties properties,
-            @Value("#{jobParameters['from']}") String from,
-            @Value("#{jobParameters['to']}") String to
+            SmaregiApiProperties properties
     ) {
         super(restTemplate);
         this.properties = properties;
-        this.from = from;
-        this.to = to;
     }
 
-    /**
-     * スマレジ取引APIのURLを生成します。
-     * UriComponentsBuilder により、タイムゾーンの '+' や日時の ':' は
-     * 自動的にURLエンコード（%2B, %3A）されます。
-     */
+    @Override
+    public void beforeStep(StepExecution stepExecution) {
+        // 1. 親クラスの処理（トークン取得）
+        super.beforeStep(stepExecution);
+
+        // 2. JobParameters から期間を取得 (yyyy-MM-dd)
+        String fromStr = stepExecution.getJobParameters().getString("from");
+        String toStr = stepExecution.getJobParameters().getString("to");
+
+        if (fromStr == null || toStr == null) {
+            throw new IllegalArgumentException("JobParameters 'from' and 'to' are required.");
+        }
+
+        // 日本標準時 (+09:00) 
+        ZoneOffset jst = ZoneOffset.ofHours(9);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssXXX");
+        
+        // from: 00:00:00
+        this.fromFormatted = LocalDate.parse(fromStr)
+                .atTime(LocalTime.MIN)
+                .atOffset(jst)
+                .format(formatter);
+        
+        // to: 23:59:59
+        this.toFormatted = LocalDate.parse(toStr)
+                .atTime(LocalTime.MAX)
+                .atOffset(jst)
+                .format(formatter);
+
+        log.info("TransactionReader初期化完了: from={}, to={}", fromFormatted, toFormatted);
+    }
+
     @Override
     protected URI getApiUrl(int page) {
-        // 例: https://api.smaregi.jp/{contract_id}/pos/transactions/
         String baseUrl = String.format("%s/%s/pos/transactions/", 
                 properties.getBaseUrl(), 
                 properties.getContractId());
 
-        URI uri = UriComponentsBuilder.fromHttpUrl(baseUrl)
-                .queryParam("transaction_datetime-from", from + "T00:00:00+09:00")
-                .queryParam("transaction_datetime-to", to + "T23:59:59+09:00")
-                .queryParam("page", page)
-                .queryParam("limit", 100)
-                .queryParam("sort", "transaction_datetime:asc")
-                .build()
-                .toUri();
+        try {
+            // Java標準のURLEncoderを使ってエンコード
+            String encodedFrom = URLEncoder.encode(this.fromFormatted, StandardCharsets.UTF_8);
+            String encodedTo = URLEncoder.encode(this.toFormatted, StandardCharsets.UTF_8);
 
-        log.info("=== Generated URI for Smaregi API ===");
-        log.info("URI: {}", uri.toString());
-        log.info("=====================================");
-        
-        return uri;
+            // クエリパラメータを組み立てる
+            String urlString = String.format("%s?transaction_datetime-from=%s&transaction_datetime-to=%s&page=%d&limit=100&sort=transaction_datetime:asc",
+                    baseUrl, encodedFrom, encodedTo, page);
+            
+            log.info("Request URL: {}", urlString);
+
+            return URI.create(urlString);
+
+        } catch (Exception e) {
+            throw new RuntimeException("URLの生成に失敗しました", e);
+        }
     }
 }

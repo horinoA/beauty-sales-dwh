@@ -36,7 +36,7 @@ public abstract class AbstractSmaregiItemReader implements ItemReader<Map<String
         this.restTemplate = restTemplate;
     }
 
-    // ★変更: String ではなく URI を返すように定義
+    //  String ではなく URI を返すように定義
     protected abstract URI getApiUrl(int page);
 
     @Override
