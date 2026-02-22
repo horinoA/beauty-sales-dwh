@@ -46,8 +46,14 @@ public class SmaregiTransactionItemReader extends AbstractSmaregiItemReader {
         super.beforeStep(stepExecution);
 
         // 2. JobParameters から期間を取得 (yyyy-MM-dd)
-        String fromStr = stepExecution.getJobParameters().getString("from");
-        String toStr = stepExecution.getJobParameters().getString("to");
+        // String fromStr = stepExecution.getJobParameters().getString("from");
+        // String toStr = stepExecution.getJobParameters().getString("to");
+        
+        // パーティショニング対応：ExecutionContextから優先的に取得し、なければJobParametersから取得する
+        String fromStr = stepExecution.getExecutionContext().getString("from", 
+                stepExecution.getJobParameters().getString("from"));
+        String toStr = stepExecution.getExecutionContext().getString("to", 
+                stepExecution.getJobParameters().getString("to"));
 
         if (fromStr == null || toStr == null) {
             throw new IllegalArgumentException("JobParameters 'from' and 'to' are required.");

@@ -392,6 +392,7 @@ CREATE TABLE raw.transactions (
     fetched_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
     json_body jsonb NOT NULL,
     app_company_id bigint NOT NULL
+    details_extracted boolean
 );
 
 

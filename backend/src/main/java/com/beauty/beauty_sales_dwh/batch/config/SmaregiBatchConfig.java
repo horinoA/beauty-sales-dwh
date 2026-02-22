@@ -6,25 +6,30 @@ import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.batch.builder.MyBatisBatchItemWriterBuilder;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
+import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.item.ItemWriter;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.PlatformTransactionManager;
 
+import com.beauty.beauty_sales_dwh.batch.partitioner.TransactionPeriodPartitioner;
 import com.beauty.beauty_sales_dwh.batch.processor.CategoryGroupRawDataProcessor;
 import com.beauty.beauty_sales_dwh.batch.processor.CategoryRawDataProcessor;
 import com.beauty.beauty_sales_dwh.batch.processor.CustomerRawDataProcessor;
 import com.beauty.beauty_sales_dwh.batch.processor.ProductRawDataProcessor;
 import com.beauty.beauty_sales_dwh.batch.processor.StaffRawDataProcessor;
+import com.beauty.beauty_sales_dwh.batch.processor.TransactionRawDataProcessor;
 import com.beauty.beauty_sales_dwh.batch.reader.SmaregiCategoryGroupItemReader;
 import com.beauty.beauty_sales_dwh.batch.reader.SmaregiCategoryItemReader;
 import com.beauty.beauty_sales_dwh.batch.reader.SmaregiCustomerItemReader;
 import com.beauty.beauty_sales_dwh.batch.reader.SmaregiProductItemReader;
 import com.beauty.beauty_sales_dwh.batch.reader.SmaregiStaffItemReader;
+import com.beauty.beauty_sales_dwh.batch.reader.SmaregiTransactionItemReader;
 import com.beauty.beauty_sales_dwh.batch.tasklet.CustomerTransformTasklet;
 import com.beauty.beauty_sales_dwh.batch.tasklet.ProductTransformTasklet;
 import com.beauty.beauty_sales_dwh.batch.tasklet.SmaregiAuthTasklet;
@@ -34,8 +39,11 @@ import com.beauty.beauty_sales_dwh.domain.CategoryRawData;
 import com.beauty.beauty_sales_dwh.domain.CustomerRawData;
 import com.beauty.beauty_sales_dwh.domain.ProductRawData;
 import com.beauty.beauty_sales_dwh.domain.StaffRawData;
+import com.beauty.beauty_sales_dwh.domain.TransactionRawData;
+import com.beauty.beauty_sales_dwh.mapper.RawTransactionMapper;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * スマレジデータ取込ジョブの設定クラス
@@ -45,6 +53,7 @@ import lombok.RequiredArgsConstructor;
  */
 @Configuration
 @RequiredArgsConstructor
+@Slf4j
 public class SmaregiBatchConfig {
 
 
@@ -52,6 +61,7 @@ public class SmaregiBatchConfig {
     private final JobRepository jobRepository;
     private final PlatformTransactionManager transactionManager;
     private final SqlSessionFactory sqlSessionFactory;
+    private final RawTransactionMapper rawTransactionMapper;
 
     // --- Tasklet ---
     private final SmaregiAuthTasklet smaregiAuthTasklet;
@@ -65,6 +75,7 @@ public class SmaregiBatchConfig {
     private final SmaregiCategoryGroupItemReader smaregiCategoryGroupReader;
     private final SmaregiProductItemReader smaregiProductReader;
     private final SmaregiStaffItemReader smaregiStaffReader;
+    private final SmaregiTransactionItemReader smaregiTransactionReader;
 
     // --- Processors ---
     private final CustomerRawDataProcessor customerProcessor;
@@ -72,6 +83,7 @@ public class SmaregiBatchConfig {
     private final CategoryGroupRawDataProcessor categoryGroupProcessor;
     private final ProductRawDataProcessor productProcessor;
     private final StaffRawDataProcessor staffProcessor;
+    private final TransactionRawDataProcessor transactionProcessor;
 
     // =================================================================================
     // 1. Job 定義 (メインフロー)
@@ -81,7 +93,6 @@ public class SmaregiBatchConfig {
         return new JobBuilder("importSmaregiRawDataJob", jobRepository)
                 .incrementer(new RunIdIncrementer())
                 .start(step1Auth())
-                //.next(stepFetchTransactionsHead()) // Add this line
                 .next(stepFetchCustomers())
                 .next(stepFetchCategories())
                 .next(stepFetchCategoryGroups())
@@ -90,6 +101,20 @@ public class SmaregiBatchConfig {
                 .next(stepTransformCustomers())
                 .next(stepTransformProducts())
                 .next(stepTranceformStaffs())
+                .build();
+    }
+
+    /**
+     * スマレジ取引データ取込ジョブ (Step A: Head取得)
+     * パーティショニングを使用して過去3年分または差分を月単位で取得します。
+     */
+    @Bean
+    public Job importSmaregiTransactionJob() {
+        return new JobBuilder("importSmaregiTransactionJob", jobRepository)
+                .incrementer(new RunIdIncrementer())
+                .start(step1Auth())
+                .next(stepMasterTransaction())
+                // .next(stepExtractTransactionDetails()) // 今後実装するStep B (明細展開)
                 .build();
     }
 
@@ -107,12 +132,32 @@ public class SmaregiBatchConfig {
                 .build();
     }
 
-    /** 
-      * Step 2: データ取込 (Chunkモデル) 
-      * APIから読み込み -> JSON変換 -> DB保存 (RAWテーブル)
-      * MyBatisを使ってRAWテーブルへ一括INSERTします。
-      * Writerは下で定義した3. Writer Bean 定義を使用 
-    */
+    /**
+     * Step 2.0: 取引データ（ヘッダ）取得 - マスタステップ
+     * パーティショナーを呼び出し、月ごとのWorker Stepを実行します。
+     */
+    @Bean
+    public Step stepMasterTransaction() {
+        return new StepBuilder("stepMasterTransaction", jobRepository)
+                .partitioner("stepFetchTransactionsHead", transactionPeriodPartitioner(null))
+                .step(stepFetchTransactionsHead())
+                .gridSize(1) // 順次実行
+                .build();
+    }
+
+    /**
+     * Step 2.0: 取引データ（ヘッダ）取得 - ワーカーステップ
+     */
+    @Bean
+    public Step stepFetchTransactionsHead() {
+        return new StepBuilder("stepFetchTransactionsHead", jobRepository)
+                .<Map<String, Object>, TransactionRawData>chunk(100, transactionManager)
+                .reader(smaregiTransactionReader)
+                .processor(transactionProcessor)
+                .writer(transactionWriter())
+                .build();
+    }
+
     /**
      * Step 2.1: 顧客データ取込
      */
@@ -258,10 +303,21 @@ public class SmaregiBatchConfig {
     }
 
     @Bean
-    public ItemWriter<com.beauty.beauty_sales_dwh.domain.TransactionRawData> transactionWriter() {
-        return new MyBatisBatchItemWriterBuilder<com.beauty.beauty_sales_dwh.domain.TransactionRawData>()
+    public ItemWriter<TransactionRawData> transactionWriter() {
+        return new MyBatisBatchItemWriterBuilder<TransactionRawData>()
                 .sqlSessionFactory(sqlSessionFactory)
                 .statementId("com.beauty.beauty_sales_dwh.mapper.RawTransactionMapper.insertRawTransaction")
                 .build();
+    }
+
+    /**
+     * 取引データの取得期間を分割するパーティショナー
+     */
+    @Bean
+    @StepScope
+    public TransactionPeriodPartitioner transactionPeriodPartitioner(
+            @Value("#{jobParameters['companyId']}") Long companyId) {
+        log.info("TransactionPeriodPartitionerを生成します。companyId: {}", companyId);
+        return new TransactionPeriodPartitioner(rawTransactionMapper, companyId);
     }
 }
