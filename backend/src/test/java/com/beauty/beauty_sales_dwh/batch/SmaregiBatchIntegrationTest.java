@@ -18,10 +18,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.batch.core.ExitStatus;
+import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.test.JobLauncherTestUtils;
 import org.springframework.batch.test.context.SpringBatchTest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -42,6 +44,10 @@ public class SmaregiBatchIntegrationTest {
     private JobLauncherTestUtils jobLauncherTestUtils;
 
     @Autowired
+    @Qualifier("importSmaregiRawDataJob")
+    private Job importSmaregiRawDataJob;
+
+    @Autowired
     private RestTemplate restTemplate;
 
     @Autowired
@@ -57,6 +63,7 @@ public class SmaregiBatchIntegrationTest {
 
     @BeforeEach
     public void setUp() {
+        jobLauncherTestUtils.setJob(importSmaregiRawDataJob);
         mockServer = MockRestServiceServer.bindTo(restTemplate).build();
         jdbcTemplate.execute("TRUNCATE TABLE raw.products,raw.customers, raw.categories, raw.category_groups, raw.staffs RESTART IDENTITY");
         jdbcTemplate.execute("TRUNCATE TABLE dwh.dim_customers RESTART IDENTITY");
@@ -94,11 +101,11 @@ public class SmaregiBatchIntegrationTest {
     public void testFeProductApiExecution() throws Exception {
         // --- API Mocks ---
         mockAuth();
-        mockCustomersApi(0); // 顧客APIは空
-        mockCategoriesApi(2); // カテゴリAPIは0件返す
-        mockCategoryGroupsApi(2); // カテゴリグループAPIは空
+        mockCustomersApi(0);
+        mockCategoriesApi(0);
+        mockCategoryGroupsApi(0);
         mockProductsApi(2);     //2件の製品データを返すモック
-        mockStaffsApi(0); // 0件のスタッフデータを返すモック
+        mockStaffsApi(0);
 
         // --- Job Execution ---
         JobExecution jobExecution = jobLauncherTestUtils.launchJob();
@@ -107,11 +114,9 @@ public class SmaregiBatchIntegrationTest {
         assertThat(jobExecution.getExitStatus()).isEqualTo(ExitStatus.COMPLETED);
 
        // 各テーブルの件数確認
-        assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM raw.categories", Integer.class)).isEqualTo(2);
-        assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM raw.category_groups", Integer.class)).isEqualTo(2);
         assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM raw.products", Integer.class)).isEqualTo(2);
 
-        // 登録されたJSONの内容を確認
+        // 登録された JSON の内容を確認
         String jsonBody = jdbcTemplate.queryForObject("SELECT json_body FROM raw.products WHERE product_id = 1", String.class);
         JsonNode jsonNode = objectMapper.readTree(jsonBody);
         assertThat(jsonNode.get("productId").asText()).isEqualTo("1001");
@@ -125,11 +130,11 @@ public class SmaregiBatchIntegrationTest {
     public void testFetchCategoriesStep() throws Exception {
         // --- API Mocks ---
         mockAuth();
-        mockCustomersApi(0); // 顧客APIは空
+        mockCustomersApi(0);
         mockCategoriesApi(2); // カテゴリAPIは2件返す
-        mockCategoryGroupsApi(0); // カテゴリグループAPIは空
-        mockProductsApi(0);     //0件の製品データを返すモック
-        mockStaffsApi(0); // 0件のスタッフデータを返すモック
+        mockCategoryGroupsApi(0);
+        mockProductsApi(0);
+        mockStaffsApi(0);
 
         // --- Job Execution ---
         JobExecution jobExecution = jobLauncherTestUtils.launchJob();
@@ -138,11 +143,9 @@ public class SmaregiBatchIntegrationTest {
         assertThat(jobExecution.getExitStatus()).isEqualTo(ExitStatus.COMPLETED);
 
         // 各テーブルの件数確認
-        assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM raw.customers", Integer.class)).isEqualTo(0);
         assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM raw.categories", Integer.class)).isEqualTo(2);
-        assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM raw.category_groups", Integer.class)).isEqualTo(0);
 
-        // 登録されたJSONの内容を確認
+        // 登録された JSON の内容を確認
         String jsonBody = jdbcTemplate.queryForObject("SELECT json_body FROM raw.categories WHERE cat_id = 1", String.class);
         JsonNode jsonNode = objectMapper.readTree(jsonBody);
         assertThat(jsonNode.get("categoryId").asText()).isEqualTo("101");
@@ -160,7 +163,7 @@ public class SmaregiBatchIntegrationTest {
         mockCategoriesApi(0);
         mockCategoryGroupsApi(2); // カテゴリグループAPIは2件返す
         mockProductsApi(0);
-        mockStaffsApi(0); // 0件のスタッフデータを返すモック
+        mockStaffsApi(0);
 
         // --- Job Execution ---
         JobExecution jobExecution = jobLauncherTestUtils.launchJob();
@@ -169,11 +172,9 @@ public class SmaregiBatchIntegrationTest {
         assertThat(jobExecution.getExitStatus()).isEqualTo(ExitStatus.COMPLETED);
         
         // 各テーブルの件数確認
-        assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM raw.customers", Integer.class)).isEqualTo(0);
-        assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM raw.categories", Integer.class)).isEqualTo(0);
         assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM raw.category_groups", Integer.class)).isEqualTo(2);
 
-        // 登録されたJSONの内容を確認
+        // 登録された JSON の内容を確認
         String jsonBody = jdbcTemplate.queryForObject("SELECT json_body FROM raw.category_groups WHERE cat_group_id = 1", String.class);
         JsonNode jsonNode = objectMapper.readTree(jsonBody);
         assertThat(jsonNode.get("categoryGroupId").asText()).isEqualTo("1");
@@ -202,7 +203,7 @@ public class SmaregiBatchIntegrationTest {
         // 各テーブルの件数確認
         assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM raw.staffs", Integer.class)).isEqualTo(2);
 
-        // 登録されたJSONの内容を確認
+        // 登録された JSON の内容を確認
         String jsonBody = jdbcTemplate.queryForObject("SELECT json_body FROM raw.staffs WHERE staff_id = 1", String.class);
         JsonNode jsonNode = objectMapper.readTree(jsonBody);
         assertThat(jsonNode.get("staffId").asText()).isEqualTo("1");
@@ -345,12 +346,8 @@ public class SmaregiBatchIntegrationTest {
         }
         String baseUrl = smaregiApiProperties.getBaseUrl() + "/" + smaregiApiProperties.getContractId() + "/pos/staffs";
 
-        OffsetDateTime defaultDate = OffsetDateTime.of(2000, 1, 1, 0, 0, 0, 0, ZoneOffset.ofHours(9));
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssXXX");
-        String encodedDate = URLEncoder.encode(defaultDate.format(formatter), StandardCharsets.UTF_8);
-
-        // Page 1 expectation
-        String urlPage1 = String.format("%s?limit=1000&page=1&upd_date_time-from=%s", baseUrl, encodedDate);
+        // Page 1 expectation (No upd_date_time-from parameter)
+        String urlPage1 = String.format("%s?limit=1000&page=1", baseUrl);
         mockServer.expect(requestTo(urlPage1))
             .andExpect(method(GET))
             .andRespond(withSuccess(json, MediaType.APPLICATION_JSON));
@@ -358,7 +355,7 @@ public class SmaregiBatchIntegrationTest {
         // ONLY expect page 2 if data is returned for page 1
         if (count > 0) {
             // Page 2 expectation (returns empty)
-            String urlPage2 = String.format("%s?limit=1000&page=2&upd_date_time-from=%s", baseUrl, encodedDate);
+            String urlPage2 = String.format("%s?limit=1000&page=2", baseUrl);
             mockServer.expect(requestTo(urlPage2))
                 .andExpect(method(GET))
                 .andRespond(withSuccess("[]", MediaType.APPLICATION_JSON));

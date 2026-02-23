@@ -142,7 +142,8 @@ CREATE TABLE IF NOT EXISTS raw.transactions (
     transaction_id BIGINT AUTO_INCREMENT PRIMARY KEY,
     fetched_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     json_body TEXT NOT NULL,
-    app_company_id bigint NOT NULL
+    app_company_id bigint NOT NULL,
+    details_extracted boolean
 );
 
 -- SYS Tables
