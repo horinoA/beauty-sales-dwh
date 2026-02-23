@@ -90,7 +90,7 @@ public class SmaregiTransactionItemReader extends AbstractSmaregiItemReader {
             String encodedTo = URLEncoder.encode(this.toFormatted, StandardCharsets.UTF_8);
 
             // クエリパラメータを組み立てる
-            String urlString = String.format("%s?transaction_datetime-from=%s&transaction_datetime-to=%s&page=%d&limit=100&sort=transaction_datetime:asc",
+            String urlString = String.format("%s?transaction_datetime-from=%s&transaction_datetime-to=%s&page=%d&limit=100&with_details=all&sort=transaction_datetime:asc",
                     baseUrl, encodedFrom, encodedTo, page);
             
             log.info("Request URL: {}", urlString);

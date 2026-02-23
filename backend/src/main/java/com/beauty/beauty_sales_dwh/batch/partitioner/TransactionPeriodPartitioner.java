@@ -15,7 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * 取引データの取得期間を月単位で分割するパーティショナー
- * 1. 初回実行時：過去3年分（36ヶ月）のパーティションを生成
+ * 1. 初回実行時：過去3ヶ月分のパーティションを生成
  * 2. 継続実行時：最終取得日時から現在までの期間を分割して生成
  */
 @Slf4j
@@ -34,8 +34,8 @@ public class TransactionPeriodPartitioner implements Partitioner {
 
         LocalDate startDate;
         if (maxFetchedAt == null) {
-            // データがない場合は3年前の月初から開始（合計約36パーティション）
-            startDate = LocalDate.now().minusYears(3).withDayOfMonth(1);
+            // データがない場合は3ヶ月の月初から開始（合計約3パーティション）
+            startDate = LocalDate.now().minusMonths(3).withDayOfMonth(1);
             log.info("初回取得として判定されました。開始日: {}", startDate);
         } else {
             // 既にある場合は最終取得日から開始

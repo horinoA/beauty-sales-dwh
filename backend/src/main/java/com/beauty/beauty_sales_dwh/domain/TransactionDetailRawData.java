@@ -1,15 +1,18 @@
 package com.beauty.beauty_sales_dwh.domain;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class TransactionDetailRawData {
-    private Long companyId; // 企業ID
-    private Long transactionId; // raw.transactions.transaction_id (外部キー)
-    private String transactionHeadId; // 親のtransactionHeadId (file_nameの代替)
-    private String jsonBody;   // APIレスポンス(JSON文字列)
+    private Long companyId;         // app_company_id
+    private String transactionHeadId; // 親の transaction_id (文字列として保持)
+    private String jsonBody;        // 明細単体のJSON
+    private String fileName;        // トレーサビリティ用 (APIリクエスト識別子など)
+    private Long rowNumber;         // 明細配列のインデックス
 }

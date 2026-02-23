@@ -131,15 +131,24 @@ Step A: 取引データ（全体）を `raw.transactions` へ保存
       ted=FALSEを明示的に設定済みです。(完了)
    6. `RawTransactionDetailMapper.xml`の作成:
       RawTransactionDetailMapperのXMLファイルです。(完了)
-   7. `SmaregiTransactionItemReader.java`の作成:
-      スマレジAPIから取引データを取得するリーダーです。
-＊取引は過去３年まで取得とする（対前年度比が見たいのでここまでが最大かなと思います）
-＊transaction_date_time-from,transaction_date_time-toの日付を1ヶ月ごとに作成し繰り返す（最初は36回リクエストを投げる）
+   7. `SmaregiTransactionItemReader.java 作成 ＆ テスト通過済み
+   8. [完了] TransactionRawDataProcessor.java 作成
+   9. [完了] TransactionPeriodPartitioner.java 作成（1ヶ月ごとの並列処理用）
+   9.テスト完了
+
+＊取引は過去3ヶ月まで取得とする（過去データの大量取得はスマレジからCSVダウンロードを手動で行う。必殺運用でカバー作戦）
+＊transaction_date_time-from,transaction_date_time-toの日付を1ヶ月ごとに作成し繰り返す（最初は約3回リクエストを投げる）
    8. `TransactionRawDataProcessor.java`の作成:
-      ステップA用のプロセッサー（生マップをTransactionRawDataに変換）です。
+      ステップA用のプロセッサー（生マップをTransactionRawDataに変換）です。[完了]
    9. `SmaregiBatchConfig.java`の更新:
-       * ステップA用のstepFetchTransactionsHead()を追加します。
-       * ステップB用のstepExtractTransactionDetails()を追加します。
-       * 新しいコンポーネント（リーダー、プロセッサー、マッパー、タスクレット）を注入します。
+       * ステップA用のstepFetchTransactionsHead()を追加します。[完了]
+       * ステップB用のstepExtractTransactionDetails()を追加します。[完了]
+       * 新しいコンポーネント（リーダー、プロセッサー、マッパー、タスクレット）を注入します。[完了]
    10. `TransactionDetailsExtractTasklet.java`の作成
-       ステップB用のタスクレット（明細を抽出し、raw.transaction_detailsに挿入）です。
+       ステップB用のタスクレット（明細を抽出し、raw.transaction_detailsに挿入）です。[完了]
+       * row_number: 明細配列の連番
+       * transaction_head_id: 親のtransaction_id
+
+   11. 次は、raw.transaction_details（ステージング）に溜まったデータを、分析用の
+  `dwh.fact_sales` および `dwh.fact_sales_details` へ変換・転送する Transform
+  フェーズ に入ります。次回以降！

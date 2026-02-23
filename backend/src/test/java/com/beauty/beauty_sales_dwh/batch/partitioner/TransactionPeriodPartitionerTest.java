@@ -1,7 +1,8 @@
 package com.beauty.beauty_sales_dwh.batch.partitioner;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
@@ -33,7 +34,7 @@ class TransactionPeriodPartitionerTest {
     }
 
     @Test
-    @DisplayName("初回実行時（データなし）：3年前の月初から今月分までのパーティションが生成されること")
+    @DisplayName("初回実行時（データなし）：3ヶ月前の月初から今月分までのパーティションが生成されること")
     void partition_InitialRun() {
         // Arrange: Mapperがnullを返す（初回）
         when(rawTransactionMapper.findMaxFetchedAt(companyId)).thenReturn(null);
@@ -42,12 +43,12 @@ class TransactionPeriodPartitionerTest {
         Map<String, ExecutionContext> result = partitioner.partition(1);
 
         // Assert
-        // 3年前〜今月までの月数（約37パーティション）が生成されているか
-        assertTrue(result.size() >= 36, "36ヶ月分以上のパーティションが生成されるはず");
+        // 3ヶ月分以上のパーティションが生成されているか
+        assertTrue(result.size() >= 3, "3ヶ月分以上のパーティションが生成されるはず");
         
-        // 最初のパーティションが3年前の月初であること
+        // 最初のパーティションが3ヶ月の月初であること
         ExecutionContext firstPartition = result.get("partition0");
-        LocalDate expectedStart = LocalDate.now().minusYears(3).withDayOfMonth(1);
+        LocalDate expectedStart = LocalDate.now().minusMonths(3).withDayOfMonth(1);
         assertEquals(expectedStart.toString(), firstPartition.getString("from"));
         
         // 最後のパーティションが今日（または今月末）を含むこと

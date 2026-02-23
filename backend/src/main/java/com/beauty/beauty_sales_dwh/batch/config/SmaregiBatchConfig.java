@@ -34,6 +34,7 @@ import com.beauty.beauty_sales_dwh.batch.tasklet.CustomerTransformTasklet;
 import com.beauty.beauty_sales_dwh.batch.tasklet.ProductTransformTasklet;
 import com.beauty.beauty_sales_dwh.batch.tasklet.SmaregiAuthTasklet;
 import com.beauty.beauty_sales_dwh.batch.tasklet.StaffTransformTasklet;
+import com.beauty.beauty_sales_dwh.batch.tasklet.TransactionDetailsExtractTasklet;
 import com.beauty.beauty_sales_dwh.domain.CategoryGroupRawData;
 import com.beauty.beauty_sales_dwh.domain.CategoryRawData;
 import com.beauty.beauty_sales_dwh.domain.CustomerRawData;
@@ -68,6 +69,7 @@ public class SmaregiBatchConfig {
     private final CustomerTransformTasklet customerTransformTasklet;
     private final ProductTransformTasklet productTransformTasklet;
     private final StaffTransformTasklet staffTransformTasklet;
+    private final TransactionDetailsExtractTasklet transactionDetailsExtractTasklet;
 
     // --- Readers ---
     private final SmaregiCustomerItemReader smaregiCustomerReader;
@@ -100,13 +102,13 @@ public class SmaregiBatchConfig {
                 .next(stepFetchStaffs())
                 .next(stepTransformCustomers())
                 .next(stepTransformProducts())
-                .next(stepTranceformStaffs())
+                .next(stepTransformStaffs())
                 .build();
     }
 
     /**
-     * スマレジ取引データ取込ジョブ (Step A: Head取得)
-     * パーティショニングを使用して過去3年分または差分を月単位で取得します。
+     * スマレジ取引データ取込ジョブ (Step A: Head取得 -> Step B: 明細展開)
+     * パーティショニングを使用して過去3ヶ月分または差分を月単位で取得します。
      */
     @Bean
     public Job importSmaregiTransactionJob() {
@@ -114,14 +116,14 @@ public class SmaregiBatchConfig {
                 .incrementer(new RunIdIncrementer())
                 .start(step1Auth())
                 .next(stepMasterTransaction())
-                // .next(stepExtractTransactionDetails()) // 今後実装するStep B (明細展開)
+                .next(stepExtractTransactionDetails())
                 .build();
     }
 
     // =================================================================================
     // 2. Step 定義
     // =================================================================================
-    /*
+    
     /**
      * Step 1: 認証タスク
      */
@@ -155,6 +157,16 @@ public class SmaregiBatchConfig {
                 .reader(smaregiTransactionReader)
                 .processor(transactionProcessor)
                 .writer(transactionWriter())
+                .build();
+    }
+
+    /**
+     * Step 2.1: 取引明細展開タスク (Step B)
+     */
+    @Bean
+    public Step stepExtractTransactionDetails() {
+        return new StepBuilder("stepExtractTransactionDetails", jobRepository)
+                .tasklet(transactionDetailsExtractTasklet, transactionManager)
                 .build();
     }
 
@@ -252,8 +264,8 @@ public class SmaregiBatchConfig {
      * Step 3: スタッフデータ整形タスク
      */
     @Bean
-    public Step stepTranceformStaffs() {
-        return new StepBuilder("stepTransformTasklet", jobRepository)
+    public Step stepTransformStaffs() {
+        return new StepBuilder("stepTransformStaffs", jobRepository)
             .tasklet(staffTransformTasklet, transactionManager)
             .build();
     }
