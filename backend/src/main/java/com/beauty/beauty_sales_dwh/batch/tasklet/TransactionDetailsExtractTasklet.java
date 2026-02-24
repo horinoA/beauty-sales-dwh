@@ -55,6 +55,10 @@ public class TransactionDetailsExtractTasklet implements Tasklet {
         List<Long> processedIds = new ArrayList<>();
 
         for (TransactionRawData transaction : transactions) {
+            if (transaction == null) {
+                log.warn("取引データが null です。スキップします。");
+                continue;
+            }
             try {
                 processTransaction(transaction);
                 processedIds.add(transaction.getTransactionId());
@@ -92,7 +96,7 @@ public class TransactionDetailsExtractTasklet implements Tasklet {
                     .companyId(transaction.getCompanyId())
                     .transactionHeadId(transaction.getTransactionId().toString())
                     .jsonBody(detail.toString())
-                    .fileName("API_EXTRACT") // トレーサビリティ用
+                    .fileName(rootNode.get("transactionHeadId").toString()) // トレーサビリティ用
                     .rowNumber(rowNumber++)
                     .build();
 

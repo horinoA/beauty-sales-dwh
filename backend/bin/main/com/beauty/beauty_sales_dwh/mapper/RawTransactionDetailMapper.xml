@@ -4,12 +4,14 @@
 
     <insert id="insertRawTransactionDetail" parameterType="com.beauty.beauty_sales_dwh.domain.TransactionDetailRawData">
         INSERT INTO raw.transaction_details (
+            app_company_id,
             transaction_head_id,
             json_body,
             file_name,
             row_number,
             fetched_at
         ) VALUES (
+            #{companyId},
             #{transactionHeadId},
             #{jsonBody}::jsonb,
             #{fileName},

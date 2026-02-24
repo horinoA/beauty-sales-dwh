@@ -151,4 +151,18 @@ Step A: 取引データ（全体）を `raw.transactions` へ保存
 
    11. 次は、raw.transaction_details（ステージング）に溜まったデータを、分析用の
   `dwh.fact_sales` および `dwh.fact_sales_details` へ変換・転送する Transform
-  フェーズ に入ります。次回以降！
+  フェーズ に入ります。[完了]
+
+12. importSmaregiTransactionJob
+  を起動して外部連携（スマレジAPIからの取得）を確認する
+  →テストコードで動かす（ロジックの動作を確認）
+  APIモックを使って、取引データの取込〜明細展開のフローが正しいか確認する新しい
+  テストクラスを作成。
+
+   12.1 新しいテスト `SmaregiTransactionIntegrationTest.java` を作成
+     SmaregiBatchIntegrationTest と同様の構成で、importSmaregiTransactionJob
+  を対象にします。
+
+   12.2 実行
+      ./gradlew test --tests
+     com.beauty.beauty_sales_dwh.batch.SmaregiTransactionIntegrationTest

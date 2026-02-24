@@ -17,6 +17,12 @@
         )
     </insert>
 
+    <resultMap id="TransactionRawDataMap" type="com.beauty.beauty_sales_dwh.domain.TransactionRawData">
+        <id property="transactionId" column="transaction_id" />
+        <result property="jsonBody" column="json_body" />
+        <result property="companyId" column="app_company_id" />
+    </resultMap>
+
     <!-- RawTransactionMapper.javaのfindMaxFetchedAtメソッドに対応 -->
     <select id="findMaxFetchedAt" resultType="java.time.OffsetDateTime">
         SELECT MAX(fetched_at)
@@ -25,7 +31,7 @@
     </select>
 
     <!-- RawTransactionMapper.javaのfindUnprocessedTransactionsメソッドに対応 -->
-    <select id="findUnprocessedTransactions" resultType="com.beauty.beauty_sales_dwh.domain.TransactionRawData">
+    <select id="findUnprocessedTransactions" resultMap="TransactionRawDataMap">
         SELECT transaction_id, json_body, app_company_id
         FROM raw.transactions
         WHERE app_company_id = #{companyId} AND details_extracted = FALSE
