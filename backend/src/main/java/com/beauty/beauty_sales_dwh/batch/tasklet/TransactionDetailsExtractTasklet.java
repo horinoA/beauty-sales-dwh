@@ -96,7 +96,7 @@ public class TransactionDetailsExtractTasklet implements Tasklet {
                     .companyId(transaction.getCompanyId())
                     .transactionHeadId(transaction.getTransactionId().toString())
                     .jsonBody(detail.toString())
-                    .fileName(rootNode.get("transactionHeadId").toString()) // トレーサビリティ用
+                    .fileName(rootNode.get("transactionHeadId").toString().replaceAll("[^0-9]", "")) // トレーサビリティ用
                     .rowNumber(rowNumber++)
                     .build();
 

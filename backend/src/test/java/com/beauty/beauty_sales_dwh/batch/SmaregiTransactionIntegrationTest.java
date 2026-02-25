@@ -207,15 +207,24 @@ public class SmaregiTransactionIntegrationTest {
           "subtotal": "11550",
           "total": "11550",
           "taxInclude": "11550",
+          "taxExclude": "0",
+          "subtotalDiscountPrice": "0",
+          "commission": "0",
+          "carriage": "0",
+          "pointDiscount": "0",
+          "cancelDivision": "0",
           "customerId": "1",
           "terminalTranDateTime": "2025-12-02T14:30:00+09:00",
           "staffId": "2",
+          "storeId": "1",
           "details": [
             {
               "transactionDetailId": "1",
               "productId": "8000001",
               "productName": "デザインカット",
               "salesPrice": "5500",
+              "taxDivision": "1",
+              "transactionDetailDivision": "1",
               "quantity": "1"
             },
             {
@@ -223,6 +232,8 @@ public class SmaregiTransactionIntegrationTest {
               "productId": "8000005",
               "productName": "リタッチカラー",
               "salesPrice": "5500",
+              "taxDivision": "1",
+              "transactionDetailDivision": "1",
               "quantity": "1"
             },
             {
@@ -230,6 +241,8 @@ public class SmaregiTransactionIntegrationTest {
               "productId": "8000012",
               "productName": "指名料",
               "salesPrice": "550",
+              "taxDivision": "1",
+              "transactionDetailDivision": "1",
               "quantity": "1"
             }
           ]

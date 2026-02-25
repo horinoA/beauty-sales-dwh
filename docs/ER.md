@@ -76,7 +76,6 @@ erDiagram
         VARCHAR staff_id PK "複合PK 2/2 スマレジAPI:staffId"
         VARCHAR staff_Name "スマレジAPI:staffName"
         VARCHAR rank "スマレジAPI:rank"
-        VARCHAR store_id  "API:storeID"
         INTEGER employ_flag "在籍フラグ スマレジAPI:display_flag"
         TIMESTAMPZ insert_data_time "API:insDateTime"
         TIMESTAMPZ update_data_time "API:updDateTime"
@@ -123,8 +122,7 @@ erDiagram
         INTEGER amount_fee "手数料(API:commission)"
         INTEGER amount_shipping "送料(API:carriage)"
         INTEGER discount_point "ポイント値引き(API:pointDiscount)"
-        INTEGER discount_coupon "クーポン値引き(API:couponDiscount)"
-
+        INTEGER discount_coupon "クーポン値引き(API:couponDiscount、プレミアム／プレミアムプラス／フードビジネス／リテールビジネス)にしか存在しないため、要NULLチェック"
         VARCHAR transaction_type "SALES/REFUND"
         BOOLEAN is_void "取消データフラグ(API:cancelDivision)"
     }
