@@ -166,3 +166,76 @@ Step A: 取引データ（全体）を `raw.transactions` へ保存
    12.2 実行
       ./gradlew test --tests
      com.beauty.beauty_sales_dwh.batch.SmaregiTransactionIntegrationTest
+
+13.取引データをraw層からdwh層へ
+
+ * `SALES` (通常売上):
+       * 定義: サービス提供または商品販売により発生した正の売上。
+       * 判断条件: returnSales が 0 (通常) かつ transactionHeadDivision が 1
+         (通常) のもの。
+       * 分析上の扱い: 売上合計（グロス）の加算対象。
+
+   * `REFUND` (返品・返金):
+       * 定義:
+         一度発生した売上に対して、商品の返品や施術のやり直し等により発生した返
+         金（負の売上）。
+       * 判断条件: returnSales が 1 (返品) または transactionHeadDivision が 5
+         (預り金返金) のもの。
+       * 分析上の扱い:
+         売上のマイナス計上（ネット売上の算出に利用）。顧客満足度や技術品質の指
+         標として別途集計されることが多い。
+
+   * `is_void` (取消):
+       * 定義:
+         入力ミスや操作間違いにより、取引自体が「なかったこと」にされたデータ。
+       * 判断条件: cancelDivision が 1 (取消) のもの。
+       * 分析上の扱い:
+         通常の売上集計からは除外します。監査（不正防止）や操作ログとしての分析
+         にのみ利用します。
+
+
+### 13.1. 取引ヘッダー判定 (FACT_SALES)
+
+| スマレジでの取引名称 | cancelDivision | returnSales | disposeDivision | その他条件 | is_void (DWH) | transaction_type (DWH) | 備考 |
+| :--- | :---: | :---: | :---: | :--- | :---: | :---: | :--- |
+| **通常取引** | 0 | 0 | 0 | total >= 0 | false | SALES | 通常の売上。 |
+| **取消取引** | 1 | - | - | - | true | SALES | 操作ミス等による無効データ。分析から除外。 |
+| **返品取消元取引** | 0 | 0 | 1 | - | false | SALES | 返品された「元の売上」。記録として保持。 |
+| **返品取消取引** | 0 | 0 | 2 | - | false | REFUND | 返品によって発生したマイナス売上。 |
+| **返品販売** | 0 | 1 | 0 | - | false | REFUND | 取引全体が返品扱いのもの。 |
+| **明細単位の返品** | 0 | 0 | 0 | total < 0 | false | REFUND | フラグはないが、合計がマイナスのケース。 |
+| **預り金返金** | 0 | - | - | transactionHeadDivision=5 | false | REFUND | 前受金等の払い戻し。 |
+### 13.2. 取引明細判定 (FACT_SALES_DETAILS)
+| transactionDetailDivision | category_type (DWH) | 備考 |
+| :--- | :---: | :--- |
+| **1** (通常) | SALES | 通常の販売明細（行）。 |
+| **2** (返品) | REFUND | 返品・お直し等によるマイナス明細（行）。 |
+---
+### 13.3実装判定ロジック
+1. **is_void (取消フラグ)**
+   - `cancelDivision == 1` ? `true` : `false`
+2. **transaction_type (取引種別)**
+   - `returnSales == 1` OR `disposeDivision == 2` OR `transactionHeadDivision == 5` OR `total < 0` ? **REFUND** : **SALES**
+3. **category_type (明細種別)**
+   - `transactionDetailDivision == 2` ? **REFUND** : **SALES**
+
+
+raw.tarnsaction→dwh.FACT_SALES
+SELECT DISTINCT ON (json_body ->> 'transactionHeadId')
+(json_body ->> 'staffId') AS "transaction_head_id",
+(json_body ->> 'terminalTranDateTime') AS "transaction_date_time",
+(json_body ->> 'customerId') AS "customer_id",
+(json_body ->> 'staffId') AS "staff_id",
+(json_body ->> 'storeId') AS "store_id",
+(json_body ->> 'storeId') AS "store_id",
+(json_body ->> 'total') AS "amount_total",
+(json_body ->> 'subtotal') AS "amount_subtotal",
+(json_body ->> 'taxInclude') AS "amount_tax_include",
+(json_body ->> 'taxExclude') AS "amount_tax_exclude",
+(json_body ->> 'subtotalDiscountPrice') AS "amount_subtotal_discount_price",
+(json_body ->> 'commission') AS "amount_fee",
+(json_body ->> 'carriage') AS  "amount_shipping",
+(json_body ->> 'pointDiscount') AS "discount_point",
+COALESCE(json_body ->> 'couponDiscoun','0') AS "discount_coupon",
+(json_body ->> 'cancelDivision') AS is_void
+FROM "raw".transactions

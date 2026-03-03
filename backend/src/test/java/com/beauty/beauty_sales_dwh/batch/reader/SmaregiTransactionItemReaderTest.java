@@ -72,8 +72,8 @@ class SmaregiTransactionItemReaderTest {
             // 【重要】すべての期待値（1ページ目と2ページ目）をリクエスト実行前に定義する
             
             // 1ページ目の期待値設定
-            mockServer.expect(requestTo(org.hamcrest.Matchers.containsString("transaction_datetime-from=2024-01-01T00%3A00%3A00%2B09%3A00")))
-                    .andExpect(requestTo(org.hamcrest.Matchers.containsString("transaction_datetime-to=2024-01-31T23%3A59%3A59%2B09%3A00")))
+            mockServer.expect(requestTo(org.hamcrest.Matchers.containsString("transaction_date_time-from=2024-01-01T00%3A00%3A00%2B09%3A00")))
+                    .andExpect(requestTo(org.hamcrest.Matchers.containsString("transaction_date_time-to=2024-01-31T23%3A59%3A59%2B09%3A00")))
                     .andExpect(header("Authorization", "Bearer test-token"))
                     .andRespond(withSuccess("[{\"transactionId\": \"123\"}]", MediaType.APPLICATION_JSON));
 

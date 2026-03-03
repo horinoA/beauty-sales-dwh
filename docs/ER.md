@@ -105,7 +105,7 @@ erDiagram
         BIGINT app_company_id PK "複合PK 1/2"
         VARCHAR transaction_head_id PK "複合PK 2/2 スマレジID:transactionHeadId"
         
-        TIMESTAMPTZ transaction_date_time "Timezoneあり"
+        TIMESTAMPTZ transaction_date_time "Timezoneあり,API:terminalTranDateTime"
         DATE transaction_date "パーティション/検索用"
         
         VARCHAR customer_id FK "DIM_CUSTOMERへ"
