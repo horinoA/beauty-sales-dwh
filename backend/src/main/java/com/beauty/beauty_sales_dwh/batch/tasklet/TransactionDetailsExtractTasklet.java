@@ -94,9 +94,9 @@ public class TransactionDetailsExtractTasklet implements Tasklet {
         for (JsonNode detail : detailsNode) {
             TransactionDetailRawData detailData = TransactionDetailRawData.builder()
                     .companyId(transaction.getCompanyId())
-                    .transactionHeadId(transaction.getTransactionId().toString())
+                    .transactionHeadId(rootNode.get("transactionHeadId").toString().replaceAll("[^0-9]", ""))
                     .jsonBody(detail.toString())
-                    .fileName(rootNode.get("transactionHeadId").toString().replaceAll("[^0-9]", "")) // トレーサビリティ用
+                    .fileName(transaction.getTransactionId().toString()) // トレーサビリティ用
                     .rowNumber(rowNumber++)
                     .build();
 

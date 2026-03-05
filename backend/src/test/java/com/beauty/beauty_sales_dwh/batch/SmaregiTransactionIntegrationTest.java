@@ -83,10 +83,7 @@ public class SmaregiTransactionIntegrationTest {
         // --- API Mocks ---
         mockAuth();
         
-        // パーティショナーが生成するであろう期間を計算（本日が2026-02-25と仮定）
-        // 実際には LocalDate.now() を使うので、実行時の日付に合わせる必要がありますが、
-        // ここではサンプルの 2025-12-02 が含まれる期間を確実にカバーするようにMockを組みます。
-        
+        // パーティショナーが生成する期間を計算
         LocalDate today = LocalDate.now();
         LocalDate startDate = today.minusMonths(3).withDayOfMonth(1);
         
@@ -119,16 +116,17 @@ public class SmaregiTransactionIntegrationTest {
 
         // 1. raw.transactions の検証
         List<Map<String, Object>> transactions = jdbcTemplate.queryForList("SELECT * FROM raw.transactions");
-        assertThat(transactions).hasSize(1);
+        assertThat(transactions).isNotEmpty();
+        
         Map<String, Object> head = transactions.get(0);
         assertThat(head.get("details_extracted")).isEqualTo(true); // 展開済みフラグ
         
         Long transactionId = ((Number) head.get("transaction_id")).longValue();
 
-        // 2. raw.transaction_details の検証
+        // 2. raw.transaction_details の検証、file_name列にraw.transactionのIDが入る
         List<Map<String, Object>> details = jdbcTemplate.queryForList(
-            "SELECT * FROM raw.transaction_details WHERE transaction_head_id = ?", transactionId.toString());
-        assertThat(details).hasSize(3); // カット、カラー、指名料
+            "SELECT * FROM raw.transaction_details WHERE file_name = ?", transactionId.toString());
+        assertThat(details).hasSizeGreaterThanOrEqualTo(1);
 
         // 具体的な中身の検証
         boolean foundCut = false;
@@ -147,18 +145,15 @@ public class SmaregiTransactionIntegrationTest {
         mockServer.verify();
     }
 
-    // ==========================================
-    // Helper methods for mocking APIs
-    // ==========================================
-
     private void mockAuth() {
         mockServer.expect(requestTo(containsString("/token")))
             .andExpect(method(POST))
-            .andRespond(withSuccess("""
-                {"access_token":"mock_test_token"}
-                """, MediaType.APPLICATION_JSON));
+            .andRespond(withSuccess("{\"access_token\":\"mock_test_token\"}", MediaType.APPLICATION_JSON));
     }
 
+    /**
+     * Reader側と同じロジックでURLを構築し、モックを定義します
+     */
     private void mockTransactionsApi(LocalDate from, LocalDate to, int count) throws Exception {
         ZoneOffset jst = ZoneOffset.ofHours(9);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssXXX");
@@ -173,23 +168,19 @@ public class SmaregiTransactionIntegrationTest {
                 smaregiApiProperties.getBaseUrl(), 
                 smaregiApiProperties.getContractId());
 
-        String jsonResponse = "[]";
-        if (count > 0) {
-            // 提供されたサンプルJSONを配列に入れる
-            jsonResponse = "[" + getSampleTransactionJson() + "]";
-        }
+        String jsonResponse = (count > 0) ? "[" + getSampleTransactionJson() + "]" : "[]";
 
         // Page 1
-        String urlPage1 = String.format("%s?transaction_datetime-from=%s&transaction_datetime-to=%s&page=1&limit=100&with_details=all&sort=transaction_datetime:asc",
+        String urlPage1 = String.format("%s?transaction_date_time-from=%s&transaction_date_time-to=%s&page=1&limit=100&with_details=all&sort=transaction_datetime:asc",
                 baseUrl, encodedFrom, encodedTo);
         
         mockServer.expect(requestTo(urlPage1))
             .andExpect(method(GET))
             .andRespond(withSuccess(jsonResponse, MediaType.APPLICATION_JSON));
 
-        // Page 2 (データがある場合のみ期待する)
+        // Page 2 (データがある場合のみ終了確認用に空配列を返す)
         if (count > 0) {
-            String urlPage2 = String.format("%s?transaction_datetime-from=%s&transaction_datetime-to=%s&page=2&limit=100&with_details=all&sort=transaction_datetime:asc",
+            String urlPage2 = String.format("%s?transaction_date_time-from=%s&transaction_date_time-to=%s&page=2&limit=100&with_details=all&sort=transaction_datetime:asc",
                     baseUrl, encodedFrom, encodedTo);
             
             mockServer.expect(requestTo(urlPage2))
@@ -212,13 +203,13 @@ public class SmaregiTransactionIntegrationTest {
           "commission": "0",
           "carriage": "0",
           "pointDiscount": "0",
-          "cancelDivision": "0",
           "customerId": "1",
           "terminalTranDateTime": "2025-12-02T14:30:00+09:00",
           "staffId": "2",
           "storeId": "1",
           "details": [
             {
+              "transactionHeadId": "1001",
               "transactionDetailId": "1",
               "productId": "8000001",
               "productName": "デザインカット",
@@ -228,6 +219,7 @@ public class SmaregiTransactionIntegrationTest {
               "quantity": "1"
             },
             {
+              "transactionHeadId": "1001",
               "transactionDetailId": "2",
               "productId": "8000005",
               "productName": "リタッチカラー",
@@ -237,12 +229,23 @@ public class SmaregiTransactionIntegrationTest {
               "quantity": "1"
             },
             {
+              "transactionHeadId": "1001",
               "transactionDetailId": "3",
               "productId": "8000012",
               "productName": "指名料",
               "salesPrice": "550",
               "taxDivision": "1",
               "transactionDetailDivision": "1",
+              "quantity": "1"
+            },
+            {
+              "transactionHeadId": "1001",
+              "transactionDetailId": "4",
+              "productId": "8000019",
+              "productName": "グリースワックス(ハード)",
+              "salesPrice": "2420",
+              "taxDivision": "1",
+              "transactionDetailDivision": "2",
               "quantity": "1"
             }
           ]

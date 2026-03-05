@@ -171,27 +171,22 @@ Step A: 取引データ（全体）を `raw.transactions` へ保存
 
  * `SALES` (通常売上):
        * 定義: サービス提供または商品販売により発生した正の売上。
-       * 判断条件: returnSales が 0 (通常) かつ transactionHeadDivision が 1
-         (通常) のもの。
+       * 判断条件: returnSales が 0 (通常) かつ transactionHeadDivision が 1 (通常) のもの。
        * 分析上の扱い: 売上合計（グロス）の加算対象。
 
    * `REFUND` (返品・返金):
        * 定義:
-         一度発生した売上に対して、商品の返品や施術のやり直し等により発生した返
-         金（負の売上）。
-       * 判断条件: returnSales が 1 (返品) または transactionHeadDivision が 5
-         (預り金返金) のもの。
+         一度発生した売上に対して、商品の返品や施術のやり直し等により発生した返金（負の売上）。
+       * 判断条件: returnSales が 1 (返品) または transactionHeadDivision が 5(預り金返金) のもの。
        * 分析上の扱い:
-         売上のマイナス計上（ネット売上の算出に利用）。顧客満足度や技術品質の指
-         標として別途集計されることが多い。
+         売上のマイナス計上（ネット売上の算出に利用）。顧客満足度や技術品質の指標として別途集計されることが多い。
 
    * `is_void` (取消):
        * 定義:
          入力ミスや操作間違いにより、取引自体が「なかったこと」にされたデータ。
        * 判断条件: cancelDivision が 1 (取消) のもの。
        * 分析上の扱い:
-         通常の売上集計からは除外します。監査（不正防止）や操作ログとしての分析
-         にのみ利用します。
+         通常の売上集計からは除外します。監査（不正防止）や操作ログとしての分析にのみ利用します。
 
 
 ### 13.1. 取引ヘッダー判定 (FACT_SALES)
@@ -220,13 +215,12 @@ Step A: 取引データ（全体）を `raw.transactions` へ保存
    - `transactionDetailDivision == 2` ? **REFUND** : **SALES**
 
 
-raw.tarnsaction→dwh.FACT_SALES
+with raw_transaction AS (
 SELECT DISTINCT ON (json_body ->> 'transactionHeadId')
-(json_body ->> 'staffId') AS "transaction_head_id",
+(json_body ->> 'transactionHeadId') AS "transaction_head_id",
 (json_body ->> 'terminalTranDateTime') AS "transaction_date_time",
 (json_body ->> 'customerId') AS "customer_id",
 (json_body ->> 'staffId') AS "staff_id",
-(json_body ->> 'storeId') AS "store_id",
 (json_body ->> 'storeId') AS "store_id",
 (json_body ->> 'total') AS "amount_total",
 (json_body ->> 'subtotal') AS "amount_subtotal",
@@ -237,5 +231,65 @@ SELECT DISTINCT ON (json_body ->> 'transactionHeadId')
 (json_body ->> 'carriage') AS  "amount_shipping",
 (json_body ->> 'pointDiscount') AS "discount_point",
 COALESCE(json_body ->> 'couponDiscoun','0') AS "discount_coupon",
-(json_body ->> 'cancelDivision') AS is_void
+(json_body ->> 'returnSales') AS "returnsales",
+(json_body ->> 'disposeDivision') AS "disposedivision",
+(json_body ->> 'transactionHeadDivision') AS "transactionheaddivision",
+(json_body ->> 'cancelDivision') AS "is_void"
 FROM "raw".transactions
+WHERE
+	app_company_id = 1
+	AND fetched_at >= '20200101 09:00:00'::timestamp with time zone
+ORDER BY
+(json_body ->> 'transactionHeadId'), fetched_at DESC
+)
+INSERT INTO dwh.fact_sales(
+	app_company_id, 
+	transaction_head_id, 
+	transaction_date_time, 
+	transaction_date, 
+	customer_id, 
+	staff_id, 
+	store_id, 
+	amount_total, 
+	amount_subtotal, 
+	amount_tax_include, 
+	amount_tax_exclude, 
+	amount_subtotal_discount_price, 
+	amount_fee, 
+	amount_shipping, 
+	discount_point, 
+	discount_coupon, 
+	transaction_type, 
+	is_void)
+SELECT 
+	4096,
+	transaction_head_id,
+	transaction_date_time::timestamptz,
+	transaction_date_time::date,
+	customer_id,
+	staff_id,
+	store_id,
+	amount_total::Integer, 
+	amount_subtotal::Integer, 
+	amount_tax_include::Integer, 
+	amount_tax_exclude::Integer, 
+	amount_subtotal_discount_price::Integer, 
+	amount_fee::Integer, 
+	amount_shipping::Integer, 
+	discount_point::Integer, 
+	discount_coupon::Integer,
+	case when returnsales = '1'
+		then 'REFUND'
+		when disposedivision = '2'
+		then 'REFUND'
+		when transactionheaddivision = '5'
+		then 'REFUND'
+		when amount_total::bigint < 0
+		then 'REFUND'
+		else 'SALES'
+	end AS "transaction_type",
+	case when is_void = '1'
+		then true
+		else false 
+	end AS is_void
+FROM raw_transaction
