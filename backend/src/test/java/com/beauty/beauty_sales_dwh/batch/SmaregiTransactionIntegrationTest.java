@@ -243,7 +243,7 @@ public class SmaregiTransactionIntegrationTest {
               "transactionDetailId": "4",
               "productId": "8000019",
               "productName": "グリースワックス(ハード)",
-              "salesPrice": "2420",
+              "salesPrice": "-2420",
               "taxDivision": "1",
               "transactionDetailDivision": "2",
               "quantity": "1"
