@@ -134,7 +134,6 @@ Step A: 取引データ（全体）を `raw.transactions` へ保存
    7. `SmaregiTransactionItemReader.java 作成 ＆ テスト通過済み
    8. [完了] TransactionRawDataProcessor.java 作成
    9. [完了] TransactionPeriodPartitioner.java 作成（1ヶ月ごとの並列処理用）
-   9.テスト完了
 
 ＊取引は過去3ヶ月まで取得とする（過去データの大量取得はスマレジからCSVダウンロードを手動で行う。必殺運用でカバー作戦）
 ＊transaction_date_time-from,transaction_date_time-toの日付を1ヶ月ごとに作成し繰り返す（最初は約3回リクエストを投げる）
@@ -151,7 +150,7 @@ Step A: 取引データ（全体）を `raw.transactions` へ保存
 
    11. 次は、raw.transaction_details（ステージング）に溜まったデータを、分析用の
   `dwh.fact_sales` および `dwh.fact_sales_details` へ変換・転送する Transform
-  フェーズ に入ります。[完了]
+  フェーズ に入ります。
 
 12. importSmaregiTransactionJob
   を起動して外部連携（スマレジAPIからの取得）を確認する
@@ -161,13 +160,13 @@ Step A: 取引データ（全体）を `raw.transactions` へ保存
 
    12.1 新しいテスト `SmaregiTransactionIntegrationTest.java` を作成
      SmaregiBatchIntegrationTest と同様の構成で、importSmaregiTransactionJob
-  を対象にします。
+  を対象にします。[完了]
 
    12.2 実行
       ./gradlew test --tests
-     com.beauty.beauty_sales_dwh.batch.SmaregiTransactionIntegrationTest
+     com.beauty.beauty_sales_dwh.batch.SmaregiTransactionIntegrationTest[完了]
 
-13.取引データをraw層からdwh層へ
+## 13.取引データをraw層からdwh層へ
 
  * `SALES` (通常売上):
        * 定義: サービス提供または商品販売により発生した正の売上。
@@ -215,132 +214,196 @@ Step A: 取引データ（全体）を `raw.transactions` へ保存
    - `transactionDetailDivision == 2` ? **REFUND** : **SALES**
 
 ### 13.4 transactionテーブルraw層からdwh層へインサートするSQL
+Transform 時（インサート時）に解決する
+       * fact_sales に入れる時点で sys.merge_candidates を LEFT JOIN
+         し、マージ先があればその ID を、なければ元の ID を customer_id
+         カラムに保存します。
+       * メリット: 集計クエリが単純になり、パフォーマンスが良い。
+       * デメリット: 後から名寄せ設定（merge_candidates）が増えた場合、過去の
+         fact_sales を再変換（洗い替え）する必要がある。
+
 with raw_transaction AS (
-SELECT DISTINCT ON (json_body ->> 'transactionHeadId')
-(json_body ->> 'transactionHeadId') AS "transaction_head_id",
-(json_body ->> 'terminalTranDateTime') AS "transaction_date_time",
-(json_body ->> 'customerId') AS "customer_id",
-(json_body ->> 'staffId') AS "staff_id",
-(json_body ->> 'storeId') AS "store_id",
-(json_body ->> 'total') AS "amount_total",
-(json_body ->> 'subtotal') AS "amount_subtotal",
-(json_body ->> 'taxInclude') AS "amount_tax_include",
-(json_body ->> 'taxExclude') AS "amount_tax_exclude",
-(json_body ->> 'subtotalDiscountPrice') AS "amount_subtotal_discount_price",
-(json_body ->> 'commission') AS "amount_fee",
-(json_body ->> 'carriage') AS  "amount_shipping",
-(json_body ->> 'pointDiscount') AS "discount_point",
-COALESCE(json_body ->> 'couponDiscoun','0') AS "discount_coupon",
-(json_body ->> 'returnSales') AS "returnsales",
-(json_body ->> 'disposeDivision') AS "disposedivision",
-(json_body ->> 'transactionHeadDivision') AS "transactionheaddivision",
-(json_body ->> 'cancelDivision') AS "is_void"
-FROM "raw".transactions
-WHERE
-    (json_body ->> 'updDateTime')::TIMESTAMPTZ >= #{fromDate} 
-    AND app_company_id = #{companyId}
-ORDER BY
-(json_body ->> 'transactionHeadId'), fetched_at DESC
+    SELECT DISTINCT ON (json_body ->> 'transactionHeadId')
+        (json_body ->> 'transactionHeadId') AS "transaction_head_id",
+        (json_body ->> 'terminalTranDateTime') AS "transaction_date_time",
+        (json_body ->> 'customerId') AS "customer_id",
+        (json_body ->> 'staffId') AS "staff_id",
+        (json_body ->> 'storeId') AS "store_id",
+        (json_body ->> 'total') AS "amount_total",
+        (json_body ->> 'subtotal') AS "amount_subtotal",
+        (json_body ->> 'taxInclude') AS "amount_tax_include",
+        (json_body ->> 'taxExclude') AS "amount_tax_exclude",
+        (json_body ->> 'subtotalDiscountPrice') AS "amount_subtotal_discount_price",
+        (json_body ->> 'commission') AS "amount_fee",
+        (json_body ->> 'carriage') AS  "amount_shipping",
+        (json_body ->> 'pointDiscount') AS "discount_point",
+        COALESCE(json_body ->> 'couponDiscount','0') AS "discount_coupon",
+        (json_body ->> 'returnSales') AS "returnsales",
+        (json_body ->> 'disposeDivision') AS "disposedivision",
+        (json_body ->> 'transactionHeadDivision') AS "transactionheaddivision",
+        (json_body ->> 'cancelDivision') AS "is_void"
+    FROM "raw".transactions
+    WHERE
+        (json_body ->> 'updDateTime')::TIMESTAMPTZ >= #{fromDate} 
+        AND app_company_id = #{companyId}
+    ORDER BY
+        (json_body ->> 'transactionHeadId'), fetched_at DESC
+),
+formatted_data AS (
+    SELECT 
+        #{companyId} AS app_company_id,
+        rt.transaction_head_id,
+        rt.transaction_date_time::timestamptz,
+        rt.transaction_date_time::date AS transaction_date,
+        -- 名寄せ解決: マージ先があればそれを、なければ元のIDを使用
+        COALESCE(mc.target_customer_id, rt.customer_id) AS customer_id,
+        rt.staff_id,
+        rt.store_id,
+        rt.amount_total::Integer, 
+        rt.amount_subtotal::Integer, 
+        rt.amount_tax_include::Integer, 
+        rt.amount_tax_exclude::Integer, 
+        rt.amount_subtotal_discount_price::Integer, 
+        rt.amount_fee::Integer, 
+        rt.amount_shipping::Integer, 
+        rt.discount_point::Integer, 
+        rt.discount_coupon::Integer,
+        CASE WHEN rt.returnsales = '1'
+            THEN 'REFUND'
+            WHEN rt.disposedivision = '2'
+            THEN 'REFUND'
+            WHEN rt.transactionheaddivision = '5'
+            THEN 'REFUND'
+            WHEN rt.amount_total::bigint < 0
+            THEN 'REFUND'
+            ELSE 'SALES'
+        END AS "transaction_type",
+        CASE WHEN rt.is_void = '1'
+            THEN true
+            ELSE false 
+        END AS is_void
+    FROM raw_transaction rt
+    LEFT JOIN sys.merge_candidates mc
+        ON rt.customer_id = mc.source_customer_id
+        AND mc.app_company_id = #{companyId}
+        AND mc.status = 'MERGED'
 )
 INSERT INTO dwh.fact_sales(
-	app_company_id, 
-	transaction_head_id, 
-	transaction_date_time, 
-	transaction_date, 
-	customer_id, 
-	staff_id, 
-	store_id, 
-	amount_total, 
-	amount_subtotal, 
-	amount_tax_include, 
-	amount_tax_exclude, 
-	amount_subtotal_discount_price, 
-	amount_fee, 
-	amount_shipping, 
-	discount_point, 
-	discount_coupon, 
-	transaction_type, 
-	is_void)
-SELECT 
-	#{companyId},
-	transaction_head_id,
-	transaction_date_time::timestamptz,
-	transaction_date_time::date,
-	customer_id,
-	staff_id,
-	store_id,
-	amount_total::Integer, 
-	amount_subtotal::Integer, 
-	amount_tax_include::Integer, 
-	amount_tax_exclude::Integer, 
-	amount_subtotal_discount_price::Integer, 
-	amount_fee::Integer, 
-	amount_shipping::Integer, 
-	discount_point::Integer, 
-	discount_coupon::Integer,
-	CASE WHEN returnsales = '1'
-		THEN 'REFUND'
-		WHEN disposedivision = '2'
-		THEN 'REFUND'
-		WHEN transactionheaddivision = '5'
-		THEN 'REFUND'
-		WHEN amount_total::bigint < 0
-		THEN 'REFUND'
-		ELSE 'SALES'
-	END AS "transaction_type",
-	CASE WHEN is_void = '1'
-		THEN true
-		ELSE false 
-	END AS is_void
-FROM raw_transaction
-
+    app_company_id, transaction_head_id, transaction_date_time, transaction_date, 
+    customer_id, staff_id, store_id, amount_total, amount_subtotal, 
+    amount_tax_include, amount_tax_exclude, amount_subtotal_discount_price, 
+    amount_fee, amount_shipping, discount_point, discount_coupon, 
+    transaction_type, is_void
+)
+SELECT * FROM formatted_data
+ON CONFLICT ON CONSTRAINT fact_sales_pkey
+DO UPDATE SET
+    transaction_date_time       = EXCLUDED.transaction_date_time, 
+    transaction_date            = EXCLUDED.transaction_date, 
+    customer_id                 = EXCLUDED.customer_id, 
+    staff_id                    = EXCLUDED.staff_id, 
+    store_id                    = EXCLUDED.store_id, 
+    amount_total                = EXCLUDED.amount_total, 
+    amount_subtotal             = EXCLUDED.amount_subtotal, 
+    amount_tax_include          = EXCLUDED.amount_tax_include, 
+    amount_tax_exclude          = EXCLUDED.amount_tax_exclude, 
+    amount_subtotal_discount_price = EXCLUDED.amount_subtotal_discount_price, 
+    amount_fee                  = EXCLUDED.amount_fee, 
+    amount_shipping             = EXCLUDED.amount_shipping, 
+    discount_point              = EXCLUDED.discount_point, 
+    discount_coupon             = EXCLUDED.discount_coupon, 
+    transaction_type            = EXCLUDED.transaction_type,
+    is_void                     = EXCLUDED.is_void;
 
 ### 13.5 transactionDtailesテーブルraw層からdwh層へインサートするSQL
 with raw_transaction_details AS (
-SELECT
-(json_body ->> 'transactionHeadId') AS "transaction_head_id",
-(json_body ->> 'transactionDetailId') AS "transaction_detail_id",
-(json_body ->> 'productId') AS "product_id",
-(json_body ->> 'productName') AS "product_name",
-(json_body ->> 'quantity') AS "quantity",
-(json_body ->> 'salesPrice') AS "sales_price",
-(json_body ->> 'taxDivision') AS "tax_division",
-(json_body ->> 'transactionDetailDivision') AS "transaction_detail_division"
-FROM "raw".transaction_details
-WHERE
-    (json_body ->> 'updDateTime')::TIMESTAMPTZ >= #{fromDate} 
-    AND app_company_id = #{companyId}
+    SELECT DISTINCT ON (json_body ->> 'transactionHeadId', json_body ->> 'transactionDetailId')
+        (json_body ->> 'transactionHeadId') AS "transaction_head_id",
+        (json_body ->> 'transactionDetailId') AS "transaction_detail_id",
+        (json_body ->> 'productId') AS "product_id",
+        (json_body ->> 'productName') AS "product_name",
+        (json_body ->> 'quantity') AS "quantity",
+        (json_body ->> 'salesPrice') AS "sales_price",
+        (json_body ->> 'taxDivision') AS "tax_division",
+        (json_body ->> 'transactionDetailDivision') AS "transaction_detail_division"
+    FROM "raw".transaction_details
+    WHERE
+        (json_body ->> 'updDateTime')::TIMESTAMPTZ >= #{fromDate} 
+        AND app_company_id = #{companyId}
+    ORDER BY 
+        (json_body ->> 'transactionHeadId'), 
+        (json_body ->> 'transactionDetailId'), 
+        fetched_at DESC
+),
+formatted_data AS (
+    SELECT
+        #{companyId} AS app_company_id,
+        tr.transaction_head_id,
+        tr.transaction_detail_id,
+        tr.product_id,
+        tr.product_name,
+        COALESCE(gr.cat_group_name, '未分類') AS category_group_name,
+        tr.quantity::Integer,
+        tr.sales_price::Integer,
+        tr.tax_division::Integer,
+        CASE WHEN tr.transaction_detail_division = '2'
+                THEN 'REFUND'
+            ELSE 'SALES'
+        END AS category_type
+    FROM
+        raw_transaction_details AS tr
+    LEFT JOIN
+        dwh.dim_products AS pr
+        ON tr.product_id = pr.product_id
+        AND pr.app_company_id = #{companyId}
+    LEFT JOIN 
+        dwh.dim_category_groups AS gr
+        ON pr.cat_group_id = gr.cat_group_id
+        AND gr.app_company_id = #{companyId}
 )
 INSERT INTO dwh.fact_sales_details(
-    app_company_id, 
-    transaction_head_id, 
-    transaction_detail_id, 
-    product_id, 
-    product_name, 
-    category_group_name, 
-    quantity, 
-    sales_price, 
-    tax_division, 
-    category_type)
-SELECT
-#{companyId},
-tr.transaction_head_id,
-tr.transaction_detail_id,
-tr.product_id,
-tr.product_name,
-gr.cat_group_name,
-tr.quantity::Integer,
-tr.sales_price::Integer,
-tr.tax_division::Integer,
-CASE WHEN tr.transaction_detail_division = '2'
-		THEN 'REFUND'
-	ELSE 'SALES'
-END
-FROM
-raw_transaction_details AS tr
-INNER JOIN
-dwh.dim_products AS pr
-ON tr.product_id = pr.product_id
-INNER JOIN 
-dwh.dim_category_groups AS gr
-ON pr.cat_group_id = gr.cat_group_id
+    app_company_id, transaction_head_id, transaction_detail_id, 
+    product_id, product_name, category_group_name, quantity, 
+    sales_price, tax_division, category_type
+)
+SELECT * FROM formatted_data
+ON CONFLICT ON CONSTRAINT fact_sales_details_pkey
+DO UPDATE SET
+    product_id          = EXCLUDED.product_id, 
+    product_name        = EXCLUDED.product_name, 
+    category_group_name = EXCLUDED.category_group_name, 
+    quantity            = EXCLUDED.quantity, 
+    sales_price         = EXCLUDED.sales_price, 
+    tax_division        = EXCLUDED.tax_division, 
+    category_type       = EXCLUDED.category_type;
+
+
+## 14.後から名寄せ設定（merge_candidates）が増えた場合、過去の fact_salesを再変換（洗い替え）する
+具体的なワークフローとしては、以下のようなイメージになります。
+
+   1. 候補発見: バッチまたは画面から「名寄せ候補」をユーザーに提示。
+   2. ユーザー承認: ユーザーが「ID: A と ID: B
+      は同一人物なのでマージする」と確定。
+   3. マージ実行 (DB更新):
+       * sys.merge_candidates のステータスを MERGED に更新。
+       * [ここがポイント] その直後に、dwh.fact_sales
+         に対して以下の更新クエリを一発走らせます。
+
+            UPDATE dwh.fact_sales
+            SET customer_id = #{target_customer_id}
+            WHERE customer_id = #{source_customer_id}
+              AND app_company_id = #{companyId};
+   
+   4. 完了: これで、過去の売上データもすべて正い ID に紐付きます。
+
+  なぜこのタイミングが良いか
+   * 即時性:
+     ユーザーが承認した瞬間に、分析画面（月次推移など）の数字が正しく統合されま
+     す。
+   * 効率性: 全データを Transform し直すのではなく、対象の customer_id だけを
+     UPDATE すれば良いため、処理が非常に軽量です。
+   * 一貫性:
+     dwh.dim_customers（顧客マスタ）のマージ処理と同じタイミングで行うことで、マ
+     スタと売上の整合性が常に保たれます。
+
+次のステップ、これらのSQLを実行するためのFactSalesTransformTasklet（または一連の Mapper）の実装 
