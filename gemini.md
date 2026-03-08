@@ -377,6 +377,30 @@ DO UPDATE SET
     tax_division        = EXCLUDED.tax_division, 
     category_type       = EXCLUDED.category_type;
 
+次のステップ、これらのSQLを実行するためのFactSalesTransformTasklet（または一連の Mapper）の実装 [完了]
+
+#### 変更点１、app_company_idをAppVendorPropertiesからJobParametersからの取得に変更
+* マルチテナント（複数会社）への対応
+  将来的にこのシステムを「A社」「B社」など複数の会社で運用する場合、application.
+  properties（AppVendorProperties）に書かれた ID は固定値になってしまいます。
+   * JobParameters を使う場合: ジョブ起動時に companyId=2 と渡せば、その実行だけ
+     B社の処理として動かせます。
+   * プロパティだけの場合:
+     B社の処理を動かすために、アプリを再起動したり環境変数を書き換えたりする必要
+     があり、運用が非常に困難になります。
+
+#### 変更点２、BeautySalesDwhApplication.java内CommandLineRunner runJob変更
+   * ジョブの追加: importSmaregiTransactionJob を runJob
+     メソッドの引数に追加し、マスタデータの取り込み後に実行するようにしました。
+   * 会社IDの明示: JobParameters に companyId
+     を追加しました。これにより、設定ファイル（.env 等）の APP_VENDOR_ID
+     が正しくジョブ全体に伝搬されます。
+   * 依存関係の整理: ジョブが複数になったため、@Qualifier
+     を使ってそれぞれのジョブを明示的に指定するようにしました。
+
+#### 変更点３、SQLのエスケープ処理 (&lt;): XML内で <
+     を使う際のエスケープの必要性（MyBatis特有の注意点）
+
 
 ## 14.後から名寄せ設定（merge_candidates）が増えた場合、過去の fact_salesを再変換（洗い替え）する
 具体的なワークフローとしては、以下のようなイメージになります。
@@ -406,4 +430,3 @@ DO UPDATE SET
      dwh.dim_customers（顧客マスタ）のマージ処理と同じタイミングで行うことで、マ
      スタと売上の整合性が常に保たれます。
 
-次のステップ、これらのSQLを実行するためのFactSalesTransformTasklet（または一連の Mapper）の実装 

@@ -31,6 +31,7 @@ import com.beauty.beauty_sales_dwh.batch.reader.SmaregiProductItemReader;
 import com.beauty.beauty_sales_dwh.batch.reader.SmaregiStaffItemReader;
 import com.beauty.beauty_sales_dwh.batch.reader.SmaregiTransactionItemReader;
 import com.beauty.beauty_sales_dwh.batch.tasklet.CustomerTransformTasklet;
+import com.beauty.beauty_sales_dwh.batch.tasklet.FactSalesTransformTasklet;
 import com.beauty.beauty_sales_dwh.batch.tasklet.ProductTransformTasklet;
 import com.beauty.beauty_sales_dwh.batch.tasklet.SmaregiAuthTasklet;
 import com.beauty.beauty_sales_dwh.batch.tasklet.StaffTransformTasklet;
@@ -70,6 +71,7 @@ public class SmaregiBatchConfig {
     private final ProductTransformTasklet productTransformTasklet;
     private final StaffTransformTasklet staffTransformTasklet;
     private final TransactionDetailsExtractTasklet transactionDetailsExtractTasklet;
+    private final FactSalesTransformTasklet factSalesTransformTasklet;
 
     // --- Readers ---
     private final SmaregiCustomerItemReader smaregiCustomerReader;
@@ -117,6 +119,7 @@ public class SmaregiBatchConfig {
                 .start(step1Auth())
                 .next(stepMasterTransaction())
                 .next(stepExtractTransactionDetails())
+                .next(stepTransformFactSales())
                 .build();
     }
 
@@ -167,6 +170,16 @@ public class SmaregiBatchConfig {
     public Step stepExtractTransactionDetails() {
         return new StepBuilder("stepExtractTransactionDetails", jobRepository)
                 .tasklet(transactionDetailsExtractTasklet, transactionManager)
+                .build();
+    }
+
+    /**
+     * Step 2.2: 取引データ整形タスク (Step C: raw -> dwh)
+     */
+    @Bean
+    public Step stepTransformFactSales() {
+        return new StepBuilder("stepTransformFactSales", jobRepository)
+                .tasklet(factSalesTransformTasklet, transactionManager)
                 .build();
     }
 

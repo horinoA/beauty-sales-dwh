@@ -27,8 +27,12 @@ public class ProductTransformTasklet implements Tasklet {
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
         log.info("Step 3: Product関連のデータ整形処理を開始します...");
 
-        // 1. プロパティから会社IDを取得
-        Long companyId = Long.valueOf(vendorProperties.getId());
+        // 1. 会社IDの取得 (JobParameters を優先)
+        Long companyId = (Long) chunkContext.getStepContext().getJobParameters().get("companyId");
+        if (companyId == null) {
+            companyId = Long.valueOf(vendorProperties.getId());
+        }
+        log.info("CompanyID: {} を使用して処理を開始します...", companyId);
         
         // 2. dwh.dim_category_groups の最終更新日時を取得
         OffsetDateTime maxUpdateDataTimeFromDimCategoryGroups = mapper.findMaxUpdateDataTimeFromDimCategoryGroups(companyId);

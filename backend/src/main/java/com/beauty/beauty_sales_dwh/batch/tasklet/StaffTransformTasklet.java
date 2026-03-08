@@ -27,9 +27,12 @@ public class StaffTransformTasklet implements Tasklet{
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
         log.info("Step 3: データ整形処理を開始します...");
 
-        // 1. プロパティから会社IDを取得
-        // (AppVendorPropertiesはStringで定義していた想定なので変換)
-        Long companyId = Long.valueOf(vendorProperties.getId());
+        // 1. 会社IDの取得 (JobParameters を優先)
+        Long companyId = (Long) chunkContext.getStepContext().getJobParameters().get("companyId");
+        if (companyId == null) {
+            companyId = Long.valueOf(vendorProperties.getId());
+        }
+        log.info("CompanyID: {} を使用して処理を開始します...", companyId);
  
         // 2. DBから最終更新日時を取得 (SQLの結果を利用)
         OffsetDateTime maxUpdateTimeFromDimStaffs = mapper.findMaxUpdateDataTimeFromDimStaffs(companyId);

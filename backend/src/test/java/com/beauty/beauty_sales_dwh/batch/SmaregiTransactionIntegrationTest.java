@@ -75,10 +75,11 @@ public class SmaregiTransactionIntegrationTest {
                 .build();
         // 関連テーブルのクリーニング
         jdbcTemplate.execute("TRUNCATE TABLE raw.transactions, raw.transaction_details RESTART IDENTITY");
+        jdbcTemplate.execute("TRUNCATE TABLE dwh.fact_sales, dwh.fact_sales_details RESTART IDENTITY");
     }
 
     @Test
-    @DisplayName("統合テスト: 取引データの取得から明細展開までが正常に動作すること")
+    @DisplayName("統合テスト: 取引データの取得から明細展開、DWH変換までが正常に動作すること")
     public void testImportTransactionJob() throws Exception {
         // --- API Mocks ---
         mockAuth();
@@ -94,7 +95,7 @@ public class SmaregiTransactionIntegrationTest {
             
             // 2025-12月分だけデータを返し、それ以外は空を返す
             if (current.getMonthValue() == 12 && current.getYear() == 2025) {
-                mockTransactionsApi(current, currentEnd, 1);
+                mockTransactionsApi(current, currentEnd, 2); // 通常 + 取消 の2件
             } else {
                 mockTransactionsApi(current, currentEnd, 0);
             }
@@ -115,32 +116,48 @@ public class SmaregiTransactionIntegrationTest {
         assertThat(jobExecution.getExitStatus()).isEqualTo(ExitStatus.COMPLETED);
 
         // 1. raw.transactions の検証
-        List<Map<String, Object>> transactions = jdbcTemplate.queryForList("SELECT * FROM raw.transactions");
-        assertThat(transactions).isNotEmpty();
-        
-        Map<String, Object> head = transactions.get(0);
-        assertThat(head.get("details_extracted")).isEqualTo(true); // 展開済みフラグ
-        
-        Long transactionId = ((Number) head.get("transaction_id")).longValue();
-
-        // 2. raw.transaction_details の検証、file_name列にraw.transactionのIDが入る
-        List<Map<String, Object>> details = jdbcTemplate.queryForList(
-            "SELECT * FROM raw.transaction_details WHERE file_name = ?", transactionId.toString());
-        assertThat(details).hasSizeGreaterThanOrEqualTo(1);
-
-        // 具体的な中身の検証
-        boolean foundCut = false;
-        for (Map<String, Object> detail : details) {
-            Object jsonBodyObj = detail.get("json_body");
-            String jsonBody = (jsonBodyObj != null) ? jsonBodyObj.toString() : null;
-            JsonNode node = objectMapper.readTree(jsonBody);
-            if ("デザインカット".equals(node.get("productName").asText())) {
-                foundCut = true;
-                assertThat(((Number) detail.get("row_number")).longValue()).isEqualTo(1L);
-                assertThat(node.get("salesPrice").asText()).isEqualTo("5500");
-            }
+        System.out.println("DEBUG: Current Vendor ID: " + smaregiApiProperties.getContractId()); // Just a guess, let's use vendorProperties if I could but I don't have it here
+        List<Map<String, Object>> transactions = jdbcTemplate.queryForList("SELECT * FROM raw.transactions ORDER BY (json_body->>'transactionHeadId')");
+        System.out.println("DEBUG: raw.transactions size: " + transactions.size());
+        for (Map<String, Object> row : transactions) {
+            System.out.println("DEBUG: raw.transactions row: id=" + row.get("transaction_id") + 
+                               ", company_id=" + row.get("app_company_id") + 
+                               ", updDateTime=" + objectMapper.readTree(row.get("json_body").toString()).get("updDateTime"));
         }
-        assertThat(foundCut).isTrue();
+        assertThat(transactions).hasSize(2);
+        
+        // 通常データ (1001) の展開済みフラグ確認
+        assertThat(transactions.get(0).get("details_extracted")).isEqualTo(true);
+
+        // 2. dwh.fact_sales の検証
+        List<Map<String, Object>> factSales = jdbcTemplate.queryForList("SELECT * FROM dwh.fact_sales ORDER BY transaction_head_id");
+        assertThat(factSales).hasSize(2);
+        
+        // 通常データ (1001)
+        Map<String, Object> sale1001 = factSales.get(0);
+        System.out.println("DEBUG: transaction_head_id: " + sale1001.get("transaction_head_id"));
+        System.out.println("DEBUG: amount_total value: " + sale1001.get("amount_total"));
+        System.out.println("DEBUG: amount_total type: " + (sale1001.get("amount_total") != null ? sale1001.get("amount_total").getClass().getName() : "null"));
+        
+        assertThat(sale1001.get("transaction_head_id")).isEqualTo("1001");
+        assertThat(((Number) sale1001.get("amount_total")).intValue()).isEqualTo(11550);
+        assertThat(sale1001.get("transaction_type")).isEqualTo("SALES");
+        assertThat(sale1001.get("is_void")).isEqualTo(false);
+
+        // 取消データ (1002)
+        Map<String, Object> sale1002 = factSales.get(1);
+        assertThat(sale1002.get("transaction_head_id")).isEqualTo("1002");
+        assertThat(sale1002.get("is_void")).isEqualTo(true); // cancelDivision=1 により true
+
+        // 3. dwh.fact_sales_details の検証
+        List<Map<String, Object>> factDetails1001 = jdbcTemplate.queryForList(
+            "SELECT * FROM dwh.fact_sales_details WHERE transaction_head_id = '1001' ORDER BY transaction_detail_id");
+        assertThat(factDetails1001).hasSize(4);
+
+        // 返品明細 (transactionDetailDivision=2) の category_type 検証
+        Map<String, Object> refundDetail = factDetails1001.get(3); // グリースワックス
+        assertThat(refundDetail.get("product_name")).isEqualTo("グリースワックス(ハード)");
+        assertThat(refundDetail.get("category_type")).isEqualTo("REFUND");
 
         mockServer.verify();
     }
@@ -178,7 +195,7 @@ public class SmaregiTransactionIntegrationTest {
             .andExpect(method(GET))
             .andRespond(withSuccess(jsonResponse, MediaType.APPLICATION_JSON));
 
-        // Page 2 (データがある場合のみ終了確認用に空配列を返す)
+        // Page 2 (終了確認用)
         if (count > 0) {
             String urlPage2 = String.format("%s?transaction_date_time-from=%s&transaction_date_time-to=%s&page=2&limit=100&with_details=all&sort=transaction_datetime:asc",
                     baseUrl, encodedFrom, encodedTo);
@@ -205,6 +222,7 @@ public class SmaregiTransactionIntegrationTest {
           "pointDiscount": "0",
           "customerId": "1",
           "terminalTranDateTime": "2025-12-02T14:30:00+09:00",
+          "updDateTime": "2025-12-02T14:30:00+09:00",
           "staffId": "2",
           "storeId": "1",
           "details": [
@@ -216,7 +234,8 @@ public class SmaregiTransactionIntegrationTest {
               "salesPrice": "5500",
               "taxDivision": "1",
               "transactionDetailDivision": "1",
-              "quantity": "1"
+              "quantity": "1",
+              "updDateTime": "2025-12-02T14:30:00+09:00"
             },
             {
               "transactionHeadId": "1001",
@@ -226,7 +245,8 @@ public class SmaregiTransactionIntegrationTest {
               "salesPrice": "5500",
               "taxDivision": "1",
               "transactionDetailDivision": "1",
-              "quantity": "1"
+              "quantity": "1",
+              "updDateTime": "2025-12-02T14:30:00+09:00"
             },
             {
               "transactionHeadId": "1001",
@@ -236,7 +256,8 @@ public class SmaregiTransactionIntegrationTest {
               "salesPrice": "550",
               "taxDivision": "1",
               "transactionDetailDivision": "1",
-              "quantity": "1"
+              "quantity": "1",
+              "updDateTime": "2025-12-02T14:30:00+09:00"
             },
             {
               "transactionHeadId": "1001",
@@ -246,7 +267,35 @@ public class SmaregiTransactionIntegrationTest {
               "salesPrice": "-2420",
               "taxDivision": "1",
               "transactionDetailDivision": "2",
-              "quantity": "1"
+              "quantity": "1",
+              "updDateTime": "2025-12-02T14:30:00+09:00"
+            }
+          ]
+        },
+        {
+          "transactionHeadId": "1002",
+          "transactionHeadDivision": "1",
+          "cancelDivision": "1",
+          "subtotal": "5500",
+          "total": "5500",
+          "taxInclude": "5500",
+          "taxExclude": "0",
+          "customerId": "1",
+          "terminalTranDateTime": "2025-12-02T15:00:00+09:00",
+          "updDateTime": "2025-12-02T15:00:00+09:00",
+          "staffId": "2",
+          "storeId": "1",
+          "details": [
+            {
+              "transactionHeadId": "1002",
+              "transactionDetailId": "1",
+              "productId": "8000001",
+              "productName": "デザインカット",
+              "salesPrice": "5500",
+              "taxDivision": "1",
+              "transactionDetailDivision": "1",
+              "quantity": "1",
+              "updDateTime": "2025-12-02T15:00:00+09:00"
             }
           ]
         }

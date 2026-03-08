@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.beauty.beauty_sales_dwh.mapper.FactSalesTransformMapper">
+
+    <!-- 最新の取引日時を取得 -->
+    <select id="findMaxTransactionDateTime" resultType="java.time.OffsetDateTime">
+        SELECT MAX(transaction_date_time) 
+        FROM dwh.fact_sales 
+        WHERE app_company_id = CAST(#{companyId} AS BIGINT)
+    </select>
+
+    <!-- Fact Sales (ヘッダー) の UPSERT -->
+    <insert id="upsertFactSales">
+        WITH raw_transaction AS (
+            SELECT DISTINCT ON (json_body ->> 'transactionHeadId')
+                (json_body ->> 'transactionHeadId') AS "transaction_head_id",
+                (json_body ->> 'terminalTranDateTime') AS "transaction_date_time",
+                (json_body ->> 'customerId') AS "customer_id",
+                (json_body ->> 'staffId') AS "staff_id",
+                (json_body ->> 'storeId') AS "store_id",
+                (json_body ->> 'total') AS "amount_total",
+                (json_body ->> 'subtotal') AS "amount_subtotal",
+                (json_body ->> 'taxInclude') AS "amount_tax_include",
+                (json_body ->> 'taxExclude') AS "amount_tax_exclude",
+                (json_body ->> 'subtotalDiscountPrice') AS "amount_subtotal_discount_price",
+                (json_body ->> 'commission') AS "amount_fee",
+                (json_body ->> 'carriage') AS  "amount_shipping",
+                (json_body ->> 'pointDiscount') AS "discount_point",
+                COALESCE(json_body ->> 'couponDiscount','0') AS "discount_coupon",
+                (json_body ->> 'returnSales') AS "returnsales",
+                (json_body ->> 'disposeDivision') AS "disposedivision",
+                (json_body ->> 'transactionHeadDivision') AS "transactionheaddivision",
+                (json_body ->> 'cancelDivision') AS "cancel_division"
+            FROM raw.transactions
+            WHERE
+                app_company_id = CAST(#{companyId} AS BIGINT)
+                AND (json_body ->> 'updDateTime') IS NOT NULL
+                AND CAST(json_body ->> 'updDateTime' AS TIMESTAMPTZ) >= CAST(#{fromDate} AS TIMESTAMPTZ)
+            ORDER BY
+                (json_body ->> 'transactionHeadId'), fetched_at DESC
+        ),
+        formatted_data AS (
+            SELECT 
+                #{companyId} AS app_company_id,
+                rt.transaction_head_id,
+                rt.transaction_date_time::timestamptz,
+                rt.transaction_date_time::date AS transaction_date,
+                -- 名寄せ解決: マージ先があればそれを、なければ元のIDを使用
+                COALESCE(mc.target_customer_id, rt.customer_id) AS customer_id,
+                rt.staff_id,
+                rt.store_id,
+                rt.amount_total::Integer, 
+                rt.amount_subtotal::Integer, 
+                rt.amount_tax_include::Integer, 
+                rt.amount_tax_exclude::Integer, 
+                rt.amount_subtotal_discount_price::Integer, 
+                rt.amount_fee::Integer, 
+                rt.amount_shipping::Integer, 
+                rt.discount_point::Integer, 
+                rt.discount_coupon::Integer,
+                CASE WHEN rt.returnsales = '1'
+                    THEN 'REFUND'
+                    WHEN rt.disposedivision = '2'
+                    THEN 'REFUND'
+                    WHEN rt.transactionheaddivision = '5'
+                    THEN 'REFUND'
+                    WHEN rt.amount_total::Integer &lt; 0
+                    THEN 'REFUND'
+                    ELSE 'SALES'
+                END AS "transaction_type",
+                CASE WHEN rt.cancel_division = '1'
+                    THEN true
+                    ELSE false 
+                END AS is_void
+            FROM raw_transaction rt
+            LEFT JOIN sys.merge_candidates mc
+                ON rt.customer_id = mc.source_customer_id
+                AND mc.app_company_id = CAST(#{companyId} AS BIGINT)
+                AND mc.status = 'MERGED'
+        )
+        INSERT INTO dwh.fact_sales(
+            app_company_id, transaction_head_id, transaction_date_time, transaction_date, 
+            customer_id, staff_id, store_id, amount_total, amount_subtotal, 
+            amount_tax_include, amount_tax_exclude, amount_subtotal_discount_price, 
+            amount_fee, amount_shipping, discount_point, discount_coupon, 
+            transaction_type, is_void
+        )
+        SELECT * FROM formatted_data
+        ON CONFLICT ON CONSTRAINT fact_sales_pkey
+        DO UPDATE SET
+            transaction_date_time       = EXCLUDED.transaction_date_time, 
+            transaction_date            = EXCLUDED.transaction_date, 
+            customer_id                 = EXCLUDED.customer_id, 
+            staff_id                    = EXCLUDED.staff_id, 
+            store_id                    = EXCLUDED.store_id, 
+            amount_total                = EXCLUDED.amount_total, 
+            amount_subtotal             = EXCLUDED.amount_subtotal, 
+            amount_tax_include          = EXCLUDED.amount_tax_include, 
+            amount_tax_exclude          = EXCLUDED.amount_tax_exclude, 
+            amount_subtotal_discount_price = EXCLUDED.amount_subtotal_discount_price, 
+            amount_fee                  = EXCLUDED.amount_fee, 
+            amount_shipping             = EXCLUDED.amount_shipping, 
+            discount_point              = EXCLUDED.discount_point, 
+            discount_coupon             = EXCLUDED.discount_coupon, 
+            transaction_type            = EXCLUDED.transaction_type,
+            is_void                     = EXCLUDED.is_void
+    </insert>
+
+    <!-- Fact Sales Details (明細) の UPSERT -->
+    <insert id="upsertFactSalesDetails">
+        WITH raw_transaction_details AS (
+            SELECT DISTINCT ON (json_body ->> 'transactionHeadId', json_body ->> 'transactionDetailId')
+                (json_body ->> 'transactionHeadId') AS "transaction_head_id",
+                (json_body ->> 'transactionDetailId') AS "transaction_detail_id",
+                (json_body ->> 'productId') AS "product_id",
+                (json_body ->> 'productName') AS "product_name",
+                (json_body ->> 'quantity') AS "quantity",
+                (json_body ->> 'salesPrice') AS "sales_price",
+                (json_body ->> 'taxDivision') AS "tax_division",
+                (json_body ->> 'transactionDetailDivision') AS "transaction_detail_division"
+            FROM raw.transaction_details
+            WHERE
+                app_company_id = CAST(#{companyId} AS BIGINT)
+                AND (json_body ->> 'updDateTime') IS NOT NULL
+                AND CAST(json_body ->> 'updDateTime' AS TIMESTAMPTZ) >= CAST(#{fromDate} AS TIMESTAMPTZ)
+            ORDER BY 
+                (json_body ->> 'transactionHeadId'), 
+                (json_body ->> 'transactionDetailId'), 
+                fetched_at DESC
+        ),
+        formatted_data AS (
+            SELECT
+                CAST(#{companyId} AS BIGINT) AS app_company_id,
+                tr.transaction_head_id,
+                tr.transaction_detail_id,
+                tr.product_id,
+                tr.product_name,
+                COALESCE(gr.cat_group_name, '未分類') AS category_group_name,
+                tr.quantity::Integer,
+                tr.sales_price::Integer,
+                tr.tax_division::Integer,
+                CASE WHEN tr.transaction_detail_division = '2'
+                        THEN 'REFUND'
+                    ELSE 'SALES'
+                END AS category_type
+            FROM
+                raw_transaction_details AS tr
+            LEFT JOIN
+                dwh.dim_products AS pr
+                ON tr.product_id = pr.product_id
+                AND pr.app_company_id = CAST(#{companyId} AS BIGINT)
+            LEFT JOIN 
+                dwh.dim_category_groups AS gr
+                ON pr.cat_group_id = gr.cat_group_id
+                AND gr.app_company_id = CAST(#{companyId} AS BIGINT)
+        )
+        INSERT INTO dwh.fact_sales_details(
+            app_company_id, transaction_head_id, transaction_detail_id, 
+            product_id, product_name, category_group_name, quantity, 
+            sales_price, tax_division, category_type
+        )
+        SELECT * FROM formatted_data
+        ON CONFLICT ON CONSTRAINT fact_sales_details_pkey
+        DO UPDATE SET
+            product_id          = EXCLUDED.product_id, 
+            product_name        = EXCLUDED.product_name, 
+            category_group_name = EXCLUDED.category_group_name, 
+            quantity            = EXCLUDED.quantity, 
+            sales_price         = EXCLUDED.sales_price, 
+            tax_division        = EXCLUDED.tax_division, 
+            category_type       = EXCLUDED.category_type;
+    </insert>
+</mapper>
