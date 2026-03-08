@@ -41,30 +41,30 @@
         ),
         formatted_data AS (
             SELECT 
-                #{companyId} AS app_company_id,
+                CAST(#{companyId} AS BIGINT) AS app_company_id,
                 rt.transaction_head_id,
-                rt.transaction_date_time::timestamptz,
-                rt.transaction_date_time::date AS transaction_date,
+                rt.transaction_date_time::TIMESTAMPTZ,
+                rt.transaction_date_time::DATE AS transaction_date,
                 -- 名寄せ解決: マージ先があればそれを、なければ元のIDを使用
                 COALESCE(mc.target_customer_id, rt.customer_id) AS customer_id,
                 rt.staff_id,
                 rt.store_id,
-                rt.amount_total::Integer, 
-                rt.amount_subtotal::Integer, 
-                rt.amount_tax_include::Integer, 
-                rt.amount_tax_exclude::Integer, 
-                rt.amount_subtotal_discount_price::Integer, 
-                rt.amount_fee::Integer, 
-                rt.amount_shipping::Integer, 
-                rt.discount_point::Integer, 
-                rt.discount_coupon::Integer,
+                COALESCE(rt.amount_total, '0')::NUMERIC::INTEGER AS amount_total, 
+                COALESCE(rt.amount_subtotal, '0')::NUMERIC::INTEGER AS amount_subtotal, 
+                COALESCE(rt.amount_tax_include, '0')::NUMERIC::INTEGER AS amount_tax_include, 
+                COALESCE(rt.amount_tax_exclude, '0')::NUMERIC::INTEGER AS amount_tax_exclude, 
+                COALESCE(rt.amount_subtotal_discount_price, '0')::NUMERIC::INTEGER AS amount_subtotal_discount_price, 
+                COALESCE(rt.amount_fee, '0')::NUMERIC::INTEGER AS amount_fee, 
+                COALESCE(rt.amount_shipping, '0')::NUMERIC::INTEGER AS amount_shipping, 
+                COALESCE(rt.discount_point, '0')::NUMERIC::INTEGER AS discount_point, 
+                COALESCE(rt.discount_coupon, '0')::NUMERIC::INTEGER AS discount_coupon,
                 CASE WHEN rt.returnsales = '1'
                     THEN 'REFUND'
                     WHEN rt.disposedivision = '2'
                     THEN 'REFUND'
                     WHEN rt.transactionheaddivision = '5'
                     THEN 'REFUND'
-                    WHEN rt.amount_total::Integer &lt; 0
+                    WHEN COALESCE(rt.amount_total, '0')::NUMERIC &lt; 0
                     THEN 'REFUND'
                     ELSE 'SALES'
                 END AS "transaction_type",
@@ -108,25 +108,34 @@
 
     <!-- Fact Sales Details (明細) の UPSERT -->
     <insert id="upsertFactSalesDetails">
-        WITH raw_transaction_details AS (
-            SELECT DISTINCT ON (json_body ->> 'transactionHeadId', json_body ->> 'transactionDetailId')
-                (json_body ->> 'transactionHeadId') AS "transaction_head_id",
-                (json_body ->> 'transactionDetailId') AS "transaction_detail_id",
-                (json_body ->> 'productId') AS "product_id",
-                (json_body ->> 'productName') AS "product_name",
-                (json_body ->> 'quantity') AS "quantity",
-                (json_body ->> 'salesPrice') AS "sales_price",
-                (json_body ->> 'taxDivision') AS "tax_division",
-                (json_body ->> 'transactionDetailDivision') AS "transaction_detail_division"
-            FROM raw.transaction_details
-            WHERE
-                app_company_id = CAST(#{companyId} AS BIGINT)
-                AND (json_body ->> 'updDateTime') IS NOT NULL
-                AND CAST(json_body ->> 'updDateTime' AS TIMESTAMPTZ) >= CAST(#{fromDate} AS TIMESTAMPTZ)
+        WITH target_transactions AS (
+            -- 対象期間内に更新された最新の取引ヘッダIDを特定
+            SELECT DISTINCT ON (json_body ->> 'transactionHeadId')
+                (json_body ->> 'transactionHeadId') AS transaction_head_id,
+                CAST(json_body ->> 'updDateTime' AS TIMESTAMPTZ) AS upd_date_time
+            FROM raw.transactions
+            WHERE app_company_id = CAST(#{companyId} AS BIGINT)
+              AND (json_body ->> 'updDateTime') IS NOT NULL
+            ORDER BY (json_body ->> 'transactionHeadId'), fetched_at DESC
+        ),
+        raw_transaction_details AS (
+            SELECT DISTINCT ON (rd.transaction_head_id, rd.json_body ->> 'transactionDetailId')
+                rd.transaction_head_id,
+                (rd.json_body ->> 'transactionDetailId') AS "transaction_detail_id",
+                (rd.json_body ->> 'productId') AS "product_id",
+                (rd.json_body ->> 'productName') AS "product_name",
+                (rd.json_body ->> 'quantity') AS "quantity",
+                (rd.json_body ->> 'salesPrice') AS "sales_price",
+                (rd.json_body ->> 'taxDivision') AS "tax_division",
+                (rd.json_body ->> 'transactionDetailDivision') AS "transaction_detail_division"
+            FROM raw.transaction_details rd
+            INNER JOIN target_transactions tt ON rd.transaction_head_id = tt.transaction_head_id
+            WHERE rd.app_company_id = CAST(#{companyId} AS BIGINT)
+              AND tt.upd_date_time >= CAST(#{fromDate} AS TIMESTAMPTZ)
             ORDER BY 
-                (json_body ->> 'transactionHeadId'), 
-                (json_body ->> 'transactionDetailId'), 
-                fetched_at DESC
+                rd.transaction_head_id, 
+                (rd.json_body ->> 'transactionDetailId'), 
+                rd.fetched_at DESC
         ),
         formatted_data AS (
             SELECT
@@ -136,9 +145,9 @@
                 tr.product_id,
                 tr.product_name,
                 COALESCE(gr.cat_group_name, '未分類') AS category_group_name,
-                tr.quantity::Integer,
-                tr.sales_price::Integer,
-                tr.tax_division::Integer,
+                COALESCE(tr.quantity, '0')::NUMERIC::INTEGER AS quantity,
+                COALESCE(tr.sales_price, '0')::NUMERIC::INTEGER AS sales_price,
+                COALESCE(tr.tax_division, '0')::NUMERIC::INTEGER AS tax_division,
                 CASE WHEN tr.transaction_detail_division = '2'
                         THEN 'REFUND'
                     ELSE 'SALES'

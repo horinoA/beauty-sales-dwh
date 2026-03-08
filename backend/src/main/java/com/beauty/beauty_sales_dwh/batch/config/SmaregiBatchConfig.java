@@ -73,13 +73,7 @@ public class SmaregiBatchConfig {
     private final TransactionDetailsExtractTasklet transactionDetailsExtractTasklet;
     private final FactSalesTransformTasklet factSalesTransformTasklet;
 
-    // --- Readers ---
-    private final SmaregiCustomerItemReader smaregiCustomerReader;
-    private final SmaregiCategoryItemReader smaregiCategoryReader;
-    private final SmaregiCategoryGroupItemReader smaregiCategoryGroupReader;
-    private final SmaregiProductItemReader smaregiProductReader;
-    private final SmaregiStaffItemReader smaregiStaffReader;
-    private final SmaregiTransactionItemReader smaregiTransactionReader;
+    // --- Readers (引数注入に切り替えるため削除) ---
 
     // --- Processors ---
     private final CustomerRawDataProcessor customerProcessor;
@@ -93,15 +87,20 @@ public class SmaregiBatchConfig {
     // 1. Job 定義 (メインフロー)
     // =================================================================================
     @Bean
-    public Job importSmaregiRawDataJob() {
+    public Job importSmaregiRawDataJob(
+            Step stepFetchCustomers,
+            Step stepFetchCategories,
+            Step stepFetchCategoryGroups,
+            Step stepFetchProducts,
+            Step stepFetchStaffs) {
         return new JobBuilder("importSmaregiRawDataJob", jobRepository)
                 .incrementer(new RunIdIncrementer())
                 .start(step1Auth())
-                .next(stepFetchCustomers())
-                .next(stepFetchCategories())
-                .next(stepFetchCategoryGroups())
-                .next(stepFetchProducts())
-                .next(stepFetchStaffs())
+                .next(stepFetchCustomers)
+                .next(stepFetchCategories)
+                .next(stepFetchCategoryGroups)
+                .next(stepFetchProducts)
+                .next(stepFetchStaffs)
                 .next(stepTransformCustomers())
                 .next(stepTransformProducts())
                 .next(stepTransformStaffs())
@@ -113,13 +112,16 @@ public class SmaregiBatchConfig {
      * パーティショニングを使用して過去3ヶ月分または差分を月単位で取得します。
      */
     @Bean
-    public Job importSmaregiTransactionJob() {
+    public Job importSmaregiTransactionJob(
+            Step stepMasterTransaction,
+            Step stepExtractTransactionDetails,
+            Step stepTransformFactSales) {
         return new JobBuilder("importSmaregiTransactionJob", jobRepository)
                 .incrementer(new RunIdIncrementer())
                 .start(step1Auth())
-                .next(stepMasterTransaction())
-                .next(stepExtractTransactionDetails())
-                .next(stepTransformFactSales())
+                .next(stepMasterTransaction)
+                .next(stepExtractTransactionDetails)
+                .next(stepTransformFactSales)
                 .build();
     }
 
@@ -142,11 +144,12 @@ public class SmaregiBatchConfig {
      * パーティショナーを呼び出し、月ごとのWorker Stepを実行します。
      */
     @Bean
-    public Step stepMasterTransaction() {
+    public Step stepMasterTransaction(Step stepFetchTransactionsHead) {
         return new StepBuilder("stepMasterTransaction", jobRepository)
                 .partitioner("stepFetchTransactionsHead", transactionPeriodPartitioner(null))
-                .step(stepFetchTransactionsHead())
+                .step(stepFetchTransactionsHead)
                 .gridSize(1) // 順次実行
+                .taskExecutor(new org.springframework.core.task.SyncTaskExecutor()) // 同期実行を強制
                 .build();
     }
 
@@ -154,7 +157,7 @@ public class SmaregiBatchConfig {
      * Step 2.0: 取引データ（ヘッダ）取得 - ワーカーステップ
      */
     @Bean
-    public Step stepFetchTransactionsHead() {
+    public Step stepFetchTransactionsHead(SmaregiTransactionItemReader smaregiTransactionReader) {
         return new StepBuilder("stepFetchTransactionsHead", jobRepository)
                 .<Map<String, Object>, TransactionRawData>chunk(100, transactionManager)
                 .reader(smaregiTransactionReader)
@@ -187,7 +190,7 @@ public class SmaregiBatchConfig {
      * Step 2.1: 顧客データ取込
      */
     @Bean
-    public Step stepFetchCustomers() {
+    public Step stepFetchCustomers(SmaregiCustomerItemReader smaregiCustomerReader) {
         return new StepBuilder("stepFetchCustomers", jobRepository)
                 .<Map<String, Object>, CustomerRawData>chunk(100, transactionManager)
                 // 100件ごとにコミット                                                                    
@@ -201,7 +204,7 @@ public class SmaregiBatchConfig {
      * Step 2.2: カテゴリデータ取込
      */
     @Bean
-    public Step stepFetchCategories() {
+    public Step stepFetchCategories(SmaregiCategoryItemReader smaregiCategoryReader) {
         return new StepBuilder("stepFetchCategories", jobRepository)
                 .<Map<String, Object>, CategoryRawData>chunk(100, transactionManager)
                 // 100件ごとにコミット                                                                    
@@ -215,7 +218,7 @@ public class SmaregiBatchConfig {
      * Step 2.3: カテゴリグループデータ取込
      */
     @Bean
-    public Step stepFetchCategoryGroups() {
+    public Step stepFetchCategoryGroups(SmaregiCategoryGroupItemReader smaregiCategoryGroupReader) {
         return new StepBuilder("stepFetchCategoryGroups", jobRepository)
                 .<Map<String, Object>, CategoryGroupRawData>chunk(100, transactionManager)
                 // 100件ごとにコミット                                                                    
@@ -229,7 +232,7 @@ public class SmaregiBatchConfig {
      * Step 2.4: 商品データ取込
      */
     @Bean
-    public Step stepFetchProducts() {
+    public Step stepFetchProducts(SmaregiProductItemReader smaregiProductReader) {
         return new StepBuilder("stepFetchProducts", jobRepository)
                 .<Map<String, Object>, ProductRawData>chunk(100, transactionManager)
                 // 100件ごとにコミット
@@ -243,7 +246,7 @@ public class SmaregiBatchConfig {
      * Step 2.5: スタッフデータ取込
      */
     @Bean
-    public Step stepFetchStaffs() {
+    public Step stepFetchStaffs(SmaregiStaffItemReader smaregiStaffReader) {
         return new StepBuilder("stepFetchStaffs", jobRepository)
                 .<Map<String, Object>, StaffRawData>chunk(100, transactionManager)
                 // 100件ごとにコミット

@@ -44,9 +44,11 @@ public abstract class AbstractSmaregiItemReader implements ItemReader<Map<String
         this.accessToken = (String) stepExecution.getJobExecution()
                 .getExecutionContext().get(SmaregiAuthTasklet.KEY_ACCESS_TOKEN);
 
-        if (this.accessToken == null) {
+        if (this.accessToken == null || this.accessToken.isEmpty()) {
+            log.error("アクセストークンが ExecutionContext に見つかりません。キー: {}", SmaregiAuthTasklet.KEY_ACCESS_TOKEN);
             throw new RuntimeException("アクセストークンが見つかりません。");
         }
+        log.info("Reader initialized with token. Length: {}", accessToken.length());
     }
 
     @Override
@@ -71,10 +73,11 @@ public abstract class AbstractSmaregiItemReader implements ItemReader<Map<String
         URI uri = getApiUrl(page);
 
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Bearer " + accessToken);
-        HttpEntity<String> entity = new HttpEntity<>(headers);
+        headers.setBearerAuth(accessToken);
+        headers.set("Content-Type", "application/json");
+        HttpEntity<Void> entity = new HttpEntity<>(headers);
 
-        log.debug("API Fetch: {}", uri);
+        log.info("API Request URL: {}", uri);
 
         try {
             // URIを渡しつつ、ParameterizedTypeReference で List型として受け取る
@@ -97,8 +100,11 @@ public abstract class AbstractSmaregiItemReader implements ItemReader<Map<String
                 currentIterator = null;
             }
 
+        } catch (org.springframework.web.client.HttpStatusCodeException e) {
+            log.error("API Error: HTTP Status {} - Response Body: {}", e.getStatusCode(), e.getResponseBodyAsString());
+            throw new RuntimeException("API取得失敗 (HTTPエラー): " + uri, e);
         } catch (Exception e) {
-            log.error("API Error: {}", e.getMessage());
+            log.error("API Error: {}", e.getMessage(), e);
             throw new RuntimeException("API取得失敗: " + uri, e);
         }
     }

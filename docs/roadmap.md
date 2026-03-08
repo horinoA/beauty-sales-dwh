@@ -43,10 +43,10 @@ gantt
 **目標:** データ取り込み〜名寄せ〜集計の一連フローをバックエンドで完結させる。
 **期間目安:** 2〜3週間
 
-- [ ] **2-1. Spring Batch 実装 (ETL)**
-    - [ ] **Extract:** API (またはMock) からデータを読み込むReader実装
-    - [ ] **Load:** RawテーブルへのWriter実装
-    - [ ] **Transform:** Rawデータを加工してDWHテーブルへ移すProcessor実装
+- [x] **2-1. Spring Batch 実装 (ETL)**
+    - [x] **Extract:** API (またはMock) からデータを読み込むReader実装
+    - [x] **Load:** RawテーブルへのWriter実装
+    - [x] **Transform:** Rawデータを加工してDWHテーブルへ移すProcessor実装
 - [ ] **2-2. 名寄せロジック (Identity Resolution) 実装**
     - [ ] 氏名・電話番号等による「類似度判定サービス」の実装
     - [ ] 名寄せ候補テーブル (`merge_candidates`) へのデータ生成バッチ処理

@@ -8,7 +8,7 @@
 
     <insert id="upsertCustomersFromRaw">
         WITH raw_data AS (
-            SELECT 
+            SELECT DISTINCT ON (json_body ->> 'customerId')
                 (json_body ->> 'customerId')   AS raw_customer_id,
                 (json_body ->> 'lastName')     AS last_name,
                 (json_body ->> 'firstName')    AS first_name,
@@ -24,11 +24,13 @@
                 raw.customers
             WHERE 
                 (json_body ->> 'updDateTime')::TIMESTAMPTZ >= #{fromDate} AND app_company_id = #{companyId}
+            ORDER BY
+                (json_body ->> 'customerId'), fetched_at DESC
         ),
         formatted_data AS (
             SELECT
                 #{companyId} AS app_company_id,
-                raw_customer_id::BIGINT AS customer_id,
+                COALESCE(raw_customer_id, '') AS customer_id,
                 last_name || '_' || first_name AS customer_name,
                 last_kana || '_' || first_kana AS customer_kana,
                 phone_number,

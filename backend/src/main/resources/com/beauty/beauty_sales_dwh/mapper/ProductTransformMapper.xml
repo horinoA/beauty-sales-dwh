@@ -88,7 +88,7 @@
             product.product_id,
             product.product_name,
             category.category_group_id,
-            product.price::INTEGER,
+            COALESCE(product.price, '0')::NUMERIC::INTEGER AS price,
             product.store_id,
             CAST(product.ins_date_time AS TIMESTAMPTZ) AS insert_data_time,
             CAST(product.upd_date_time AS TIMESTAMPTZ) AS update_data_time

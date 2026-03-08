@@ -35,7 +35,7 @@
             staff_id,
             staff_name,
             rank,
-            CAST(employ_flag AS INTEGER),
+            COALESCE(employ_flag, '0')::NUMERIC::INTEGER,
             CAST(insert_data_time AS TIMESTAMPTZ),
             CAST(update_data_time AS TIMESTAMPTZ)
         FROM
