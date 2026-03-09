@@ -12,7 +12,7 @@ gantt
     DB設計実装 (Raw/DWH層)         :done, p1_3, after p1_2, 3d
     
     section Phase 2: ETL & ロジック
-    Spring Batch実装 (取得~保存)    :p2_1, after p1_3, 7d
+    Spring Batch実装 (取得~保存)    :done, p2_1, after p1_3, 7d
     名寄せロジック実装 (Core)       :p2_2, after p2_1, 7d
     集計API作成 (Controller)       :p2_3, after p2_2, 5d
 
