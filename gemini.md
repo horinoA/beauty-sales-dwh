@@ -401,6 +401,15 @@ DO UPDATE SET
 #### 変更点３、SQLのエスケープ処理 (&lt;): XML内で <
      を使う際のエスケープの必要性（MyBatis特有の注意点）
 
+#### 変更点４
+1. SQLの堅牢性: ::NUMERIC::INTEGER による安全な型変換と、DISTINCT ON
+      による重複データ対策。
+2. API仕様への準拠: スマレジAPI特有の sort
+      パラメータ（キャメルケース）の修正。
+3. データ整合性:
+      親テーブル（raw.transactions）の更新日時に基づいた、明細データの確実なフィ
+      ルタリング。
+
 
 ## 14.後から名寄せ設定（merge_candidates）が増えた場合、過去の fact_salesを再変換（洗い替え）する
 具体的なワークフローとしては、以下のようなイメージになります。
@@ -429,4 +438,215 @@ DO UPDATE SET
    * 一貫性:
      dwh.dim_customers（顧客マスタ）のマージ処理と同じタイミングで行うことで、マ
      スタと売上の整合性が常に保たれます。
+
+
+## 15 名寄せ（Identity Resolution / RecordLinkage）の実装、
+  美容サロンのデータ（名前、カナ、電話番号）を扱う上で、検討すべき代表的なアルゴリズムと手法。
+
+#### 「決定論的（Exact Match）」 なルール
+
+
+  1. 前処理（正規化）アルゴリズム
+  アルゴリズムを適用する前に、データを「同じ土俵」に乗せる手法です。
+   * Unicode正規化 (NFKC): 全角・半角、カタカナ・ひらがなの統一。
+   * ストップワード除去: 名字と名前の間のスペース、ハイフンの除去。
+   * 住所正規化: （もし住所があれば）「1丁目2番3号」と「1-2-3」の変換。
+
+
+  2. 決定論的名寄せ (Deterministic Matching)
+  「この項目が一致したら同一人物」と断定するルールベースの手法です。
+   * 完全一致 (Exact Match):
+     電話番号、メールアドレスなど一意性が高い項目の比較。
+   * クロス一致 (Cross Match):
+     顧客Aの「電話番号」と顧客Bの「携帯番号」が一致するか、などの複数項目クロス
+     チェック。
+
+
+  3. 曖昧一致 / 文字列類似度 (Fuzzy Matching)
+  「似ている」度合いを数値化（0.0〜1.0）するアルゴリズムです。
+   * レーベンシュタイン距離 (Levenshtein Distance):
+     1文字の挿入・削除・置換で何回操作が必要か。名字の誤字脱字に強い。
+   * ジャロ・ウィンクラー距離 (Jaro-Winkler Distance):
+     文字列の「接頭辞」の一致を重視。日本語の名字（「斉藤」と「齋藤」など）の判
+     定に有効。
+   * N-gram (バイグラム等):
+     文字列をN文字ずつに分割して共通項を比較。名前の一部が欠けている場合に強い。
+
+
+  4. 音韻一致 (Phonetic Matching)
+  読み（カナ）が似ているものを探す手法です。
+   * Soundex / Metaphone:
+     英語圏で主流ですが、日本語では「カナの濁音・半濁音・拗音の正規化」がこれに
+     相当します（例：「ハ」と「パ」、「ユ」と「ユウ」の同一視）。
+
+
+  5. 確率論的名寄せ (Probabilistic Matching)
+  複数の項目の「一致確率」に重みをつけて合計スコアで判定する手法です。
+   * Fellegi-Sunterモデル:
+     名寄せの数学的基盤。名前が一致した時の「嬉しさ（重み）」と、誕生日が一致し
+     た時の「嬉しさ」を統計的に処理します。
+
+
+  6. ブロッキング / インデクシング (Blocking)
+  全件 vs 全件の比較は O(N^2) で重くなるため、比較対象を絞り込む技術です。
+   * Sorted Neighborhood:
+     カナ順に並べて、前後数件（ウィンドウ）だけを比較対象にする。
+   * Hash Blocking:
+     生年月日の「月日」だけをハッシュ化し、同じハッシュ値を持つグループ内だけで
+     詳細比較を行う。
+
+  ---
+
+
+  今回のプロジェクトでの狙い目
+  サロンデータの場合、以下の組み合わせが現実的で強力です。
+
+
+   1. Normalization: 全角半角・スペースの徹底排除。
+   2. Blocking: 生年月日の「月日」または「電話番号の下4桁」でバケツ分け。
+   3. Fuzzy Match: Jaro-Winkler を使って、カナ氏名の類似度スコアを算出。
+   4. Verification: 最終的には人間が承認するための
+      sys.merge_candidates（ステータス：PENDING）への登録。
+
+
+  「ジャロ・ウィンクラー距離」や「レーベンシュタイン距離」は PostgreSQL
+  の拡張機能（fuzzystrmatch）でも使える
+
+#### 統計学・AIの視点での「名寄せ」
+
+
+   1. 二値分類問題 (Binary Classification):
+       * 「2つのレコードは同一人物か (1) か、別人か (0)
+         か」を判定するモデルとして捉えられます。
+   2. 特徴量エンジニアリング (Feature Engineering):
+       * 氏名、カナ、電話番号、来店日などをどう数値化（ベクトル化）して、類似度
+         を計算するか。
+   3. 適合率 (Precision) と再現率 (Recall) のトレードオフ:
+       * 適合率重視:
+         「別人なのにマージしてしまう」エラーを最小限にする（サロンではこちらが
+         重要：他人の履歴が混ざるとクレームになるため）。
+       * 再現率重視:
+         「同一人物なのに漏れてしまう」エラーを最小限にする（分析精度には効く）
+         。
+   4. 教師なし学習 (Clustering):
+       * 階層的クラスタリングなどを使って、類似した顧客を「重複グループ」として
+         自動抽出する手法。
+   5. 重み付け (Weighting):
+       * 「電話番号の一致」と「名字の一致」、どちらがどれだけ「同一人物である確
+         率」に寄与するか（ベイズ統計的な考え方）。
+
+  次のステップのヒント
+  最初は 「決定論的（Exact Match）」 なルールから始めて、徐々に
+  「確率論的（Fuzzy Match / Score-based）」
+  なロジックへ拡張していくのが定石です。
+
+  PostgreSQLには fuzzystrmatch や pg_trgm
+  という、類似度計算に特化した拡張モジュールもあります。
+
+
+<insert id="findAndInsertMergeCandidates">
+    2     WITH normalized_customers AS (
+    3         SELECT
+    4             app_company_id,
+    5             customer_id,
+    6             -- 名字と名前の間のスペースを削除して比較しやすくする
+    7             replace(replace(customer_name, ' ', ''), '　', '') AS
+      norm_name,
+    8             replace(replace(customer_kana, ' ', ''), '　', '') AS
+      norm_kana,
+    9             regexp_replace(phone_number, '[^0-9]', '', 'g') AS norm_phone,
+   10             regexp_replace(mobile_number, '[^0-9]', '', 'g') AS
+      norm_mobile,
+   11             --
+      ブロッキング用：カナの先頭2文字（例：「サト」）が一致する人同士だけで比較
+      する
+   12             substring(replace(replace(customer_kana, ' ', ''), '　', ''),
+      1, 2) AS kana_block,
+   13             visit_count
+   14         FROM dwh.dim_customers
+   15         WHERE app_company_id = #{companyId}
+   16           AND is_deleted = false
+   17     ),
+   18     matched_pairs AS (
+   19         SELECT
+   20             c1.customer_id AS id1,
+   21             c2.customer_id AS id2,
+   22             CASE
+   23                 -- 1. 電話番号が一致（最強）
+   24                 WHEN (c1.norm_phone = c2.norm_phone AND c1.norm_phone !=
+      '') OR (c1.norm_mobile = c2.norm_mobile AND c1.norm_mobile != '') THEN 100
+   25                 -- 2. カナが完全一致（かなり強い）
+   26                 WHEN c1.norm_kana = c2.norm_kana AND c1.norm_kana != ''
+      THEN 95
+   27                 -- 3. 漢字氏名が完全一致（強い）
+   28                 WHEN c1.norm_name = c2.norm_name AND c1.norm_name != ''
+      THEN 90
+   29                 ELSE 0
+   30             END AS score
+   31         FROM normalized_customers c1
+   32         JOIN normalized_customers c2 ON c1.app_company_id =
+      c2.app_company_id
+   33             AND c1.customer_id &lt; c2.customer_id
+   34             -- 【重要：ブロッキング】
+   35             --
+      電話番号が一致するか、もしくは「カナの先頭2文字」が一致するペアのみを詳細
+      比較の対象にする
+   36             -- これにより、計算量を数百分の一に削減できます。
+   37             AND (
+   38                 (c1.norm_phone = c2.norm_phone AND c1.norm_phone != '') OR
+   39                 (c1.norm_mobile = c2.norm_mobile AND c1.norm_mobile != '')
+      OR
+   40                 (c1.kana_block = c2.kana_block AND c1.kana_block != '')
+   41             )
+   42         WHERE
+   43             -- スコアがついたものだけを抽出
+   44             ( (c1.norm_phone = c2.norm_phone AND c1.norm_phone != '') OR
+      (c1.norm_mobile = c2.norm_mobile AND c1.norm_mobile != '') )
+   45             OR (c1.norm_kana = c2.norm_kana AND c1.norm_kana != '')
+   46             OR (c1.norm_name = c2.norm_name AND c1.norm_name != '')
+   47     ),
+   48     final_candidates AS (
+   49         -- (以下、前回と同様に visit_count で target/source を決定)
+   50         SELECT
+   51             #{companyId} AS app_company_id,
+   52             CASE WHEN cust1.visit_count >= cust2.visit_count THEN
+      cust2.customer_id ELSE cust1.customer_id END AS source_customer_id,
+   53             CASE WHEN cust1.visit_count >= cust2.visit_count THEN
+      cust1.customer_id ELSE cust2.customer_id END AS target_customer_id,
+   54             pairs.score
+   55         FROM matched_pairs pairs
+   56         JOIN dwh.dim_customers cust1 ON pairs.id1 = cust1.customer_id AND
+      cust1.app_company_id = #{companyId}
+   57         JOIN dwh.dim_customers cust2 ON pairs.id2 = cust2.customer_id AND
+      cust2.app_company_id = #{companyId}
+   58     )
+   59     INSERT INTO sys.merge_candidates ( ... )
+   60     SELECT ... FROM final_candidates fc
+   61     WHERE NOT EXISTS ( ... );
+   62 </insert>
+
+  工夫した点と計算量への対策
+
+
+   1. スペースの除去 (replace):
+      「山田 太郎」と「山田太郎」が一致するように正規化しています。
+   2. カナの先頭2文字ブロッキング (kana_block):
+
+  全く名前が掠りもしない人同士（例：「佐藤」と「鈴木」）を比較対象から外していま
+  す。これにより、結合処理の負荷を大幅に軽減できます。
+   3. 電話番号優先:
+
+  電話番号が一致していれば、氏名が多少違っても（例：家族が同じ番号を使っている、
+  あるいは名字が変わった）候補として抽出されます。
+
+
+  さらに高度な「曖昧一致」をしたい場合
+  もし、「齋藤」と「斉藤」のような、完全一致しないが似ている名前も抽出したい場合
+  は、PostgreSQL の levenshtein 関数を使用できます。
+
+
+   1 -- 名字の編集距離が1以内なら似ていると判定する例（要 fuzzystrmatch 拡張）
+   2 WHEN levenshtein(c1.norm_name, c2.norm_name) &lt;= 1 THEN 85
+
+
 
