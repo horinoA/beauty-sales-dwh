@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.beauty.beauty_sales_dwh.mapper.CustomerVisitUpdateMapper">
+
+    <update id="updateCustomerVisitStats">
+        WITH visit_stats AS (
+            SELECT 
+                customer_id,
+                MAX(transaction_date) AS "last_visit_date",
+                MIN(transaction_date) AS "first_visit_date",
+                COUNT(*) AS "visit_count"
+            FROM dwh.fact_sales
+            WHERE app_company_id = #{companyId}
+              AND is_void = false
+            GROUP BY customer_id
+        )
+        UPDATE dwh.dim_customers dc
+        SET
+            last_visit_date  = vs.last_visit_date,
+            first_visit_date = vs.first_visit_date,
+            visit_count      = vs.visit_count,
+            update_data_time = CURRENT_TIMESTAMP
+        FROM visit_stats vs
+        WHERE dc.customer_id = vs.customer_id
+          AND dc.app_company_id = #{companyId}
+          AND dc.is_deleted = false
+    </update>
+
+</mapper>

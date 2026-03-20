@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.beauty.beauty_sales_dwh.mapper.IdentityResolutionMapper">
+
+    <insert id="findAndInsertMergeCandidates">
+        WITH normalized_customers AS (
+            SELECT
+                app_company_id,
+                customer_id,
+                -- 名字と名前の間の全角・半角スペースを削除
+                replace(replace(customer_name, ' ', ''), '　', '') AS norm_name,
+                replace(replace(customer_kana, ' ', ''), '　', '') AS norm_kana,
+                -- 電話番号から数字以外を除去
+                regexp_replace(phone_number, '[^0-9]', '', 'g') AS norm_phone,
+                regexp_replace(mobile_number, '[^0-9]', '', 'g') AS norm_mobile,
+                -- ブロッキング用：カナの先頭2文字（例：「サト」）
+                substring(replace(replace(customer_kana, ' ', ''), '　', ''), 1, 2) AS kana_block,
+                visit_count,
+                last_visit_date
+            FROM dwh.dim_customers
+            WHERE app_company_id = #{companyId}
+              AND is_deleted = false
+        ),
+        matched_pairs AS (
+            SELECT
+                c1.customer_id AS id1,
+                c2.customer_id AS id2,
+                CASE
+                    -- 1. 電話番号が一致（最強：100点）
+                    WHEN (c1.norm_phone = c2.norm_phone AND c1.norm_phone != '') 
+                      OR (c1.norm_mobile = c2.norm_mobile AND c1.norm_mobile != '') THEN 100
+                    -- 2. カナが完全一致（95点）
+                    WHEN c1.norm_kana = c2.norm_kana AND c1.norm_kana != '' THEN 95
+                    -- 3. 漢字氏名が完全一致（90点）
+                    WHEN c1.norm_name = c2.norm_name AND c1.norm_name != '' THEN 90
+                    -- 4. 漢字氏名が曖昧一致（85点） ※1文字違いまで
+                    WHEN levenshtein(c1.norm_name, c2.norm_name) &lt;= 1 AND c1.norm_name != '' THEN 85
+                    -- 5. カナが曖昧一致（80点） ※1文字違いまで
+                    WHEN levenshtein(c1.norm_kana, c2.norm_kana) &lt;= 1 AND c1.norm_kana != '' THEN 80
+                    ELSE 0
+                END AS score
+            FROM normalized_customers c1
+            JOIN normalized_customers c2 ON c1.app_company_id = c2.app_company_id
+                AND c1.customer_id &lt; c2.customer_id -- 自分自身との比較を避ける
+                -- 【ブロッキング】電話番号一致、またはカナの先頭2文字が一致するペアのみに絞り込む
+                AND (
+                    (c1.norm_phone = c2.norm_phone AND c1.norm_phone != '') OR
+                    (c1.norm_mobile = c2.norm_mobile AND c1.norm_mobile != '') OR
+                    (c1.kana_block = c2.kana_block AND c1.kana_block != '')
+                )
+        ),
+        final_candidates AS (
+            -- スコア80点以上のものを対象に、visit_count等で正(target)と副(source)を決定
+            SELECT
+                #{companyId} AS app_company_id,
+                CASE 
+                    WHEN cust1.visit_count > cust2.visit_count THEN cust2.customer_id
+                    WHEN cust1.visit_count &lt; cust2.visit_count THEN cust1.customer_id
+                    WHEN (cust1.last_visit_date IS NOT NULL AND cust2.last_visit_date IS NOT NULL AND cust1.last_visit_date > cust2.last_visit_date) THEN cust2.customer_id
+                    WHEN (cust1.last_visit_date IS NOT NULL AND cust2.last_visit_date IS NOT NULL AND cust1.last_visit_date &lt; cust2.last_visit_date) THEN cust1.customer_id
+                    ELSE (CASE WHEN cust1.customer_id > cust2.customer_id THEN cust2.customer_id ELSE cust1.customer_id END)
+                END AS source_customer_id,
+                CASE 
+                    WHEN cust1.visit_count > cust2.visit_count THEN cust1.customer_id
+                    WHEN cust1.visit_count &lt; cust2.visit_count THEN cust2.customer_id
+                    WHEN (cust1.last_visit_date IS NOT NULL AND cust2.last_visit_date IS NOT NULL AND cust1.last_visit_date > cust2.last_visit_date) THEN cust1.customer_id
+                    WHEN (cust1.last_visit_date IS NOT NULL AND cust2.last_visit_date IS NOT NULL AND cust1.last_visit_date &lt; cust2.last_visit_date) THEN cust2.customer_id
+                    ELSE (CASE WHEN cust1.customer_id > cust2.customer_id THEN cust1.customer_id ELSE cust2.customer_id END)
+                END AS target_customer_id,
+                pairs.score
+            FROM matched_pairs pairs
+            JOIN dwh.dim_customers cust1 ON pairs.id1 = cust1.customer_id AND cust1.app_company_id = #{companyId}
+            JOIN dwh.dim_customers cust2 ON pairs.id2 = cust2.customer_id AND cust2.app_company_id = #{companyId}
+            WHERE pairs.score >= 80
+        )
+        INSERT INTO sys.merge_candidates (
+            app_company_id,
+            source_customer_id,
+            target_customer_id,
+            similarity_score,
+            status
+        )
+        SELECT
+            app_company_id,
+            source_customer_id,
+            target_customer_id,
+            score,
+            'PENDING'
+        FROM final_candidates
+        ON CONFLICT (app_company_id, source_customer_id, target_customer_id) 
+        DO NOTHING
+    </insert>
+
+</mapper>

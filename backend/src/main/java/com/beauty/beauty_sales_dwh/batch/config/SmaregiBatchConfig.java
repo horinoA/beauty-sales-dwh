@@ -31,7 +31,9 @@ import com.beauty.beauty_sales_dwh.batch.reader.SmaregiProductItemReader;
 import com.beauty.beauty_sales_dwh.batch.reader.SmaregiStaffItemReader;
 import com.beauty.beauty_sales_dwh.batch.reader.SmaregiTransactionItemReader;
 import com.beauty.beauty_sales_dwh.batch.tasklet.CustomerTransformTasklet;
+import com.beauty.beauty_sales_dwh.batch.tasklet.CustomerVisitUpdateTasklet;
 import com.beauty.beauty_sales_dwh.batch.tasklet.FactSalesTransformTasklet;
+import com.beauty.beauty_sales_dwh.batch.tasklet.IdentityResolutionTasklet;
 import com.beauty.beauty_sales_dwh.batch.tasklet.ProductTransformTasklet;
 import com.beauty.beauty_sales_dwh.batch.tasklet.SmaregiAuthTasklet;
 import com.beauty.beauty_sales_dwh.batch.tasklet.StaffTransformTasklet;
@@ -72,6 +74,8 @@ public class SmaregiBatchConfig {
     private final StaffTransformTasklet staffTransformTasklet;
     private final TransactionDetailsExtractTasklet transactionDetailsExtractTasklet;
     private final FactSalesTransformTasklet factSalesTransformTasklet;
+    private final IdentityResolutionTasklet identityResolutionTasklet;
+    private final CustomerVisitUpdateTasklet customerVisitUpdateTasklet;
 
     // --- Readers (引数注入に切り替えるため削除) ---
 
@@ -104,6 +108,8 @@ public class SmaregiBatchConfig {
                 .next(stepTransformCustomers())
                 .next(stepTransformProducts())
                 .next(stepTransformStaffs())
+                .next(stepUpdateCustomerVisitStats())
+                .next(stepIdentifyResolution())
                 .build();
     }
 
@@ -122,6 +128,7 @@ public class SmaregiBatchConfig {
                 .next(stepMasterTransaction)
                 .next(stepExtractTransactionDetails)
                 .next(stepTransformFactSales)
+                .next(stepUpdateCustomerVisitStats())
                 .build();
     }
 
@@ -183,6 +190,16 @@ public class SmaregiBatchConfig {
     public Step stepTransformFactSales() {
         return new StepBuilder("stepTransformFactSales", jobRepository)
                 .tasklet(factSalesTransformTasklet, transactionManager)
+                .build();
+    }
+
+    /**
+     * Step 2.3: 顧客来店統計更新タスク
+     */
+    @Bean
+    public Step stepUpdateCustomerVisitStats() {
+        return new StepBuilder("stepUpdateCustomerVisitStats", jobRepository)
+                .tasklet(customerVisitUpdateTasklet, transactionManager)
                 .build();
     }
 
@@ -284,6 +301,16 @@ public class SmaregiBatchConfig {
         return new StepBuilder("stepTransformStaffs", jobRepository)
             .tasklet(staffTransformTasklet, transactionManager)
             .build();
+    }
+
+    /**
+     * Step 4: 名寄せ候補抽出タスク
+     */
+    @Bean
+    public Step stepIdentifyResolution() {
+        return new StepBuilder("stepIdentifyResolution", jobRepository)
+                .tasklet(identityResolutionTasklet, transactionManager)
+                .build();
     }
 
     // =================================================================================
