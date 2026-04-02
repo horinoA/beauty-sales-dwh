@@ -8,13 +8,13 @@
                 app_company_id,
                 customer_id,
                 -- 名字と名前の間の全角・半角スペースを削除
-                replace(replace(customer_name, ' ', ''), '　', '') AS norm_name,
-                replace(replace(customer_kana, ' ', ''), '　', '') AS norm_kana,
+                translate(customer_name, ' 　_', '') AS norm_name,
+                translate(customer_kana, ' 　_', '') AS norm_kana,
                 -- 電話番号から数字以外を除去
                 regexp_replace(phone_number, '[^0-9]', '', 'g') AS norm_phone,
                 regexp_replace(mobile_number, '[^0-9]', '', 'g') AS norm_mobile,
                 -- ブロッキング用：カナの先頭2文字（例：「サト」）
-                substring(replace(replace(customer_kana, ' ', ''), '　', ''), 1, 2) AS kana_block,
+                substring(translate(customer_kana, ' 　_', ''), 1, 2) AS kana_block,
                 visit_count,
                 last_visit_date
             FROM dwh.dim_customers
@@ -25,27 +25,36 @@
             SELECT
                 c1.customer_id AS id1,
                 c2.customer_id AS id2,
+                c1.visit_count AS v1,
+                c2.visit_count AS v2,
+                c1.last_visit_date AS d1,
+                c2.last_visit_date AS d2,
                 CASE
-                    -- 1. 電話番号が一致（最強：100点）
-                    WHEN (c1.norm_phone = c2.norm_phone AND c1.norm_phone != '') 
-                      OR (c1.norm_mobile = c2.norm_mobile AND c1.norm_mobile != '') THEN 100
-                    -- 2. カナが完全一致（95点）
+                    -- 1. 電話番号が一致（同一カラム、またはクロス）
+                    WHEN (c1.norm_phone IN (c2.norm_phone, c2.norm_mobile) AND c1.norm_phone != '') 
+                      OR (c1.norm_mobile IN (c2.norm_phone, c2.norm_mobile) AND c1.norm_mobile != '') THEN
+                        CASE 
+                            -- かつ名字（先頭2文字）も一致なら100点、違うなら世帯別の可能性で80点
+                            WHEN substring(c1.norm_kana, 1, 2) = substring(c2.norm_kana, 1, 2) THEN 100
+                            ELSE 80 
+                        END
+                    -- 2. カナ完全一致（95点）
                     WHEN c1.norm_kana = c2.norm_kana AND c1.norm_kana != '' THEN 95
-                    -- 3. 漢字氏名が完全一致（90点）
+                    -- 3. 漢字完全一致（90点）
                     WHEN c1.norm_name = c2.norm_name AND c1.norm_name != '' THEN 90
-                    -- 4. 漢字氏名が曖昧一致（85点） ※1文字違いまで
+                    -- 4. 漢字曖昧一致（85点） ※1文字違いまで
                     WHEN levenshtein(c1.norm_name, c2.norm_name) &lt;= 1 AND c1.norm_name != '' THEN 85
-                    -- 5. カナが曖昧一致（80点） ※1文字違いまで
+                    -- 5. カナ曖昧一致（80点） ※1文字違いまで
                     WHEN levenshtein(c1.norm_kana, c2.norm_kana) &lt;= 1 AND c1.norm_kana != '' THEN 80
                     ELSE 0
                 END AS score
             FROM normalized_customers c1
             JOIN normalized_customers c2 ON c1.app_company_id = c2.app_company_id
                 AND c1.customer_id &lt; c2.customer_id -- 自分自身との比較を避ける
-                -- 【ブロッキング】電話番号一致、またはカナの先頭2文字が一致するペアのみに絞り込む
+                -- 【ブロッキング】電話番号カラムを跨いで一致、またはカナの先頭2文字が一致するペアのみに絞り込む
                 AND (
-                    (c1.norm_phone = c2.norm_phone AND c1.norm_phone != '') OR
-                    (c1.norm_mobile = c2.norm_mobile AND c1.norm_mobile != '') OR
+                    (c1.norm_phone IN (c2.norm_phone, c2.norm_mobile) AND c1.norm_phone != '') OR
+                    (c1.norm_mobile IN (c2.norm_phone, c2.norm_mobile) AND c1.norm_mobile != '') OR
                     (c1.kana_block = c2.kana_block AND c1.kana_block != '')
                 )
         ),
@@ -54,24 +63,24 @@
             SELECT
                 #{companyId} AS app_company_id,
                 CASE 
-                    WHEN cust1.visit_count > cust2.visit_count THEN cust2.customer_id
-                    WHEN cust1.visit_count &lt; cust2.visit_count THEN cust1.customer_id
-                    WHEN (cust1.last_visit_date IS NOT NULL AND cust2.last_visit_date IS NOT NULL AND cust1.last_visit_date > cust2.last_visit_date) THEN cust2.customer_id
-                    WHEN (cust1.last_visit_date IS NOT NULL AND cust2.last_visit_date IS NOT NULL AND cust1.last_visit_date &lt; cust2.last_visit_date) THEN cust1.customer_id
-                    ELSE (CASE WHEN cust1.customer_id > cust2.customer_id THEN cust2.customer_id ELSE cust1.customer_id END)
+                    WHEN v1 > v2 THEN id2
+                    WHEN v1 &lt; v2 THEN id1
+                    -- 来店数が同じなら直近来店日（NULLは最古の日付として扱う）
+                    WHEN COALESCE(d1, '1900-01-01') > COALESCE(d2, '1900-01-01') THEN id2
+                    WHEN COALESCE(d1, '1900-01-01') &lt; COALESCE(d2, '1900-01-01') THEN id1
+                    -- それでも同じならIDが小さい方をsourceにする（一貫性のため）
+                    ELSE (CASE WHEN id1 > id2 THEN id2 ELSE id1 END)
                 END AS source_customer_id,
                 CASE 
-                    WHEN cust1.visit_count > cust2.visit_count THEN cust1.customer_id
-                    WHEN cust1.visit_count &lt; cust2.visit_count THEN cust2.customer_id
-                    WHEN (cust1.last_visit_date IS NOT NULL AND cust2.last_visit_date IS NOT NULL AND cust1.last_visit_date > cust2.last_visit_date) THEN cust1.customer_id
-                    WHEN (cust1.last_visit_date IS NOT NULL AND cust2.last_visit_date IS NOT NULL AND cust1.last_visit_date &lt; cust2.last_visit_date) THEN cust2.customer_id
-                    ELSE (CASE WHEN cust1.customer_id > cust2.customer_id THEN cust1.customer_id ELSE cust2.customer_id END)
+                    WHEN v1 > v2 THEN id1
+                    WHEN v1 &lt; v2 THEN id2
+                    WHEN COALESCE(d1, '1900-01-01') > COALESCE(d2, '1900-01-01') THEN id1
+                    WHEN COALESCE(d1, '1900-01-01') &lt; COALESCE(d2, '1900-01-01') THEN id2
+                    ELSE (CASE WHEN id1 > id2 THEN id1 ELSE id2 END)
                 END AS target_customer_id,
-                pairs.score
-            FROM matched_pairs pairs
-            JOIN dwh.dim_customers cust1 ON pairs.id1 = cust1.customer_id AND cust1.app_company_id = #{companyId}
-            JOIN dwh.dim_customers cust2 ON pairs.id2 = cust2.customer_id AND cust2.app_company_id = #{companyId}
-            WHERE pairs.score >= 80
+                score
+            FROM matched_pairs
+            WHERE score >= 80
         )
         INSERT INTO sys.merge_candidates (
             app_company_id,
