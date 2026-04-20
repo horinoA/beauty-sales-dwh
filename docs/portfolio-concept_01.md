@@ -258,3 +258,22 @@ erDiagram
     }
 
 ```
+
+## HTTPメソッド・リソース対応表
+|メソッド|エンドポイント|説明|備考|
+|---- | ---- | ---- | ---- | 
+|GET|/api/v1/dashboard/summary|ダッシュボード用サマリー数値の取得|本日売上、客数等|
+|GET|/api/v1/sales/monthly-trend|月次売上推移チャート用データの取得|棒グラフ・折れ線用|
+|GET|/api/v1/sales/details|売上明細一覧の取得|期間・店舗フィルタ可|
+|GET|/api/v1/analysis/staff-sales-ranking|スタッフ別売上ランクの取得|売上比率(%)含む|
+|GET|/api/v1/analysis/customer-abc-summary|顧客ABC分析サマリーの取得|ランク別人数・シェア|
+|GET|/api/v1/customers/ranked-list|顧客ランク詳細リストの取得|パレート図下部の表用|
+|GET|/api/v1/customer-merges/candidates|名寄せ候補（組）リストの取得|類似度スコア順|
+|GET|/api/v1/customers/search|顧客検索,手動名寄せ時の検索用|
+|POST|/api/v1/customer-merges/execute|顧客統合の実行|AをBに統合|
+|DELETE|/api/v1/customer-merges/candidates/{id}|名寄せ候補の却下（無視）|候補リストから除外|
+|GET|/api/v1/settings/smaregi-config|スマレジ連携設定の取得|連携状態、トークン等|
+|PATCH|/api/v1/settings/smaregi-config|スマレジ連携設定の一部更新|トークン更新等|
+|GET|/api/v1/jobs/logs|システム運用ログ（ジョブ履歴）の取得|実行日時、ステータス|
+|POST|/api/v1/jobs/smaregi-import|スマレジデータ手動インポートのキック|非同期ジョブ実行|
+|POST|/api/v1/jobs/{jobId}/rerun|失敗したジョブの再実行|エラーリカバリ用|

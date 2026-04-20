@@ -13,7 +13,7 @@ gantt
     
     section Phase 2: ETL & ロジック
     Spring Batch実装 (取得~保存)    :done, p2_1, after p1_3, 7d
-    名寄せロジック実装 (Core)       :p2_2, after p2_1, 7d
+    名寄せロジック実装 (Core)       :done, after p2_1, 7d
     集計API作成 (Controller)       :p2_3, after p2_2, 5d
 
     section Phase 3: フロントエンド
@@ -47,9 +47,9 @@ gantt
     - [x] **Extract:** API (またはMock) からデータを読み込むReader実装
     - [x] **Load:** RawテーブルへのWriter実装
     - [x] **Transform:** Rawデータを加工してDWHテーブルへ移すProcessor実装
-- [ ] **2-2. 名寄せロジック (Identity Resolution) 実装**
-    - [ ] 氏名・電話番号等による「類似度判定サービス」の実装
-    - [ ] 名寄せ候補テーブル (`merge_candidates`) へのデータ生成バッチ処理
+- [x] **2-2. 名寄せロジック (Identity Resolution) 実装**
+    - [x] 氏名・電話番号等による「類似度判定サービス」の実装
+    - [x] 名寄せ候補テーブル (`merge_candidates`) へのデータ生成バッチ処理
 - [ ] **2-3. 分析用API (REST Controller) 作成**
     - [ ] ダッシュボード用集計API (売上推移、スタッフランク、ABC分析)
     - [ ] 名寄せ候補リスト取得・統合実行用API
