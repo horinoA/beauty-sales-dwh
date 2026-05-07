@@ -1,0 +1,98 @@
+openapi: 3.1.0
+info:
+  title: beauty-sales-dwh
+  version: 0.0.2
+paths:
+  /api/v1/sales/monthly-trend:
+    get:
+      summary: 月次売上推移チャート用データの取得
+      description: パラメータにて指定された期間（必須）の月毎の売上額と対前年比を返す。month昇順。
+      parameters:
+        - in: query
+          name: transaction_month_from
+          description: |
+            指定開始月（yyyy-MM形式）。どちらか必須項目。
+          required: true
+          schema:
+            type: string
+            pattern: '^\d{4}-(0[1-9]|1[0-2])$'
+            example: "2025-01"
+        - in: query
+          name: transaction_month_to
+          description: |
+            指定終了月（yyyy-MM形式）。どちらか必須項目。
+          required: true
+          schema:
+            type: string
+            pattern: '^\d{4}-(0[1-9]|1[0-2])$'
+            example: "2026-01"
+      responses:
+        '200':
+          description: 月次売上推移データの取得成功
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    month:
+                      type: string
+                      format: date
+                      example: "2026-01"
+                    sale_amount:
+                      type: integer
+                      format: int64
+                      description: 月毎売上額
+                    year_on_year_comparison:
+                      type: number
+                      format: double
+                      description: 対前年比
+        '400':
+          description: Bad request (必須項目の欠落、またはバリデーションエラー)
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/RequiredParameterMissing'
+                  - $ref: '#/components/schemas/InvalidFormat'
+                  - $ref: '#/components/schemas/DateRangeSettings'
+              examples:
+                RequiredParameterMissing:
+                  summary: 必須パラメータ未指定
+                  value:
+                    status: 400
+                    message: 必須パラメータ(transaction_month_from/to)が指定されていません。
+                InvalidFormat:
+                  summary: 形式不正
+                  value:
+                    status: 400
+                    message: 無効な入力値です。(yyyy-MM形式ではない)
+                DateRangeSettings:
+                  summary: 期間設定不正
+                  value:
+                    status: 400
+                    message: 期間設定に誤りがあるようです。
+components:
+  schemas:
+    RequiredParameterMissing:
+      type: object
+      properties:
+        status:
+          type: integer
+        message:
+          type: string
+    InvalidFormat:
+      type: object
+      properties:
+        status:
+          type: integer
+        message:
+          type: string
+    DateRangeSettings:
+      type: object
+      properties:
+        status:
+          type: integer
+        message:
+          type: string
