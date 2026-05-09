@@ -2,17 +2,31 @@ openapi: 3.1.0
 info:
   title: beauty-sales-dwh
   version: 0.0.2
+# 実装メモ:
+# 1. バリデーション:
+#    - ControllerでOptionalとして受け取り、両方未指定の場合は RequiredParameterMissing (400) をスロー。
+#    - Javaの YearMonth クラスを活用し、12ヶ月の加算・減算や現在時刻との比較を実装する。
+# 2. GlobalExceptionHandler:
+#    - 「期間不正 (from > to)」や「形式不正」時に、components/schemas 定義に沿ったJSONを返却するようハンドリングする。
+
 paths:
   /api/v1/sales/monthly-trend:
     get:
       summary: 月次売上推移チャート用データの取得
-      description: パラメータにて指定された期間（必須）の月毎の売上額と対前年比を返す。month昇順。
+      description: |
+        パラメータにて指定された期間の月毎の売上額と対前年比を返す。month昇順。
+        
+        【期間補完ロジック】
+        - transaction_month_from のみ指定: to は from の12ヶ月後（現在月を超える場合は現在月まで）。
+        - transaction_month_to のみ指定: from は to の12ヶ月前。
+        - 両方指定: その期間を集計。
+        - 両方未指定: 400 Bad Request。
       parameters:
         - in: query
           name: transaction_month_from
           description: |
-            指定開始月（yyyy-MM形式）。どちらか必須項目。
-          required: true
+            集計開始月（yyyy-MM形式）。toが未指定の場合は12ヶ月後（最大現在月）までを補完。
+          required: false
           schema:
             type: string
             pattern: '^\d{4}-(0[1-9]|1[0-2])$'
@@ -20,8 +34,8 @@ paths:
         - in: query
           name: transaction_month_to
           description: |
-            指定終了月（yyyy-MM形式）。どちらか必須項目。
-          required: true
+            集計終了月（yyyy-MM形式）。fromが未指定の場合は12ヶ月前を補完。
+          required: false
           schema:
             type: string
             pattern: '^\d{4}-(0[1-9]|1[0-2])$'

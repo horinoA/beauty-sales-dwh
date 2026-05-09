@@ -497,7 +497,6 @@ DO UPDATE SET
 
   ---
 
-
   今回のプロジェクトでの狙い目
   サロンデータの場合、以下の組み合わせが現実的で強力です。
 
@@ -513,8 +512,6 @@ DO UPDATE SET
   の拡張機能（fuzzystrmatch）でも使える
 
 #### 統計学・AIの視点での「名寄せ」
-
-
    1. 二値分類問題 (Binary Classification):
        * 「2つのレコードは同一人物か (1) か、別人か (0)
          か」を判定するモデルとして捉えられます。
@@ -648,5 +645,68 @@ DO UPDATE SET
    1 -- 名字の編集距離が1以内なら似ていると判定する例（要 fuzzystrmatch 拡張）
    2 WHEN levenshtein(c1.norm_name, c2.norm_name) &lt;= 1 THEN 85
 
+
+## APIの実装
+roadmap.md 
+**2-3. 分析用API (REST Controller) 作成** 開始
+### 月次売上推移チャート用データの取得|棒グラフ・折れ線用
+method:GET
+
+url:/api/v1/sales/monthly-trend
+APIdoc.yaml内paths:/api/v1/sales/monthly-trend:より
+
+analytics/sales を売上分析ドメインの核として、以下のように構成します。
+
+
+    1 src/main/java/com/beauty/beauty_sales_dwh/analytics/sales/
+    2 ├── controller/                 # APIエンドポイント
+    3 │   └── MonthlySalesTrendController.java
+    4 ├── service/                    # 期間補完・対前年比計算・集計呼び出し
+    5 │   └── MonthlySalesTrendService.java
+    6 ├── dto/                        # リクエスト・レスポンス用 Record
+    7 │   ├── MonthlySalesTrendRequest.java
+    8 │   └── MonthlySalesTrendResponse.java
+    9 ├── FactSales.java              # (既存) Entity
+   10 ├── FactSalesDetail.java        # (既存) Entity
+   11 └── SalesRepository.java        # [中心] Spring Data JDBC リポジトリ
+
+
+  実装戦略：Spring Data JDBC での集計
+
+
+  Spring Data JDBC
+  は「1テーブル1リポジトリ」が基本ですが、今回のような複雑な集計（GROUP BY
+  や対前年比のための自己結合/複数期間取得）を行う場合は、@Query
+  アノテーションを使用して SQL を直接書くのが最も効率的です。
+
+
+  1. DTO (Record) の作成
+  前述の通り dto パッケージに作成します。
+   * MonthlySalesTrendResponse: SQLの集計結果を受け取る型としても使います。
+
+
+  2. Repository (SalesRepository.java) へのメソッド追加
+  @Query を使い、指定された期間（当年＋前年）を一気に集計する SQL を定義します。
+
+
+  SQLのポイント:
+   * BETWEEN :start AND :end
+     で「前年の開始月」から「当年の終了月」までをガバッと取る。
+   * Java側（Service）で、取得したリストから「当年」と「前年」をマッチングさせて
+     比率を計算する。
+   * あるいは、SQLの WINDOW関数 や LEFT JOIN
+     を使ってSQL内で比率まで出すことも可能ですが、Spring Data JDBC
+     では結果を単純な Record
+     のリストで受け取り、Javaで加工する方がデバッグしやすく「人間プログラマ」向
+     きです。
+
+
+  3. Service (MonthlySalesTrendService.java)
+   * Controller から MonthlySalesTrendRequest を受け取る。
+   * 期間補完: YearMonth
+     を計算し、DBに投げる「検索開始月（前年分含む）」と「検索終了月」を決定する
+     。
+   * Repository を呼び出し、結果を MonthlySalesTrendResponse
+     のリストに詰め替えて返す。
 
 
