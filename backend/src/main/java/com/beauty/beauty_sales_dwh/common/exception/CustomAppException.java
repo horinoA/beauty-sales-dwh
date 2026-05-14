@@ -1,10 +1,19 @@
 package com.beauty.beauty_sales_dwh.common.exception;
 
 import org.springframework.http.HttpStatus;
+import lombok.Getter;
 
-public abstract class CustomAppException extends RuntimeException{
-    public CustomAppException(String message){
+@Getter
+public abstract class CustomAppException extends RuntimeException {
+    private final Object[] args;
+
+    public CustomAppException(String message) {
+        this(message, null);
+    }
+
+    public CustomAppException(String message, Object[] args) {
         super(message);
+        this.args = args;
     }
     
     // 子クラスごとに異なるステータスコードを返せるようにする（デフォルトは400）

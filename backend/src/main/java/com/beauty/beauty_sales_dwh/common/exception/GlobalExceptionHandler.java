@@ -2,9 +2,12 @@ package com.beauty.beauty_sales_dwh.common.exception;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -15,11 +18,15 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j; // ログ出力用（Lombok）
 
 @Slf4j // ログを出力できるようにする
 @RestControllerAdvice
+@RequiredArgsConstructor
 public class GlobalExceptionHandler {
+
+    private final MessageSource messageSource;
 
     /**
      * 型変換エラー（JSONパースエラー）
@@ -28,15 +35,18 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<Map<String, Object>> handleTypeMismatch(HttpMessageNotReadableException ex) {
         Map<String, Object> body = createErrorBody(HttpStatus.BAD_REQUEST, "Bad Request");
+        Locale locale = LocaleContextHolder.getLocale();
 
         if (ex.getCause() instanceof InvalidFormatException ife) {
             String fieldName = ife.getPath().stream()
                                   .map(ref -> ref.getFieldName())
                                   .findFirst()
                                   .orElse("unknown");
-            body.put("message", "入力形式が正しくありません。フィールド: " + fieldName + ", 値: " + ife.getValue());
+            String message = messageSource.getMessage("error.type.mismatch", new Object[]{fieldName, ife.getValue()}, locale);
+            body.put("message", message);
         } else {
-            body.put("message", "リクエストJSONの形式が不正、またはリクエストボディが空です。");
+            String message = messageSource.getMessage("error.http.message.not.readable", null, locale);
+            body.put("message", message);
         }
 
         return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
@@ -49,6 +59,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, Object>> handleValidationErrors(MethodArgumentNotValidException ex) {
         Map<String, Object> body = createErrorBody(HttpStatus.BAD_REQUEST, "Validation Error");
+        Locale locale = LocaleContextHolder.getLocale();
 
         // 発生したすべてのフィールドエラーをリスト化して返す
         Map<String, String> errors = ex.getBindingResult().getFieldErrors().stream()
@@ -58,7 +69,7 @@ public class GlobalExceptionHandler {
                         (msg1, msg2) -> msg1 // キー重複時は最初のメッセージを採用
                 ));
 
-        body.put("message", "入力内容に誤りがあります。");
+        body.put("message", messageSource.getMessage("error.validation.failed", null, locale));
         body.put("details", errors); // どの項目がダメだったか詳細を返す
 
         return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
@@ -74,7 +85,7 @@ public class GlobalExceptionHandler {
         log.error("NullPointerException occurred: ", ex);
 
         Map<String, Object> body = createErrorBody(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error");
-        body.put("message", "サーバー内部で予期せぬエラーが発生しました。");
+        body.put("message", messageSource.getMessage("error.internal.server.error", null, LocaleContextHolder.getLocale()));
         // セキュリティのため、外部には詳細なスタックトレースを返さないのが定石
         return new ResponseEntity<>(body, HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -85,8 +96,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(CustomAppException.class)
     public ResponseEntity<Map<String, Object>> handleCustomExceptions(CustomAppException ex) {
         Map<String, Object> body = createErrorBody(ex.getStatus(), ex.getClass().getSimpleName());
-        body.put("message", ex.getMessage());
-        return new ResponseEntity<>(body,ex.getStatus());
+        Locale locale = LocaleContextHolder.getLocale();
+        // メッセージキーを使ってプロパティから取得を試みる。なければそのままの文字列を返す
+        String message = messageSource.getMessage(ex.getMessage(), ex.getArgs(), ex.getMessage(), locale);
+        
+        body.put("message", message);
+        return new ResponseEntity<>(body, ex.getStatus());
     }
 
     /**
@@ -97,7 +112,7 @@ public class GlobalExceptionHandler {
         log.error("Unexpected error occurred: ", ex);
 
         Map<String, Object> body = createErrorBody(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error");
-        body.put("message", "システムエラーが発生しました。管理者に問い合わせてください。");
+        body.put("message", messageSource.getMessage("error.system.error", null, LocaleContextHolder.getLocale()));
 
         return new ResponseEntity<>(body, HttpStatus.INTERNAL_SERVER_ERROR);
     }

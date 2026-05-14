@@ -541,87 +541,6 @@ DO UPDATE SET
   という、類似度計算に特化した拡張モジュールもあります。
 
 
-<insert id="findAndInsertMergeCandidates">
-    2     WITH normalized_customers AS (
-    3         SELECT
-    4             app_company_id,
-    5             customer_id,
-    6             -- 名字と名前の間のスペースを削除して比較しやすくする
-    7             replace(replace(customer_name, ' ', ''), '　', '') AS
-      norm_name,
-    8             replace(replace(customer_kana, ' ', ''), '　', '') AS
-      norm_kana,
-    9             regexp_replace(phone_number, '[^0-9]', '', 'g') AS norm_phone,
-   10             regexp_replace(mobile_number, '[^0-9]', '', 'g') AS
-      norm_mobile,
-   11             --
-      ブロッキング用：カナの先頭2文字（例：「サト」）が一致する人同士だけで比較
-      する
-   12             substring(replace(replace(customer_kana, ' ', ''), '　', ''),
-      1, 2) AS kana_block,
-   13             visit_count
-   14         FROM dwh.dim_customers
-   15         WHERE app_company_id = #{companyId}
-   16           AND is_deleted = false
-   17     ),
-   18     matched_pairs AS (
-   19         SELECT
-   20             c1.customer_id AS id1,
-   21             c2.customer_id AS id2,
-   22             CASE
-   23                 -- 1. 電話番号が一致（最強）
-   24                 WHEN (c1.norm_phone = c2.norm_phone AND c1.norm_phone !=
-      '') OR (c1.norm_mobile = c2.norm_mobile AND c1.norm_mobile != '') THEN 100
-   25                 -- 2. カナが完全一致（かなり強い）
-   26                 WHEN c1.norm_kana = c2.norm_kana AND c1.norm_kana != ''
-      THEN 95
-   27                 -- 3. 漢字氏名が完全一致（強い）
-   28                 WHEN c1.norm_name = c2.norm_name AND c1.norm_name != ''
-      THEN 90
-   29                 ELSE 0
-   30             END AS score
-   31         FROM normalized_customers c1
-   32         JOIN normalized_customers c2 ON c1.app_company_id =
-      c2.app_company_id
-   33             AND c1.customer_id &lt; c2.customer_id
-   34             -- 【重要：ブロッキング】
-   35             --
-      電話番号が一致するか、もしくは「カナの先頭2文字」が一致するペアのみを詳細
-      比較の対象にする
-   36             -- これにより、計算量を数百分の一に削減できます。
-   37             AND (
-   38                 (c1.norm_phone = c2.norm_phone AND c1.norm_phone != '') OR
-   39                 (c1.norm_mobile = c2.norm_mobile AND c1.norm_mobile != '')
-      OR
-   40                 (c1.kana_block = c2.kana_block AND c1.kana_block != '')
-   41             )
-   42         WHERE
-   43             -- スコアがついたものだけを抽出
-   44             ( (c1.norm_phone = c2.norm_phone AND c1.norm_phone != '') OR
-      (c1.norm_mobile = c2.norm_mobile AND c1.norm_mobile != '') )
-   45             OR (c1.norm_kana = c2.norm_kana AND c1.norm_kana != '')
-   46             OR (c1.norm_name = c2.norm_name AND c1.norm_name != '')
-   47     ),
-   48     final_candidates AS (
-   49         -- (以下、前回と同様に visit_count で target/source を決定)
-   50         SELECT
-   51             #{companyId} AS app_company_id,
-   52             CASE WHEN cust1.visit_count >= cust2.visit_count THEN
-      cust2.customer_id ELSE cust1.customer_id END AS source_customer_id,
-   53             CASE WHEN cust1.visit_count >= cust2.visit_count THEN
-      cust1.customer_id ELSE cust2.customer_id END AS target_customer_id,
-   54             pairs.score
-   55         FROM matched_pairs pairs
-   56         JOIN dwh.dim_customers cust1 ON pairs.id1 = cust1.customer_id AND
-      cust1.app_company_id = #{companyId}
-   57         JOIN dwh.dim_customers cust2 ON pairs.id2 = cust2.customer_id AND
-      cust2.app_company_id = #{companyId}
-   58     )
-   59     INSERT INTO sys.merge_candidates ( ... )
-   60     SELECT ... FROM final_candidates fc
-   61     WHERE NOT EXISTS ( ... );
-   62 </insert>
-
   工夫した点と計算量への対策
 
 
@@ -640,7 +559,6 @@ DO UPDATE SET
   さらに高度な「曖昧一致」をしたい場合
   もし、「齋藤」と「斉藤」のような、完全一致しないが似ている名前も抽出したい場合
   は、PostgreSQL の levenshtein 関数を使用できます。
-
 
    1 -- 名字の編集距離が1以内なら似ていると判定する例（要 fuzzystrmatch 拡張）
    2 WHEN levenshtein(c1.norm_name, c2.norm_name) &lt;= 1 THEN 85

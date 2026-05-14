@@ -15,7 +15,7 @@ public record MonthlySalesTrendRequest(
         //全てのフィールドがnull
         if (Stream.of(transaction_month_from,transaction_month_to)
             .allMatch(field -> field == null || field.isBlank())){
-                throw new RequiredParameterMissingException("必須パラメータ(transaction_month_from/to)が指定されていません。");
+                throw new RequiredParameterMissingException("error.parameter.required", new Object[]{"transaction_month_from/to"});
         }
     }
 }
