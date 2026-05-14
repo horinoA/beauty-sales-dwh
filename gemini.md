@@ -679,11 +679,35 @@ analytics/sales を売上分析ドメインの核として、以下のように�
   や対前年比のための自己結合/複数期間取得）を行う場合は、@Query
   アノテーションを使用して SQL を直接書くのが最も効率的です。
 
+実装プラン
+   1. DTO作成:
+      リクエスト(MonthlySalesTrendRequest)とレスポンス(MonthlySalesTrendResponse
+      )をRecordで定義。
+   2. Repository実装: 先ほどのWindow関数SQLを @Query で実装。
+   3. Service実装: Repositoryを呼び出すだけ（非常にシンプルになります）。
+   4. Controller実装: APIエンドポイントの公開。
+
+
 
   1. DTO (Record) の作成
   前述の通り dto パッケージに作成します。
    * MonthlySalesTrendResponse: SQLの集計結果を受け取る型としても使います。
 
+独自例外はCustomAppException.javaを親クラスにして
+public 独自クラス extends CustomAppException
+@Override
+    public HttpStatus getStatus() {
+        return 投げたいステータス（HttpStatus.hogehohe）
+    }
+RequiredParameterMissingExceptionを参考に
+
+GrobalexceptionHandller.classの
+**
+     * 独自エラー
+     */
+    @ExceptionHandler(CustomAppException.class)
+    public ResponseEntity
+で受けてる
 
   2. Repository (SalesRepository.java) へのメソッド追加
   @Query を使い、指定された期間（当年＋前年）を一気に集計する SQL を定義します。
@@ -708,5 +732,63 @@ analytics/sales を売上分析ドメインの核として、以下のように�
      。
    * Repository を呼び出し、結果を MonthlySalesTrendResponse
      のリストに詰め替えて返す。
+
+Window関数（特に LAG
+  関数）を使用して、SQL側で対前年比を算出する例を提示します。
+
+  SQLの実装例（PostgreSQL）
+
+
+  Window関数を使う場合の最大の注意点は、「データが0件の月があると、12個前のレコ
+  ードが前年同月とは限らなくなる」という点です。これを防ぐために、generate_serie
+  s でカレンダー（月の連番）を生成してから結合するのが定石です。
+
+
+    1 WITH date_range AS (
+    2     -- 1. 指定期間（当年）の1年前から、当月末までの月リストを生成
+    3     SELECT generate_series(
+    4         DATE_TRUNC('month', :startDate::date - INTERVAL '1 year'),
+    5         DATE_TRUNC('month', :endDate::date),
+    6         '1 month'::interval
+    7     )::date AS month_date
+    8 ),
+    9 monthly_sales AS (
+   10     -- 2. 実データを月単位で集計
+   11     SELECT
+   12         DATE_TRUNC('month', transaction_date)::date AS month_date,
+   13         SUM(amount_total) AS amount
+   14     FROM dwh.fact_sales
+   15     WHERE app_company_id = :companyId
+   16       AND is_void = false
+   17     GROUP BY 1
+   18 ),
+   19 joined_data AS (
+   20     -- 3. カレンダーと実データを結合し、欠損月を0で埋める
+   21     SELECT
+   22         dr.month_date,
+   23         COALESCE(ms.amount, 0) AS current_amount
+   24     FROM date_range dr
+   25     LEFT JOIN monthly_sales ms ON dr.month_date = ms.month_date
+   26 ),
+   27 calc_yoy AS (
+   28     -- 4. Window関数で12行前（1年前）の値を取得して計算
+   29     SELECT
+   30         TO_CHAR(month_date, 'YYYY-MM') AS month,
+   31         current_amount AS amount,
+   32         LAG(current_amount, 12) OVER (ORDER BY month_date) AS
+      last_year_amount
+   33     FROM joined_data
+   34 )
+   35 -- 5. 最終的にリクエストされた期間（当年分）のみに絞り込む
+   36 SELECT
+   37     month,
+   38     amount,
+   39     last_year_amount,
+   40     CASE
+   41         WHEN last_year_amount IS NULL OR last_year_amount = 0 THEN NULL
+   42         ELSE ROUND(((amount::numeric / last_year_amount) - 1) * 100, 2)
+   43     END AS growth_rate
+   44 FROM calc_yoy
+   45 WHERE month_date >= DATE_TRUNC('month', :startDate::date)
 
 

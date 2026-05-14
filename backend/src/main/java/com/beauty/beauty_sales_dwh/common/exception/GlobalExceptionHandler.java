@@ -22,7 +22,7 @@ import lombok.extern.slf4j.Slf4j; // ログ出力用（Lombok）
 public class GlobalExceptionHandler {
 
     /**
-     * 1. 型変換エラー（JSONパースエラー）
+     * 型変換エラー（JSONパースエラー）
      * 例: Integer項目に "abc" を送った場合
      */
     @ExceptionHandler(HttpMessageNotReadableException.class)
@@ -43,7 +43,7 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * 2. バリデーションエラー（@NotNull, @Min, @Size など）
+     * バリデーションエラー（@NotNull, @Min, @Size など）
      * 例: 必須項目が null だった場合
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -65,7 +65,7 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * 3. 予期せぬ NullPointerException
+     * 予期せぬ NullPointerException
      * 例: サービス層などで .get() などを呼んで落ちた場合
      */
     @ExceptionHandler(NullPointerException.class)
@@ -76,12 +76,21 @@ public class GlobalExceptionHandler {
         Map<String, Object> body = createErrorBody(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error");
         body.put("message", "サーバー内部で予期せぬエラーが発生しました。");
         // セキュリティのため、外部には詳細なスタックトレースを返さないのが定石
-
         return new ResponseEntity<>(body, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     /**
-     * 4. その他の予期せぬエラー（安全策）
+     * 独自エラー
+     */
+    @ExceptionHandler(CustomAppException.class)
+    public ResponseEntity<Map<String, Object>> handleCustomExceptions(CustomAppException ex) {
+        Map<String, Object> body = createErrorBody(ex.getStatus(), ex.getClass().getSimpleName());
+        body.put("message", ex.getMessage());
+        return new ResponseEntity<>(body,ex.getStatus());
+    }
+
+    /**
+     * その他の予期せぬエラー（安全策）
      */
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, Object>> handleAllExceptions(Exception ex) {
