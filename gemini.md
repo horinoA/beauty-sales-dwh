@@ -11,7 +11,7 @@
 * **マルチテナント**: 全てのクエリ・処理において、必ず `app_company_id` を条件に含め、テナント間のデータ漏洩を防ぐこと。
 
 ## 2. 技術スタック & バージョン
-* **Java**: 21 (LTS) - Record, Switch Expressions, Virtual Threads(必要に応じて)を使用。
+* **Java**: 21 (LTS) - Record, Switch Expressions, Virtual Threads(必要に応じて)を使用.
 * **Framework**: Spring Boot 3.5.8
 * **Build Tool**: Gradle
 * **DB**: PostgreSQL 16+
@@ -404,7 +404,7 @@ DO UPDATE SET
 #### 変更点４
 1. SQLの堅牢性: ::NUMERIC::INTEGER による安全な型変換と、DISTINCT ON
       による重複データ対策。
-2. API仕様への準拠: スマレジAPI特有の sort
+2. API仕様への準拠: スマレジAPI特有 of sort
       パラメータ（キャメルケース）の修正。
 3. データ整合性:
       親テーブル（raw.transactions）の更新日時に基づいた、明細データの確実なフィ
@@ -467,7 +467,7 @@ DO UPDATE SET
    * レーベンシュタイン距離 (Levenshtein Distance):
      1文字の挿入・削除・置換で何回操作が必要か。名字の誤字脱字に強い。
    * ジャロ・ウィンクラー距離 (Jaro-Winkler Distance):
-     文字列の「接頭辞」の一致を重視。日本語の名字（「斉藤」と「齋藤」など）の判
+     文字列の「接頭辞」の一致を重視. 日本語の名字（「斉藤」と「齋藤」など）の判
      定に有効。
    * N-gram (バイグラム等):
      文字列をN文字ずつに分割して共通項を比較。名前の一部が欠けている場合に強い。
@@ -501,11 +501,11 @@ DO UPDATE SET
   サロンデータの場合、以下の組み合わせが現実的で強力です。
 
 
-   1. Normalization: 全角半角・スペースの徹底排除。
-   2. Blocking: 生年月日の「月日」または「電話番号の下4桁」でバケツ分け。
-   3. Fuzzy Match: Jaro-Winkler を使って、カナ氏名の類似度スコアを算出。
+   1. Normalization: 全角半角・スペースの徹底排除.
+   2. Blocking: 生年月日の「月日」または「電話番号の下4桁」でバケツ分け.
+   3. Fuzzy Match: Jaro-Winkler を使って、カナ氏名の類似度スコアを算出.
    4. Verification: 最終的には人間が承認するための
-      sys.merge_candidates（ステータス：PENDING）への登録。
+      sys.merge_candidates（ステータス：PENDING）への登録.
 
 
   「ジャロ・ウィンクラー距離」や「レーベンシュタイン距離」は PostgreSQL
@@ -633,9 +633,9 @@ GrobalexceptionHandller.classの
 
   SQLのポイント:
    * BETWEEN :start AND :end
-     で「前年の開始月」から「当年の終了月」までをガバッと取る。
+     で「前年の開始月」から「当年の終了月」までをガバッと取る.
    * Java側（Service）で、取得したリストから「当年」と「前年」をマッチングさせて
-     比率を計算する。
+     比率を計算する.
    * あるいは、SQLの WINDOW関数 や LEFT JOIN
      を使ってSQL内で比率まで出すことも可能ですが、Spring Data JDBC
      では結果を単純な Record
@@ -709,4 +709,21 @@ Window関数（特に LAG
    44 FROM calc_yoy
    45 WHERE month_date >= DATE_TRUNC('month', :startDate::date)
 
+## 16. MonthlySalesTrendRequest 実装時の注意点と改善課題
+売上推移APIのリクエストDTO実装において、以下の設計上の課題が特定された。
 
+### 1. Java Record の仕様とデータ保持
+* **課題**: コンパクトコンストラクタ内で宣言したローカル変数はフィールドに保存されないため、パース後の `OffsetDateTime` を外部から参照できない。
+* **改善案**: 
+    * 案A: record を通常の class に変更し、フィールドを明示的に持つ。
+    * 案B: record のメソッド（例: `getFromDate()`）内で、`DateUtil` を使用して動的に値を計算/取得する。
+
+### 2. 月初・月末計算のロジック
+* **課題**: `LocalDate.minusMonths()` を直接使うと、元の「日」が維持されるため、単純な `LocalTime.MIN/MAX` との組み合わせでは「月初（1日）」や「当月末日」にならないケースがある。
+* **改善案**:
+    * 月初計算: `YearMonth.from(date).atDay(1)` を使用する。
+    * 当月末計算: `YearMonth.now().atEndOfMonth()` を使用する。
+
+### 3. 期間（12ヶ月）の定義
+* **課題**: 「12ヶ月前」の補完において、開始月を12ヶ月前に設定すると、合計13ヶ月分（例: 2023-05 ～ 2024-05）のデータが含まれる可能性がある。
+* **検討事項**: ビジネス要件に基づき、オフセット値を11ヶ月にするか12ヶ月にするか再定義が必要。
