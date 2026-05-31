@@ -41,6 +41,34 @@ public class DateUtil {
     }
     
     /**
+     *  "yyyy-MM" 形式の文字列よりMonthNum月前の開始日時を返す
+     * 
+     * @param YearMonthStr "yyyy-MM" 形式の文字列
+     * @param MonthNum 減産される月数
+     * @return  指定された月数が引かれた開始日時の OffsetDateTime (JST)
+     */
+    public static OffsetDateTime ReduceMonthAtStartOfDay(String YearMonthStr,Long MonthNum){
+        LocalDate yearMonthDay = YearMonth.from(
+                                        startOfMonth(YearMonthStr).minusMonths(MonthNum).toLocalDate())
+                                        .atDay(1);
+        return atStartOfDay(yearMonthDay);
+    }
+
+    /**
+     * "yyyy-MM" 形式の文字列よりMonthNum月後の終了日時を返す
+     * 
+     * @param YearMonthStr "yyyy-MM" 形式の文字列
+     * @param MonthNum 減産される月数
+     * @return  指定された月数が加算された終了日時の OffsetDateTime (JST)
+     */
+    public static OffsetDateTime AddMonthAtEndOfDay(String YearMonthStr,Long MonthNum){
+        LocalDate yearMonthDay = YearMonth.from(
+                                startOfMonth(YearMonthStr).plusMonths(MonthNum).toLocalDate())
+                                .atEndOfMonth();
+        return atEndOfDay(yearMonthDay);
+    }
+
+    /**
      * LocalDate を JST の開始時点の OffsetDateTime に変換します。
      */
     public static OffsetDateTime atStartOfDay(LocalDate date) {
@@ -55,4 +83,5 @@ public class DateUtil {
         if (date == null) return null;
         return OffsetDateTime.of(date, LocalTime.MAX, JST_OFFSET);
     }
+
 }

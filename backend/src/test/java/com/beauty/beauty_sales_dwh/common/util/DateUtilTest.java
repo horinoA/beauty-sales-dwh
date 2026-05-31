@@ -60,4 +60,29 @@ class DateUtilTest {
         assertEquals(LocalTime.MAX, result.toLocalTime());
         assertEquals(JST, result.getOffset());
     }
+
+    @Test
+    @DisplayName("yyyy-mm形式のnヶ月前の開始日データが取得できること")
+    void ReduceMonthAtStartOfDayTest(){
+        OffsetDateTime result = DateUtil.ReduceMonthAtStartOfDay("2025-02", 11L);
+        assertNotNull(result);
+        assertEquals(2024, result.getYear());
+        assertEquals(3, result.getMonthValue());
+        assertEquals(1, result.getDayOfMonth());
+        assertEquals(LocalTime.MIN, result.toLocalTime());
+        assertEquals(JST, result.getOffset());
+    }
+
+    @Test
+    @DisplayName("yyyy-mm形式のnヶ月後の終了日データが取得できること")
+    void AddMonthAtEndOfDayTest(){
+        // うるう年の2月でテスト
+        OffsetDateTime result = DateUtil.AddMonthAtEndOfDay("2024-03", 11L);
+        assertNotNull(result);
+        assertEquals(2025, result.getYear());
+        assertEquals(2, result.getMonthValue());
+        assertEquals(28, result.getDayOfMonth());
+        assertEquals(LocalTime.MAX, result.toLocalTime());
+        assertEquals(JST, result.getOffset());
+    }
 }
